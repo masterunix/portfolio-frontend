@@ -1,7 +1,18 @@
+/**
+ * ResumeHex.tsx — Resume tile with download button.
+ *
+ * Used on the Resumes page inside a parent <Hexagon> component.
+ * Displays resume domain info and a download button.
+ *
+ * Pure presentational — receives data and callbacks, no business logic.
+ * The actual download mechanism is handled by ResumesClient.
+ */
 'use client';
 
 import React from 'react';
 import { adjustColor } from '@/lib/utils';
+
+// ─── Props ───────────────────────────────────────────────────────────────────
 
 interface ResumeHexProps {
   resume: {
@@ -17,19 +28,16 @@ interface ResumeHexProps {
       name: string;
     };
   };
+  /** Click handler for the download button */
   onDownload: (e: React.MouseEvent) => void;
 }
 
-/**
- * ResumeHex — displays a single resume tile with download button.
- * 
- * Pure presentational component that receives data and callbacks.
- * No business logic - just renders the UI.
- */
+// ─── Component ───────────────────────────────────────────────────────────────
+
 export default function ResumeHex({ resume, onDownload }: ResumeHexProps) {
   return (
-    <div className="hex-content pointer-events-auto transition-transform duration-[400ms] ease-[cubic-bezier(0.25,0.46,0.45,0.94)] ">
-      {/* Resume Icon */}
+    <div className="hex-content pointer-events-auto">
+      {/* Resume Icon — gradient rounded square */}
       <div 
         className="w-[50px] h-[50px] rounded-[12px] flex items-center justify-center text-2xl shadow-lg shrink-0 transition-transform duration-300 group-hover:scale-110"
         style={{ 

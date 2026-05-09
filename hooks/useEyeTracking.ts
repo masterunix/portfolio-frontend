@@ -1,19 +1,27 @@
+/**
+ * useEyeTracking.ts — Tracks cursor position for the Gleck anime eyes.
+ *
+ * Calculates a normalized position (-1 to 1) for pupil movement based
+ * on cursor distance from the widget center. The max tracking distance
+ * is 200px — beyond that, the eyes look "fully" in that direction.
+ *
+ * @param widgetRef - React ref to the widget container element
+ * @returns Object with normalized x and y positions for pupil rendering
+ */
+
 import { useState, useEffect, RefObject } from 'react';
 
+// ─── Types ───────────────────────────────────────────────────────────────────
+
 interface EyePosition {
+  /** Horizontal pupil offset (-1 = far left, 0 = center, 1 = far right) */
   x: number;
+  /** Vertical pupil offset (-1 = top, 0 = center, 1 = bottom) */
   y: number;
 }
 
-/**
- * useEyeTracking — Tracks cursor position relative to widget for anime eyes
- * 
- * Calculates normalized position (-1 to 1) for pupil movement based on
- * cursor distance from widget center.
- * 
- * @param widgetRef - React ref to the widget container element
- * @returns Object with normalized x and y positions for pupils
- */
+// ─── Hook ────────────────────────────────────────────────────────────────────
+
 export function useEyeTracking(widgetRef: RefObject<HTMLElement | null>): EyePosition {
   const [eyePos, setEyePos] = useState<EyePosition>({ x: 0, y: 0 });
 
@@ -25,12 +33,12 @@ export function useEyeTracking(widgetRef: RefObject<HTMLElement | null>): EyePos
       const centerX = rect.left + rect.width / 2;
       const centerY = rect.top + rect.height / 2;
 
-      // Calculate distance from center
+      // Calculate delta from widget center
       const deltaX = e.clientX - centerX;
       const deltaY = e.clientY - centerY;
 
-      // Normalize to -1 to 1 range with smooth falloff
-      const maxDistance = 200; // pixels
+      // Normalize to -1..1 range with 200px max tracking radius
+      const maxDistance = 200;
       const normalizedX = Math.max(-1, Math.min(1, deltaX / maxDistance));
       const normalizedY = Math.max(-1, Math.min(1, deltaY / maxDistance));
 

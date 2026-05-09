@@ -1,7 +1,18 @@
+/**
+ * FeedbackHex.tsx — Feedback tile with email button.
+ *
+ * Used on the Resumes page as a special tile that lets visitors
+ * send feedback via email. Renders inside a parent <Hexagon> component
+ * (the hex shell is provided by the parent).
+ *
+ * Pure presentational — receives data and callbacks, no business logic.
+ */
 'use client';
 
 import React from 'react';
 import { adjustColor } from '@/lib/utils';
+
+// ─── Props ───────────────────────────────────────────────────────────────────
 
 interface FeedbackHexProps {
   feedbackData: {
@@ -11,19 +22,16 @@ interface FeedbackHexProps {
     color: string;
     icon: string;
   };
+  /** Click handler for the "Send Email" button — opens mail client */
   onSendEmail: (e: React.MouseEvent) => void;
 }
 
-/**
- * FeedbackHex — displays a feedback tile with email button.
- * 
- * Pure presentational component that receives data and callbacks.
- * No business logic - just renders the UI.
- */
+// ─── Component ───────────────────────────────────────────────────────────────
+
 export default function FeedbackHex({ feedbackData, onSendEmail }: FeedbackHexProps) {
   return (
-    <div className="hex-content pointer-events-auto transition-transform duration-[400ms] ease-[cubic-bezier(0.25,0.46,0.45,0.94)] ">
-      {/* Feedback Icon */}
+    <div className="hex-content pointer-events-auto">
+      {/* Feedback Icon — gradient rounded square */}
       <div 
         className="w-[50px] h-[50px] rounded-[12px] flex items-center justify-center text-2xl shadow-lg shrink-0 transition-transform duration-300 group-hover:scale-110"
         style={{ 

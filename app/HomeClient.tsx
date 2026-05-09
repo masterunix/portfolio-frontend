@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import NavHexagon from '@/components/NavHexagon';
 import Hexagon from '@/components/Hexagon';
 import { useTypewriter } from '@/hooks/useTypewriter';
-import { navigationContent, skipList } from '@/lib/constants';
+import { navigationContent, skipList, NavigationItem } from '@/lib/constants';
 
 interface HomeMessage {
   id: number;
@@ -23,7 +23,8 @@ interface GridItem {
   width: number;
   height: number;
   delay: number;
-  navData?: any;
+  /** Navigation data — undefined for empty/decorative hexagons */
+  navData?: NavigationItem;
 }
 
 export default function HomeClient({ messages }: { messages: HomeMessage[] }) {
@@ -155,19 +156,20 @@ export default function HomeClient({ messages }: { messages: HomeMessage[] }) {
           };
 
           if (item.navData) {
+            const nav = item.navData; // Narrowed — guaranteed defined inside this block
             return (
               // Outer div owns the click → runs exit animation before routing.
               // NavHexagon is a pure tile; it has no link of its own.
               <div
                 key={item.id}
                 className="cursor-pointer"
-                onClick={(e) => handleNavigate(e, item.navData.href, item.navData.external)}
+                onClick={(e) => handleNavigate(e, nav.href, nav.external)}
               >
                 <NavHexagon
-                  icon={item.navData.svg}
-                  title={item.navData.text}
-                  description={item.navData.description}
-                  color={item.navData.color}
+                  icon={nav.svg}
+                  title={nav.text}
+                  description={nav.description}
+                  color={nav.color}
                   delay={item.delay}
                   style={style}
                 />
@@ -180,7 +182,7 @@ export default function HomeClient({ messages }: { messages: HomeMessage[] }) {
               key={item.id} 
               delay={item.delay} 
               style={style}
-              className="pointer-events-none opacity-50" 
+              className="pointer-events-none" 
             />
           );
         })}

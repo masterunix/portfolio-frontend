@@ -233,7 +233,7 @@ export default function ResumesClient({ resumes }: { resumes: Resume[] }) {
   if (!mounted || !layout) return null;
 
   return (
-    <main className="relative w-full h-screen overflow-hidden bg-black">
+    <main className="relative w-full h-screen overflow-hidden">
       {/* Hidden download link - React way, no DOM manipulation */}
       {downloadUrl && (
         <a

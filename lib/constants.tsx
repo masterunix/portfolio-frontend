@@ -1,6 +1,53 @@
+/**
+ * constants.tsx — Shared constants for the portfolio application.
+ *
+ * Contains:
+ * - HEX_SVG_PATH: The master hexagonal SVG path used across all hex components
+ * - navigationContent: Home page grid navigation items keyed by "row-col"
+ * - skipList: Grid positions to leave empty on the home page
+ */
+
 import React from 'react';
 
-export const navigationContent: Record<string, any> = {
+// ─── Types ───────────────────────────────────────────────────────────────────
+
+/** Shape of a navigation tile on the home page grid */
+export interface NavigationItem {
+  /** Display label shown inside the hex */
+  text: string;
+  /** Short subtitle below the label */
+  description: string;
+  /** SVG icon rendered inside the gradient box */
+  svg: React.ReactNode;
+  /** Gradient base color (hex string) */
+  color: string;
+  /** Route path or full URL to navigate to */
+  href: string;
+  /** If true, opens in a new tab instead of client-side routing */
+  external: boolean;
+}
+
+// ─── Hexagon Geometry ────────────────────────────────────────────────────────
+
+/**
+ * Master SVG path for the rounded hexagon shape.
+ * Used by every hex component (Hexagon, ProjectHex, TechHex, etc.)
+ * to render the outline stroke and the backdrop-filter clip boundary.
+ *
+ * Changing this single constant updates the shape across the entire site.
+ * Viewbox: 0 0 190 212
+ */
+export const HEX_SVG_PATH =
+  'M85.5 3.63965C91.3786 0.245625 98.6214 0.245625 104.5 3.63965L178.896 46.5928C184.775 49.9868 188.396 56.2589 188.396 63.0469V148.953C188.396 155.741 184.775 162.013 178.896 165.407L104.5 208.36C98.805 211.648 91.8296 211.751 86.0547 208.669L85.5 208.36L11.1035 165.407C5.22494 162.013 1.60356 155.741 1.60352 148.953V63.0469C1.60356 56.2589 5.22493 49.9868 11.1035 46.5928L85.5 3.63965Z';
+
+// ─── Navigation Grid ─────────────────────────────────────────────────────────
+
+/**
+ * Home page navigation content, keyed by grid position "row-col".
+ * Only positions listed here get a clickable tile; all other positions
+ * render as decorative empty hexagons.
+ */
+export const navigationContent: Record<string, NavigationItem> = {
   '1-2': {
     text: 'Github',
     description: 'View my code repositories',
@@ -87,24 +134,14 @@ export const navigationContent: Record<string, any> = {
   },
 };
 
+// ─── Grid Configuration ──────────────────────────────────────────────────────
+
+/**
+ * Grid positions to skip (leave empty) on the home and resumes pages.
+ * Format: [row, col] pairs. These positions render as transparent spacers
+ * to create the organic, non-rectangular honeycomb boundary.
+ */
 export const skipList = [
   [0, 0], [2, 0], [0, 7], [2, 7],
   [1, 7], [3, 7]
-];
-
-export const technologies = [
-  { title: 'MongoDB', tech: 'NoSQL Database', description: 'Document-based database', icon: '🍃', color: '#47a248' },
-  { title: 'React', tech: 'Frontend Library', description: 'Component-based UI', icon: '⚛️', color: '#61dafb' },
-  { title: 'Flutter', tech: 'Mobile Framework', description: 'Cross-platform development', icon: '📱', color: '#02569b' },
-  { title: 'React Native', tech: 'Mobile Development', description: 'Native mobile apps', icon: '📲', color: '#61dafb' },
-  { title: 'Node.js', tech: 'Backend Runtime', description: 'Server-side JavaScript', icon: '🟢', color: '#339933' },
-  { title: 'Ubuntu Server', tech: 'Linux Distribution', description: 'Server operating system', icon: '🐧', color: '#e95420' },
-  { title: 'Python', tech: 'Programming Language', description: 'AI/ML development', icon: '🐍', color: '#3776ab' },
-  { title: 'TensorFlow', tech: 'ML Framework', description: 'Deep learning library', icon: '🧠', color: '#ff6f00' },
-  { title: 'PyTorch', tech: 'ML Framework', description: 'Neural network library', icon: '🔥', color: '#ee4c2c' },
-  { title: 'Nginx', tech: 'Web Server', description: 'Reverse proxy server', icon: '🌐', color: '#009639' },
-  { title: 'JavaScript', tech: 'Programming Language', description: 'Web development', icon: '⚡', color: '#f7df1e' },
-  { title: 'HTML/CSS', tech: 'Web Technologies', description: 'Frontend markup & styling', icon: '🎨', color: '#e34f26' },
-  { title: 'Express.js', tech: 'Backend Framework', description: 'Node.js web framework', icon: '🚀', color: '#000000' },
-  { title: 'Dart', tech: 'Programming Language', description: 'Flutter development', icon: '🎯', color: '#0175c2' }
 ];

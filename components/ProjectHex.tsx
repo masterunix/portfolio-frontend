@@ -1,10 +1,30 @@
+/**
+ * ProjectHex.tsx — Displays a single project inside a hexagonal tile.
+ *
+ * Used in the Projects carousel (middle row). Renders its own hex shell
+ * because CarouselHex wraps it directly (not via <Hexagon>).
+ *
+ * Features:
+ * - Project icon or Strapi-hosted logo
+ * - Title, tech stack, and description
+ * - GitHub and Visit action buttons
+ * - Hover effects via CSS `group` class
+ */
 'use client';
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import { adjustColor } from '@/lib/utils';
+import { HEX_SVG_PATH } from '@/lib/constants';
+
+// ─── Constants ───────────────────────────────────────────────────────────────
 
 const STRAPI = process.env.NEXT_PUBLIC_STRAPI_URL || 'http://localhost:1337';
+
+/** Placeholder strings that indicate a link is not yet available */
+const PLACEHOLDER_VALUES = ['Coming Soon', 'In Development', 'Private', 'Available on request', 'Will be deployed soon'];
+
+// ─── Props ───────────────────────────────────────────────────────────────────
 
 interface ProjectHexProps {
   project: {
@@ -18,21 +38,19 @@ interface ProjectHexProps {
     github?: string | null;
     visit?: string | null;
   };
-  /** Disable transitions during exit animation */
+  /** Disable hover transitions during exit animation */
   isExiting?: boolean;
 }
 
-/**
- * ProjectHex — displays a single project in a hexagonal tile.
- * Renders SVG hexagon background and content.
- * Wrapper with group class for hover effects.
- */
+// ─── Component ───────────────────────────────────────────────────────────────
+
 export default function ProjectHex({ project, isExiting = false }: ProjectHexProps) {
   const router = useRouter();
-  const isPrivateOrPlaceholder = (value: string | null | undefined) => {
+
+  /** Checks if a link value is a placeholder or missing */
+  const isPrivateOrPlaceholder = (value: string | null | undefined): boolean => {
     if (!value) return true;
-    const placeholders = ['Coming Soon', 'In Development', 'Private', 'Available on request', 'Will be deployed soon'];
-    return placeholders.includes(value);
+    return PLACEHOLDER_VALUES.includes(value);
   };
 
   const hasGithub = !isPrivateOrPlaceholder(project.github);
@@ -40,15 +58,17 @@ export default function ProjectHex({ project, isExiting = false }: ProjectHexPro
 
   return (
     <div className="group relative w-full h-full">
-      {/* Hexagon SVG Background */}
-      <div className="hex-glass-mask"><div className="hex-glass-blur" /></div>
+      {/* Frosted glass blur layer */}
+      <div className="hex-glass-blur" />
+
+      {/* Hexagonal SVG outline */}
       <svg
         viewBox="0 0 190 212"
         preserveAspectRatio="none"
         className="absolute inset-0 w-full h-full pointer-events-none"
       >
         <path
-          d="M85.5 3.63965C91.3786 0.245625 98.6214 0.245625 104.5 3.63965L178.896 46.5928C184.775 49.9868 188.396 56.2589 188.396 63.0469V148.953C188.396 155.741 184.775 162.013 178.896 165.407L104.5 208.36C98.805 211.648 91.8296 211.751 86.0547 208.669L85.5 208.36L11.1035 165.407C5.22494 162.013 1.60356 155.741 1.60352 148.953V63.0469C1.60356 56.2589 5.22493 49.9868 11.1035 46.5928L85.5 3.63965Z"
+          d={HEX_SVG_PATH}
           fill="rgba(255,255,255,0.05)"
           stroke="rgba(255,255,255,0.1)"
           strokeWidth="1"
@@ -58,7 +78,7 @@ export default function ProjectHex({ project, isExiting = false }: ProjectHexPro
 
       {/* Content */}
       <div className="hex-content">
-        {/* Project Icon/Logo */}
+        {/* Project Icon/Logo — gradient rounded square */}
         <div
           className="w-[50px] h-[50px] rounded-[12px] flex items-center justify-center text-2xl shadow-lg transition-transform duration-300 group-hover:scale-110 shrink-0"
           style={{
@@ -92,7 +112,7 @@ export default function ProjectHex({ project, isExiting = false }: ProjectHexPro
           {project.description}
         </div>
 
-        {/* Action Buttons */}
+        {/* Action Buttons — GitHub and/or Visit links */}
         <div className="flex flex-col mt-2 shrink-0 w-full items-center" style={{ gap: '12px' }}>
           {hasGithub && (
             <button

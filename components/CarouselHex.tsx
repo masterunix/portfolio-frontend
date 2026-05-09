@@ -1,33 +1,51 @@
+/**
+ * CarouselHex.tsx — Positional wrapper for hexagons in the infinite carousel.
+ *
+ * Handles three animation phases:
+ * 1. Entrance: Diagonal wave using framer-motion (col+row stagger)
+ * 2. Active:   Smooth horizontal scrolling via useTransform (declarative)
+ * 3. Exit:     Diagonal wave fade-out with slide-down
+ *
+ * The X position is computed declaratively via framer-motion's useTransform,
+ * which wraps the offset using modular arithmetic for seamless infinite looping.
+ *
+ * NO DOM MANIPULATION — uses framer-motion's declarative API throughout.
+ */
 'use client';
 
 import React from 'react';
 import { motion, useTransform, MotionValue } from 'framer-motion';
 
+// ─── Props ───────────────────────────────────────────────────────────────────
+
 interface CarouselHexProps {
   children: React.ReactNode;
+  /** Base X position in pixels (before carousel offset is applied) */
   baseX: number;
+  /** Y position in pixels (fixed — rows don't scroll) */
   y: number;
+  /** Hexagon width in pixels */
   width: number;
+  /** Hexagon height in pixels */
   height: number;
+  /** Row index (0-based) — used for stagger delay calculation */
   row: number;
+  /** Column index (0-based) — used for stagger delay calculation */
   col: number;
+  /** Which set this hex belongs to (0, 1, or 2) for carousel duplication */
   setIndex: number;
+  /** Framer-motion MotionValue tracking the current scroll offset */
   carouselOffset: MotionValue<number>;
+  /** Total width of all columns in one set (for modular wrapping) */
   totalWidth: number;
+  /** Horizontal spacing between hex centers */
   hexSpacing: number;
+  /** When true, plays the exit animation */
   isExiting: boolean;
 }
 
-/**
- * CarouselHex — wrapper that positions a hex in the infinite carousel.
- * 
- * Animation phases:
- * 1. Entrance: Diagonal wave using framer-motion (like DSA Stats)
- * 2. Active: Smooth horizontal scrolling via useTransform
- * 3. Exit: Diagonal wave using framer-motion (like DSA Stats)
- * 
- * NO DOM MANIPULATION - uses framer-motion's declarative API throughout.
- */
+// ─── Component ───────────────────────────────────────────────────────────────
+
 export default function CarouselHex({
   children,
   baseX,
@@ -42,11 +60,16 @@ export default function CarouselHex({
   hexSpacing,
   isExiting
 }: CarouselHexProps) {
-  // Diagonal wave delays (same as DSA Stats)
-  const entranceDelay = (col + row) * 0.05; // Convert to seconds for framer-motion
+  // Diagonal wave delays — same pattern as DSA Stats page for consistency
+  const entranceDelay = (col + row) * 0.05;
   const exitDelay = (col + row) * 0.05;
 
-  // Transform carousel offset to wrapped X position (declarative, no DOM manipulation)
+  /**
+   * Transform carousel offset into a wrapped X position.
+   * Uses modular arithmetic to create seamless infinite looping:
+   * rawX = baseX - offset (moves left as offset increases)
+   * wrappedX = rawX mod totalWidth (wraps around when off-screen)
+   */
   const x = useTransform(carouselOffset, (offset) => {
     const rawX = baseX - offset;
     let wrappedX = ((rawX % totalWidth) + totalWidth) % totalWidth;
@@ -74,6 +97,7 @@ export default function CarouselHex({
         height
       }}
     >
+      {/* Inner wrapper — disables pointer events during exit to prevent stale clicks */}
       <div 
         className="w-full h-full transition-all duration-[400ms] ease-[cubic-bezier(0.25,0.46,0.45,0.94)]"
         style={{ pointerEvents: isExiting ? 'none' : 'auto' }}

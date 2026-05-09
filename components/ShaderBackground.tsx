@@ -261,7 +261,6 @@ export default function ShaderBackground() {
           );
 
           if (activeTheme) {
-            console.log('Selected theme:', activeTheme.name);
             setTheme(activeTheme);
           }
         }
@@ -293,8 +292,6 @@ export default function ShaderBackground() {
     return null;
   }
 
-  console.log('Rendering shader with palette:', palette);
-  console.log('Rendering shader with palette:', palette);
 
   return (
     <div

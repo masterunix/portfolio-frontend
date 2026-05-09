@@ -1,29 +1,53 @@
 /**
- * Layout calculation utilities for hexagonal grids.
- * Matches the legacy projects-script.js calculations exactly.
+ * layoutUtils.ts — Layout calculation utilities for hexagonal grids.
+ *
+ * Provides pure functions for computing hex dimensions, grid spacing,
+ * and individual hex positions. Used by the carousel pages (Projects, Skills)
+ * to create a consistent honeycomb layout.
+ *
+ * Key design decisions:
+ * - hexSpacingX is forced to an EVEN number to prevent Chromium sub-pixel
+ *   phase jitter (see Chromium Bug Fix comment below)
+ * - All spacing values are rounded to integers for pixel-perfect rendering
+ * - Functions are pure (no side effects) and easily testable
  */
 
+// ─── Types ───────────────────────────────────────────────────────────────────
+
+/** Computed layout measurements for a hexagonal grid */
 export interface HexLayout {
+  /** Width of a single hexagon in pixels */
   hexWidth: number;
+  /** Height of a single hexagon in pixels */
   hexHeight: number;
+  /** Horizontal distance between hex centers (hexWidth + gap) */
   hexSpacingX: number;
+  /** Vertical distance between hex centers (hexHeight × 0.75 + gap) */
   hexSpacingY: number;
+  /** Y offset to vertically center the grid in the viewport */
   startY: number;
+  /** Total width of one complete set of columns (cols × hexSpacingX) */
   setWidth: number;
 }
 
+/** Input configuration for the grid calculator */
 export interface GridConfig {
+  /** Number of rows in the grid */
   rows: number;
+  /** Number of columns per set */
   cols: number;
+  /** Gap between hexagons in pixels */
   gap: number;
 }
 
+// ─── Layout Computation ──────────────────────────────────────────────────────
+
 /**
  * Compute hexagon dimensions and grid layout based on viewport size.
- * 
- * @param viewportWidth - Window inner width
- * @param viewportHeight - Window inner height
- * @param config - Grid configuration (rows, cols, gap)
+ *
+ * @param viewportWidth  - Window inner width in pixels
+ * @param viewportHeight - Window inner height in pixels
+ * @param config         - Grid configuration (rows, cols, gap)
  * @returns Layout measurements for positioning hexagons
  */
 export function computeHexLayout(
@@ -36,24 +60,30 @@ export function computeHexLayout(
   // Base hex width is 1/4.27 of viewport (25% smaller than original 1/3.2)
   let hexWidth = Math.floor(viewportWidth / 4.27);
   
-  // Chromium Bug Fix: Chrome snaps masks to integers independently.
-  // If odd rows have a fractional X offset (e.g., .5), they snap on different frames than even rows.
-  // This causes a "rippling" or "alternating" visual vibration across the grid during scroll.
-  // By enforcing an EVEN hexSpacingX, the half-offset is always a perfect integer.
+  /**
+   * Chromium Bug Fix: Chrome snaps mask/clip boundaries to physical integers
+   * independently per element. In a honeycomb grid, odd rows are offset by
+   * hexSpacingX / 2. If hexSpacingX is ODD, this produces a .5px offset,
+   * causing even and odd rows to snap on different frames during animation.
+   * This manifests as a visible "rippling" or "alternating" vibration.
+   *
+   * Fix: Force hexSpacingX to be EVEN so the half-offset is always a
+   * perfect integer, and both row groups snap together as one unit.
+   */
   if ((hexWidth + gap) % 2 !== 0) {
     hexWidth -= 1;
   }
   
-  const hexHeight = Math.round(hexWidth * 1.1547); // Hexagon aspect ratio
+  const hexHeight = Math.round(hexWidth * 1.1547); // Regular hexagon aspect ratio (2/√3)
   
   const hexSpacingX = hexWidth + gap; // Guaranteed even
   const hexSpacingY = Math.round(hexHeight * 0.75) + gap; // Guaranteed integer
   
-  // Calculate grid dimensions
+  // Calculate grid dimensions and center vertically
   const gridHeight = (rows - 1) * hexSpacingY + hexHeight;
-  const startY = Math.round((viewportHeight - gridHeight) / 2); // Center vertically, forced integer
+  const startY = Math.round((viewportHeight - gridHeight) / 2);
   
-  // Width of one complete set of columns
+  // Width of one complete set of columns (used for carousel wrapping)
   const setWidth = cols * hexSpacingX;
   
   return {
@@ -66,15 +96,17 @@ export function computeHexLayout(
   };
 }
 
+// ─── Position Calculation ────────────────────────────────────────────────────
+
 /**
  * Calculate X position for a hexagon in the grid.
- * Odd rows are offset by half a hex width for honeycomb pattern.
- * 
- * @param row - Row index (0-based)
- * @param col - Column index (0-based)
+ * Odd rows are offset by half a hex width for the honeycomb pattern.
+ *
+ * @param row        - Row index (0-based)
+ * @param col        - Column index (0-based)
  * @param hexSpacingX - Horizontal spacing between hex centers
- * @param setIndex - Which set (for infinite carousel, 0-2)
- * @param setWidth - Width of one complete set
+ * @param setIndex   - Which set (for infinite carousel: 0, 1, or 2)
+ * @param setWidth   - Width of one complete set
  * @returns X position in pixels
  */
 export function calculateHexX(
@@ -84,10 +116,10 @@ export function calculateHexX(
   setIndex: number,
   setWidth: number
 ): number {
-  // Odd rows offset by half spacing for honeycomb pattern
+  // Honeycomb offset: odd rows shift right by half spacing
   const rowOffset = row % 2 === 1 ? hexSpacingX / 2 : 0;
   
-  // Base position within the set
+  // Base position within the set (shifted left by one hex for visual padding)
   const baseX = col * hexSpacingX + rowOffset - hexSpacingX;
   
   // Add set offset for carousel duplication
@@ -98,10 +130,10 @@ export function calculateHexX(
 
 /**
  * Calculate Y position for a hexagon in the grid.
- * 
- * @param row - Row index (0-based)
+ *
+ * @param row        - Row index (0-based)
  * @param hexSpacingY - Vertical spacing between hex centers
- * @param startY - Top offset to center grid vertically
+ * @param startY     - Top offset to center grid vertically
  * @returns Y position in pixels
  */
 export function calculateHexY(

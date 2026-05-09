@@ -1,6 +1,25 @@
+/**
+ * globals.css — Master stylesheet for the portfolio application.
+ *
+ * Organized into sections:
+ * 1. Tailwind directives
+ * 2. Base / reset styles
+ * 3. Back button glassmorphism
+ * 4. Hex action button
+ * 5. Gleck notification widget
+ * 6. Hex glass blur (31-point polygon workaround)
+ * 7. Hex content layout
+ * 8. Scrollbar customization
+ * 9. Keyframe animations
+ */
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   1. BASE / RESET
+   ═══════════════════════════════════════════════════════════════════════════ */
 
 :root {
   --background: #000000;
@@ -9,6 +28,7 @@
 
 html {
   background-color: #000000;
+  scroll-behavior: smooth;
 }
 
 * {
@@ -24,24 +44,12 @@ body {
   overflow-x: hidden;
 }
 
-/* Glassmorphism utilities */
-.glass {
-  background: rgba(255, 255, 255, 0.05);
-  -webkit-backdrop-filter: blur(10px);
-  -moz-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
+/* ═══════════════════════════════════════════════════════════════════════════
+   2. BACK BUTTON GLASSMORPHISM
+   Standard frosted-glass pill button used on all sub-pages for navigation.
+   Uses a ::before pseudo-element to reinforce blur on Chrome.
+   ═══════════════════════════════════════════════════════════════════════════ */
 
-.glass-strong {
-  background: rgba(255, 255, 255, 0.1);
-  -webkit-backdrop-filter: blur(20px);
-  -moz-backdrop-filter: blur(20px);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-/* Back button glassmorphism - standard solution for all browsers */
 .back-button-glass {
   position: relative;
   display: inline-block;
@@ -57,7 +65,7 @@ body {
   backdrop-filter: blur(15px) saturate(180%);
 }
 
-/* Force backdrop-filter with multiple approaches for Chrome */
+/* Reinforcement layer — ensures blur renders in Chrome even with z-index stacking */
 .back-button-glass::before {
   content: '';
   position: absolute;
@@ -76,6 +84,7 @@ body {
   box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.5), inset 0 1px 0 0 rgba(255, 255, 255, 0.2), 0 0 40px rgba(255, 255, 255, 0.2);
 }
 
+/* Anchor inside the button — override all link state colors */
 .back-button-glass a,
 .back-button-glass a:link,
 .back-button-glass a:visited,
@@ -93,17 +102,11 @@ body {
   display: block;
 }
 
-.glass-hover {
-  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
+/* ═══════════════════════════════════════════════════════════════════════════
+   3. HEX ACTION BUTTON
+   Small white pill button used inside hex tiles for GitHub/Visit/Download.
+   ═══════════════════════════════════════════════════════════════════════════ */
 
-.glass-hover:hover {
-  background: rgba(255, 255, 255, 0.15);
-  border-color: rgba(255, 255, 255, 0.3);
-  transform: translateY(-2px);
-}
-
-/* Hex action button - standardized glass button for hex content */
 .hex-button {
   background: rgba(255, 255, 255, 0.9);
   color: #000;
@@ -133,7 +136,11 @@ body {
   transform: scale(0.95);
 }
 
-/* Gleck Notice Widget Styles */
+/* ═══════════════════════════════════════════════════════════════════════════
+   4. GLECK NOTIFICATION WIDGET
+   Persistent AI assistant notice widget (bottom-left corner).
+   ═══════════════════════════════════════════════════════════════════════════ */
+
 .gleck-widget {
   box-sizing: border-box;
   position: relative;
@@ -149,6 +156,7 @@ body {
   border-radius: 16px;
 }
 
+/* Small square buttons inside the widget (collapse, expand, close) */
 .gleck-button {
   width: 28px;
   height: 28px;
@@ -171,11 +179,13 @@ body {
   transform: translateY(-1px);
 }
 
+/* Red-tinted hover for the close/dismiss button */
 .gleck-button-danger:hover {
   background: rgba(239, 68, 68, 0.25);
   border-color: rgba(239, 68, 68, 0.5);
 }
 
+/* Individual notice card in the enlarged view */
 .gleck-notice-item {
   padding: 10px;
   margin-bottom: 8px;
@@ -197,6 +207,7 @@ body {
   background: rgba(255, 255, 255, 0.1);
 }
 
+/* Links and text inside the widget */
 .gleck-link {
   color: white;
   text-decoration: none;
@@ -211,33 +222,36 @@ body {
   color: white;
 }
 
-.gleck-notice-content a {
-  color: rgba(255, 255, 255, 0.9) !important;
-  text-decoration: underline !important;
+/* Make richtext links from Strapi visible and clickable */
+.gleck-notice-content a,
+.gleck-notice-content a:link,
+.gleck-notice-content a:visited {
+  color: rgba(255, 255, 255, 0.9);
+  text-decoration: underline;
   text-underline-offset: 2px;
+  text-decoration-color: rgba(255, 255, 255, 0.4);
   transition: all 0.2s ease;
 }
 
 .gleck-notice-content a:hover {
-  color: white !important;
+  color: #fff;
+  text-decoration-color: #fff;
 }
 
-/* Liquid glass effect */
-.liquid-glass {
-  background: linear-gradient(135deg,
-      rgba(255, 255, 255, 0.1) 0%,
-      rgba(255, 255, 255, 0.05) 100%);
-  -webkit-backdrop-filter: blur(15px) saturate(180%);
-  -moz-backdrop-filter: blur(15px) saturate(180%);
-  backdrop-filter: blur(15px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  box-shadow:
-    0 8px 32px 0 rgba(0, 0, 0, 0.37),
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
-}
+/* ═══════════════════════════════════════════════════════════════════════════
+   5. HEX GLASS BLUR — 31-Point Polygon Workaround
+   
+   Bypasses all three known Chromium mask-image + backdrop-filter bugs:
+   - Bug #40854528: Ancestor mask breaks child backdrop-filter
+   - Bug #41465359: Same-element mask causes blur to bleed into rectangle
+   - Bug #331753416: clip-path + overflow:hidden deletes blur
+   
+   Solution: Uses a 31-point CSS polygon() that traces the SVG bezier
+   curves with enough resolution to appear perfectly smooth.
+   The blur radius is kept to 8px (single-pass) to prevent Chrome's
+   compositor from causing sub-pixel phase jitter during animations.
+   ═══════════════════════════════════════════════════════════════════════════ */
 
-/* Glass blur for Hexagons using 31-Point High-Resolution Polygon Workaround */
-/* Bypasses all Chromium bugs while retaining flawlessly smooth curves */
 .hex-glass-blur {
   position: absolute;
   inset: 0;
@@ -269,76 +283,10 @@ body {
   z-index: 0;
 }
 
-/* Glow effects */
-.glow {
-  box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
-}
-
-.glow-strong {
-  box-shadow: 0 0 40px rgba(255, 255, 255, 0.2);
-}
-
-/* Hexagon base styling */
-.hex {
-  position: absolute;
-  cursor: default;
-  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-.hex.nav-hex {
-  cursor: pointer;
-}
-
-/* Hexagon SVG styling */
-.hex-svg path {
-  fill: rgba(255, 255, 255, 0.05);
-  stroke: rgba(255, 255, 255, 0.1);
-  stroke-width: 1;
-  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-.hex-svg:hover path,
-.hex:hover .hex-svg path {
-  fill: rgba(255, 255, 255, 0.1);
-  stroke: rgba(255, 255, 255, 0.2);
-}
-
-/* Hex icon styling */
-.hex-icon {
-  width: 56px;
-  height: 56px;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  transition: transform 0.3s ease;
-}
-
-.hex-icon svg {
-  width: 24px;
-  height: 24px;
-  color: white;
-}
-
-.hex:hover .hex-icon {
-  transform: scale(1.1);
-}
-
-/* Hex text styling */
-.hex-text {
-  font-size: 13px;
-  font-weight: 600;
-  color: white;
-  text-align: center;
-}
-
-.hex-description {
-  font-size: 10px;
-  color: rgba(255, 255, 255, 0.8);
-  text-align: center;
-  line-height: 1.2;
-}
+/* ═══════════════════════════════════════════════════════════════════════════
+   6. HEX CONTENT LAYOUT
+   Centering layer for icon, title, description, and buttons inside a hex.
+   ═══════════════════════════════════════════════════════════════════════════ */
 
 .hex-content {
   position: absolute;
@@ -352,16 +300,16 @@ body {
   z-index: 10;
 }
 
+/* Allow child elements (buttons, links) to receive pointer events */
 .hex-content>* {
   pointer-events: auto;
 }
 
-/* Smooth scrolling */
-html {
-  scroll-behavior: smooth;
-}
+/* ═══════════════════════════════════════════════════════════════════════════
+   7. SCROLLBAR CUSTOMIZATION
+   Dark-themed scrollbar matching the overall aesthetic.
+   ═══════════════════════════════════════════════════════════════════════════ */
 
-/* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
 }
@@ -379,13 +327,16 @@ html {
   background: rgba(255, 255, 255, 0.3);
 }
 
-/* Animations */
+/* ═══════════════════════════════════════════════════════════════════════════
+   8. KEYFRAME ANIMATIONS
+   Used for page entrance/exit transitions and the typewriter cursor.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
 @keyframes fadeInUp {
   from {
     opacity: 0;
     transform: translateY(20px);
   }
-
   to {
     opacity: 1;
     transform: translateY(0);
@@ -393,23 +344,13 @@ html {
 }
 
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 @keyframes fadeOut {
-  from {
-    opacity: 1;
-  }
-
-  to {
-    opacity: 0;
-  }
+  from { opacity: 1; }
+  to { opacity: 0; }
 }
 
 @keyframes fadeOutDown {
@@ -417,37 +358,14 @@ html {
     opacity: 1;
     transform: translateY(0);
   }
-
   to {
     opacity: 0;
     transform: translateY(20px);
   }
 }
 
+/* Blinking cursor for the typewriter effect on the home page */
 @keyframes blink-cursor {
-
-  from,
-  to {
-    border-color: transparent;
-  }
-
-  50% {
-    border-color: white;
-  }
-}
-
-/* Gleck notice widget — make links in richtext content visible & clickable */
-.gleck-notice-content a,
-.gleck-notice-content a:link,
-.gleck-notice-content a:visited {
-  color: rgba(255, 255, 255, 0.9);
-  text-decoration: underline;
-  text-underline-offset: 2px;
-  text-decoration-color: rgba(255, 255, 255, 0.4);
-  transition: all 0.2s ease;
-}
-
-.gleck-notice-content a:hover {
-  color: #fff;
-  text-decoration-color: #fff;
+  from, to { border-color: transparent; }
+  50% { border-color: white; }
 }
