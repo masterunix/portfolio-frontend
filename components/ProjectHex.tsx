@@ -41,6 +41,7 @@ export default function ProjectHex({ project, isExiting = false }: ProjectHexPro
   return (
     <div className="group relative w-full h-full">
       {/* Hexagon SVG Background */}
+      <div className="hex-glass-blur group-hover:bg-black/10 group-hover:backdrop-blur-md" />
       <svg
         viewBox="0 0 190 212"
         preserveAspectRatio="none"

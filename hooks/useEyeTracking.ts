@@ -14,7 +14,7 @@ interface EyePosition {
  * @param widgetRef - React ref to the widget container element
  * @returns Object with normalized x and y positions for pupils
  */
-export function useEyeTracking(widgetRef: RefObject<HTMLElement>): EyePosition {
+export function useEyeTracking(widgetRef: RefObject<HTMLElement | null>): EyePosition {
   const [eyePos, setEyePos] = useState<EyePosition>({ x: 0, y: 0 });
 
   useEffect(() => {

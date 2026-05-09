@@ -53,7 +53,7 @@ export default function Hexagon({
       className="relative"
       style={{
         ...style,
-        willChange: 'transform, filter',
+        willChange: 'transform',
         backfaceVisibility: 'hidden',
         WebkitBackfaceVisibility: 'hidden'
       }}
@@ -65,6 +65,7 @@ export default function Hexagon({
         style={{ pointerEvents: isExiting ? 'none' : 'auto' }}
       >
         {/* Liquid glass hexagon outline — fills whatever size the parent provides */}
+        <div className="hex-glass-blur group-hover:bg-black/10 group-hover:backdrop-blur-md" />
         <svg
           viewBox="0 0 190 212"
           className="absolute inset-0 w-full h-full pointer-events-none"
@@ -75,7 +76,6 @@ export default function Hexagon({
             fill="rgba(255,255,255,0.05)"
             stroke="rgba(255,255,255,0.1)"
             strokeWidth="1"
-            style={{ backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)' }}
             className="transition-all duration-[400ms] ease-[cubic-bezier(0.25,0.46,0.45,0.94)] group-hover:fill-[rgba(255,255,255,0.1)] group-hover:stroke-[rgba(255,255,255,0.2)]"
           />
         </svg>

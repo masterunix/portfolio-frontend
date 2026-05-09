@@ -73,7 +73,7 @@ export default function CarouselHex({
         width,
         height,
         
-        willChange: 'transform, filter',
+        willChange: 'transform',
         backfaceVisibility: 'hidden',
         WebkitBackfaceVisibility: 'hidden'
       }}
