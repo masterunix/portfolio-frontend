@@ -27,8 +27,6 @@ export default function RootLayout({
     <html lang="en" className={`${inter.variable} h-full antialiased`}>
       <body className="min-h-full bg-black relative">
         <ShaderBackground />
-        {/* Vignette overlay - persists across all pages to prevent flash */}
-        <div className="vignette" />
         {/* Gleck mascot - persists across all pages */}
         <GleckNoticeWrapper />
         <div className="relative z-10">

@@ -89,22 +89,7 @@ export default function DSAPlatformHex({ platform, onVisit }: DSAPlatformHexProp
         
         {/* Visit Button */}
         <button 
-          className="text-[10px] font-semibold transition-all duration-200 active:scale-95 cursor-pointer mt-2 shrink-0"
-          style={{ 
-            background: 'rgba(255, 255, 255, 0.9)',
-            color: '#000',
-            border: '1px solid rgba(255, 255, 255, 0.3)',
-            borderRadius: '6px',
-            padding: '5px 10px',
-            width: '85px',
-            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)'
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.background = 'rgba(255, 255, 255, 1)';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.background = 'rgba(255, 255, 255, 0.9)';
-          }}
+          className="hex-button mt-2"
           onClick={onVisit}
           aria-label={`Visit ${platform.name} profile`}
         >

@@ -46,7 +46,7 @@ export default function FeedbackHex({ feedbackData, onSendEmail }: FeedbackHexPr
 
       {/* Email Button */}
       <button 
-        className="bg-gradient-to-br from-[#00d2d3] to-[#00a8a9] text-white border-none px-3.5 py-1.5 rounded-md text-[10px] font-semibold cursor-pointer shadow-md transition-all duration-300 mt-1 shrink-0 hover:brightness-110 active:scale-95"
+        className="hex-button mt-2"
         onClick={onSendEmail}
         aria-label="Send feedback email"
       >

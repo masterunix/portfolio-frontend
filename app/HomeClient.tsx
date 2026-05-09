@@ -118,9 +118,6 @@ export default function HomeClient({ messages }: { messages: HomeMessage[] }) {
 
   return (
     <main className="relative w-full h-screen overflow-hidden bg-transparent">
-      {/* Vignette overlay */}
-      <div className="vignette" />
-
       {/* Header */}
       <header 
         className={`fixed left-1/2 -translate-x-1/2 text-center z-[100] transition-opacity duration-300 ${isExiting ? 'opacity-0' : 'opacity-100'}`}

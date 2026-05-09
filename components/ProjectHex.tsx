@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useRouter } from 'next/navigation';
 import { adjustColor } from '@/lib/utils';
 
 const STRAPI = process.env.NEXT_PUBLIC_STRAPI_URL || 'http://localhost:1337';
@@ -27,6 +28,7 @@ interface ProjectHexProps {
  * Wrapper with group class for hover effects.
  */
 export default function ProjectHex({ project, isExiting = false }: ProjectHexProps) {
+  const router = useRouter();
   const isPrivateOrPlaceholder = (value: string | null | undefined) => {
     if (!value) return true;
     const placeholders = ['Coming Soon', 'In Development', 'Private', 'Available on request', 'Will be deployed soon'];
@@ -97,22 +99,7 @@ export default function ProjectHex({ project, isExiting = false }: ProjectHexPro
                 e.stopPropagation();
                 window.open(project.github!, '_blank', 'noopener,noreferrer');
               }}
-              className="text-[9px] font-semibold transition-all duration-200 active:scale-95 cursor-pointer"
-              style={{ 
-                background: 'rgba(255, 255, 255, 0.9)',
-                color: '#000',
-                border: '1px solid rgba(255, 255, 255, 0.3)',
-                borderRadius: '6px',
-                padding: '4px 8px',
-                width: '60px',
-                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = 'rgba(255, 255, 255, 1)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.9)';
-              }}
+              className="hex-button"
               aria-label={`View ${project.title} on GitHub`}
             >
               GitHub
@@ -122,29 +109,15 @@ export default function ProjectHex({ project, isExiting = false }: ProjectHexPro
             <button
               onClick={(e) => {
                 e.stopPropagation();
-                const url = project.visit!.startsWith('/') ? project.visit! : `https://${project.visit}`;
-                if (project.visit!.startsWith('/')) {
-                  window.location.href = url;
+                const url = project.visit!;
+                if (url.startsWith('/')) {
+                  router.push(url);
                 } else {
-                  window.open(url, '_blank', 'noopener,noreferrer');
+                  const fullUrl = url.startsWith('http') ? url : `https://${url}`;
+                  window.open(fullUrl, '_blank', 'noopener,noreferrer');
                 }
               }}
-              className="text-[9px] font-semibold transition-all duration-200 active:scale-95 cursor-pointer"
-              style={{ 
-                background: 'rgba(255, 255, 255, 0.9)',
-                color: '#000',
-                border: '1px solid rgba(255, 255, 255, 0.3)',
-                borderRadius: '6px',
-                padding: '4px 8px',
-                width: '60px',
-                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = 'rgba(255, 255, 255, 1)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.9)';
-              }}
+              className="hex-button"
               aria-label={`Visit ${project.title}`}
             >
               Visit

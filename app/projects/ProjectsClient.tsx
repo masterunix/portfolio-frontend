@@ -68,7 +68,7 @@ interface ProjectsClientProps {
  * - Carousel logic extracted to useCarousel hook
  * - Individual hex rendering delegated to ProjectHex/TechHex components
  */
-export default function ProjectsClient({ projects, skills }: ProjectsClientProps) {
+export default function ProjectsClient({ projects = [], skills = [] }: ProjectsClientProps) {
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -82,7 +82,7 @@ export default function ProjectsClient({ projects, skills }: ProjectsClientProps
 
   // Carousel state and controls
   const { carouselOffset, navigateToItem } = useCarousel({
-    itemCount: projects.length,
+    itemCount: projects.length || 1, // Fallback to 1 to avoid division by zero in hook if any
     itemSpacing: layout?.hexSpacingX || 0,
     setWidth: layout?.setWidth || 0,
     autoScrollSpeed: 0.39,
@@ -108,6 +108,10 @@ export default function ProjectsClient({ projects, skills }: ProjectsClientProps
     const items: GridItem[] = [];
     const { hexSpacingX, hexSpacingY, startY, setWidth } = layout;
 
+    // Safety checks for array lengths
+    const projectsLen = projects.length || 1;
+    const skillsLen = skills.length || 1;
+
     for (let setIndex = 0; setIndex < NUM_SETS; setIndex++) {
       for (let row = 0; row < GRID_CONFIG.rows; row++) {
         for (let col = 0; col < GRID_CONFIG.cols; col++) {
@@ -116,23 +120,25 @@ export default function ProjectsClient({ projects, skills }: ProjectsClientProps
 
           if (row === 1) {
             // Middle row - projects
-            data = projects[col % projects.length];
+            data = projects[col % projectsLen] || projects[0];
             isProject = true;
           } else {
             // Top row (row === 0) and Bottom row (row === 2) - SAME skills array
-            data = skills[col % skills.length];
+            data = skills[col % skillsLen] || skills[0];
           }
 
-          items.push({
-            id: `${setIndex}-${row}-${col}`,
-            row,
-            col,
-            setIndex,
-            x: calculateHexX(row, col, hexSpacingX, setIndex, setWidth),
-            y: calculateHexY(row, hexSpacingY, startY),
-            isProject,
-            data
-          });
+          if (data) {
+            items.push({
+              id: `${setIndex}-${row}-${col}`,
+              row,
+              col,
+              setIndex,
+              x: calculateHexX(row, col, hexSpacingX, setIndex, setWidth),
+              y: calculateHexY(row, hexSpacingY, startY),
+              isProject,
+              data
+            });
+          }
         }
       }
     }
@@ -149,48 +155,25 @@ export default function ProjectsClient({ projects, skills }: ProjectsClientProps
     <main className="relative w-full h-screen overflow-hidden bg-black">
       {/* Header */}
       <header
-        className={`fixed left-1/2 -translate-x-1/2 text-center z-[100] ${isExiting ? '' : ''}`}
+        className={`fixed left-1/2 -translate-x-1/2 text-center z-[100] transition-opacity duration-500 ${isExiting ? 'opacity-0' : 'opacity-100'}`}
         style={{ 
-          top: 20, 
-          opacity: isExiting ? undefined : 0,
-          animation: isExiting ? 'fadeOut 0.5s ease-out forwards' : 'fadeIn 0.5s ease-out forwards 200ms'
+          top: '20px', 
+          animation: isExiting ? undefined : 'fadeIn 0.5s ease-out forwards 200ms',
+          opacity: 0
         }}
       >
         <h1
-          className="text-white text-[32px] font-bold tracking-wide drop-shadow-[0_2px_8px_rgba(0,0,0,0.7)] whitespace-nowrap"
+          className="text-white text-4xl font-bold tracking-wide drop-shadow-[0_2px_8px_rgba(0,0,0,0.7)] whitespace-nowrap"
           style={{ fontFamily: "'Inter', sans-serif", marginBottom: '12px' }}
         >
           My Projects &amp; Work
         </h1>
 
-        <a
-          href="/"
-          onClick={handleBack}
-          className="inline-block transition-all duration-300"
-          style={{
-            background: 'linear-gradient(135deg,rgba(255,255,255,0.1) 0%,rgba(255,255,255,0.05) 100%)',
-            border: '1px solid rgba(255,255,255,0.18)',
-            color: 'white',
-            padding: '10px 20px',
-            borderRadius: 25,
-            fontSize: 14,
-            fontWeight: 500,
-            backdropFilter: 'blur(15px) saturate(180%)',
-            WebkitBackdropFilter: 'blur(15px) saturate(180%)',
-            textDecoration: 'none',
-            boxShadow: '0 8px 32px 0 rgba(0,0,0,0.37),inset 0 1px 0 0 rgba(255,255,255,0.1)'
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.background = 'linear-gradient(135deg,rgba(255,255,255,0.15) 0%,rgba(255,255,255,0.08) 100%)';
-            e.currentTarget.style.transform = 'translateY(-2px)';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.background = 'linear-gradient(135deg,rgba(255,255,255,0.1) 0%,rgba(255,255,255,0.05) 100%)';
-            e.currentTarget.style.transform = 'translateY(0)';
-          }}
-        >
-          ← Back to Home
-        </a>
+        <div className="back-button-glass">
+          <a href="/" onClick={handleBack}>
+            ← Back to Home
+          </a>
+        </div>
       </header>
 
       {/* Carousel Grid */}

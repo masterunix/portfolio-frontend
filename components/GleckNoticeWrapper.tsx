@@ -206,23 +206,17 @@ export default function GleckNoticeWrapper() {
 
   /**
    * Generates dynamic inline styles based on widget state
-   * @returns Inline style object for container styling
+   * @returns Inline style object for container dimensions and glassmorphism
    */
   const getContainerStyles = () => {
     const baseStyles = {
-      boxSizing: 'border-box' as const,
-      position: 'relative' as const,
-      overflow: 'hidden' as const,
-      display: 'flex',
-      flexDirection: 'column' as const,
-      transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
       backdropFilter: 'blur(20px)',
-      boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.37), inset 0 1px 0 0 rgba(255, 255, 255, 0.1)',
-      border: '1px solid rgba(255, 255, 255, 0.1)',
+      WebkitBackdropFilter: 'blur(20px)',
       background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%)',
-      borderRadius: '16px'
+      border: '1px solid rgba(255, 255, 255, 0.1)',
+      boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.37), inset 0 1px 0 0 rgba(255, 255, 255, 0.1)'
     };
-    
+
     if (isExpanded) {
       if (isEnlarged) {
         return {
@@ -281,7 +275,7 @@ export default function GleckNoticeWrapper() {
       role="complementary"
       aria-label="Gleck notification widget"
     >
-      <div style={getContainerStyles()}>
+      <div className="gleck-widget" style={getContainerStyles()}>
         {/* Collapsed state - Eyes only */}
         {!isExpanded && (
           <div className="flex items-center justify-center w-full h-full">
@@ -307,9 +301,8 @@ export default function GleckNoticeWrapper() {
                   href={currentNotice.link}
                   target="_blank"
                   rel="noopener noreferrer"
+                  className="gleck-link gleck-notice-content"
                   style={{
-                    color: 'white',
-                    textDecoration: 'none',
                     fontSize: '14px',
                     lineHeight: '1.4',
                     display: 'block',
@@ -317,14 +310,13 @@ export default function GleckNoticeWrapper() {
                     whiteSpace: isEnlarged ? 'normal' : 'nowrap',
                     overflow: isEnlarged ? 'visible' : 'hidden',
                     textOverflow: 'ellipsis',
-                    transition: 'color 0.2s'
+                    color: 'white'
                   }}
-                  onMouseEnter={(e) => e.currentTarget.style.color = 'rgba(255, 255, 255, 0.8)'}
-                  onMouseLeave={(e) => e.currentTarget.style.color = 'white'}
                   dangerouslySetInnerHTML={{ __html: sanitizeHTML(currentNotice.text) }}
                 />
               ) : (
                 <div
+                  className="gleck-notice-content"
                   style={{
                     color: 'white',
                     fontSize: '14px',
@@ -341,29 +333,7 @@ export default function GleckNoticeWrapper() {
             {/* Enlarge/Shrink button */}
             <button
               onClick={() => setIsEnlarged(!isEnlarged)}
-              style={{
-                width: '28px',
-                height: '28px',
-                borderRadius: '8px',
-                border: '1px solid rgba(255, 255, 255, 0.15)',
-                background: 'rgba(255, 255, 255, 0.1)',
-                color: 'white',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                flexShrink: 0,
-                transition: 'all 0.2s',
-                padding: 0
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)';
-                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.3)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
-                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.15)';
-              }}
+              className="gleck-button"
               title={isEnlarged ? 'Shrink' : 'Expand'}
               aria-label={isEnlarged ? 'Shrink widget' : 'Expand widget'}
             >
@@ -383,29 +353,7 @@ export default function GleckNoticeWrapper() {
                 setIsEnlarged(false);
                 setUserCollapsed(true);
               }}
-              style={{
-                width: '28px',
-                height: '28px',
-                borderRadius: '8px',
-                border: '1px solid rgba(255, 255, 255, 0.15)',
-                background: 'rgba(255, 255, 255, 0.1)',
-                color: 'white',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                flexShrink: 0,
-                transition: 'all 0.2s',
-                padding: 0
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = 'rgba(239, 68, 68, 0.25)';
-                e.currentTarget.style.borderColor = 'rgba(239, 68, 68, 0.5)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
-                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.15)';
-              }}
+              className="gleck-button gleck-button-danger"
               title="Collapse"
               aria-label="Collapse widget"
             >
@@ -440,25 +388,8 @@ export default function GleckNoticeWrapper() {
               {notices.map((notice: Notice, idx: number) => (
                 <div
                   key={notice.id}
-                  style={{
-                    padding: '10px',
-                    marginBottom: '8px',
-                    borderRadius: '8px',
-                    border: idx === currentIndex ? '1px solid rgba(255, 255, 255, 0.2)' : '1px solid rgba(255, 255, 255, 0.1)',
-                    background: idx === currentIndex ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.05)',
-                    transition: 'all 0.3s',
-                    cursor: 'pointer',
-                    boxSizing: 'border-box'
-                  }}
+                  className={`gleck-notice-item ${idx === currentIndex ? 'active' : ''}`}
                   onClick={() => setCurrentIndex(idx)}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)';
-                    e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.25)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background = idx === currentIndex ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.05)';
-                    e.currentTarget.style.borderColor = idx === currentIndex ? 'rgba(255, 255, 255, 0.2)' : 'rgba(255, 255, 255, 0.1)';
-                  }}
                   role="button"
                   tabIndex={0}
                   onKeyDown={(e) => {
@@ -474,22 +405,20 @@ export default function GleckNoticeWrapper() {
                       href={notice.link}
                       target="_blank"
                       rel="noopener noreferrer"
+                      className="gleck-link gleck-notice-content"
                       style={{
                         fontSize: '13px',
                         lineHeight: '1.6',
-                        color: 'white',
                         wordBreak: 'break-word',
-                        textDecoration: 'none',
                         display: 'block',
-                        transition: 'color 0.2s'
+                        color: 'white'
                       }}
-                      onMouseEnter={(e) => e.currentTarget.style.color = 'rgba(255, 255, 255, 0.8)'}
-                      onMouseLeave={(e) => e.currentTarget.style.color = 'white'}
                       dangerouslySetInnerHTML={{ __html: sanitizeHTML(notice.text) }}
                       onClick={(e) => e.stopPropagation()}
                     />
                   ) : (
                     <div
+                      className="gleck-notice-content"
                       style={{
                         fontSize: '13px',
                         lineHeight: '1.6',
@@ -512,6 +441,7 @@ export default function GleckNoticeWrapper() {
               setIsExpanded(true);
               setUserCollapsed(false);
             }}
+            className="gleck-button"
             style={{
               position: 'absolute',
               top: '4px',
@@ -519,22 +449,10 @@ export default function GleckNoticeWrapper() {
               width: '20px',
               height: '20px',
               borderRadius: '50%',
-              border: 'none',
-              background: 'rgba(255, 255, 255, 0.1)',
-              color: 'white',
-              cursor: 'pointer',
               fontSize: '12px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              transition: 'all 0.3s',
-              padding: 0
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
+              background: 'rgba(255, 255, 255, 0.1)',
+              border: 'none',
+              color: 'white'
             }}
             title="Expand"
             aria-label="Expand widget"
@@ -549,17 +467,14 @@ export default function GleckNoticeWrapper() {
         href={settings.knowMoreLink}
         target="_blank"
         rel="noopener noreferrer"
+        className="gleck-link"
         style={{
           display: 'block',
           marginTop: '8px',
           fontSize: '11px',
-          color: 'rgba(255, 255, 255, 0.6)',
-          textDecoration: 'none',
           paddingLeft: '8px',
-          transition: 'color 0.2s'
+          color: 'rgba(255, 255, 255, 0.6)'
         }}
-        onMouseEnter={(e) => e.currentTarget.style.color = 'rgba(255, 255, 255, 0.9)'}
-        onMouseLeave={(e) => e.currentTarget.style.color = 'rgba(255, 255, 255, 0.6)'}
       >
         {settings.knowMoreText}
       </a>

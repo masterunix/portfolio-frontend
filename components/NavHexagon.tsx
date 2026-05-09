@@ -32,24 +32,29 @@ export default function NavHexagon({
   isExiting = false
 }: NavHexagonProps) {
   return (
-    <Hexagon delay={delay} className="group cursor-pointer" style={style} isExiting={isExiting}>
+    <Hexagon 
+      delay={delay} 
+      className="transition-all duration-[400ms] ease-[cubic-bezier(0.25,0.46,0.45,0.94)] hover:scale-105 hover:z-10 hover:brightness-110" 
+      style={style} 
+      isExiting={isExiting}
+    >
       {/*
         Content centered within the hex — mirrors legacy hex-content:
         position:absolute;inset:0;display:flex;flex-direction:column;
         align-items:center;justify-content:center;gap:8px;padding:16px
       */}
       {/* Content wrapper — centered flex column */}
-      <div className="hex-content pointer-events-none">
+      <div className="hex-content pointer-events-none group">
 
-        {/* Icon box — 56×56px gradient rounded square */}
+        {/* Icon box — 62×62px gradient rounded square */}
         <div
-          className="w-14 h-14 rounded-[12px] flex items-center justify-center text-white shadow-lg transition-transform duration-300 group-hover:scale-110 shrink-0"
+          className="w-[62px] h-[62px] rounded-[12px] flex items-center justify-center text-white shadow-lg transition-transform duration-300 group-hover:scale-110 shrink-0"
           style={{
             background: `linear-gradient(135deg, ${color} 0%, ${adjustColor(color, -20)} 100%)`,
             boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
           }}
         >
-          <div className="w-9 h-9 flex items-center justify-center" style={{ width: '36px', height: '36px' }}>
+          <div className="w-[38px] h-[38px] flex items-center justify-center" style={{ width: '38px', height: '38px' }}>
             {React.isValidElement(icon) 
               ? React.cloneElement(icon as React.ReactElement<any>, {
                   style: { width: '100%', height: '100%', display: 'block' }

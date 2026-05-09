@@ -188,48 +188,25 @@ export default function SkillsClient({ skills }: SkillsClientProps) {
     <main className="relative w-full h-screen overflow-hidden bg-black">
       {/* Header */}
       <header
-        className={`fixed left-1/2 -translate-x-1/2 text-center z-[100] ${isExiting ? '' : ''}`}
+        className={`fixed left-1/2 -translate-x-1/2 text-center z-[100] transition-opacity duration-500 ${isExiting ? 'opacity-0' : 'opacity-100'}`}
         style={{ 
-          top: 20, 
-          opacity: isExiting ? undefined : 0,
-          animation: isExiting ? 'fadeOut 0.5s ease-out forwards' : 'fadeIn 0.5s ease-out forwards 200ms'
+          top: '20px', 
+          animation: isExiting ? undefined : 'fadeIn 0.5s ease-out forwards 200ms',
+          opacity: 0
         }}
       >
         <h1
-          className="text-white text-[32px] font-bold mb-2.5 tracking-wide drop-shadow-[0_2px_8px_rgba(0,0,0,0.7)] whitespace-nowrap"
+          className="text-white text-4xl font-bold tracking-wide drop-shadow-[0_2px_8px_rgba(0,0,0,0.7)] whitespace-nowrap"
           style={{ fontFamily: "'Inter', sans-serif", marginBottom: '12px' }}
         >
           Experience and Skills
         </h1>
 
-        <a
-          href="/"
-          onClick={handleBack}
-          className="inline-block transition-all duration-300"
-          style={{
-            background: 'linear-gradient(135deg,rgba(255,255,255,0.1) 0%,rgba(255,255,255,0.05) 100%)',
-            border: '1px solid rgba(255,255,255,0.18)',
-            color: 'white',
-            padding: '10px 20px',
-            borderRadius: 25,
-            fontSize: 14,
-            fontWeight: 500,
-            backdropFilter: 'blur(15px) saturate(180%)',
-            WebkitBackdropFilter: 'blur(15px) saturate(180%)',
-            textDecoration: 'none',
-            boxShadow: '0 8px 32px 0 rgba(0,0,0,0.37),inset 0 1px 0 0 rgba(255,255,255,0.1)'
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.background = 'linear-gradient(135deg,rgba(255,255,255,0.15) 0%,rgba(255,255,255,0.08) 100%)';
-            e.currentTarget.style.transform = 'translateY(-2px)';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.background = 'linear-gradient(135deg,rgba(255,255,255,0.1) 0%,rgba(255,255,255,0.05) 100%)';
-            e.currentTarget.style.transform = 'translateY(0)';
-          }}
-        >
-          ← Back to Home
-        </a>
+        <div className="back-button-glass">
+          <a href="/" onClick={handleBack}>
+            ← Back to Home
+          </a>
+        </div>
       </header>
 
       {/* Carousel Grid */}

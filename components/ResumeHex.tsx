@@ -52,22 +52,7 @@ export default function ResumeHex({ resume, onDownload }: ResumeHexProps) {
 
       {/* Download Button */}
       <button 
-        className="text-[9px] font-semibold cursor-pointer transition-all duration-200 active:scale-95 mt-2 shrink-0"
-        style={{ 
-          background: 'rgba(255, 255, 255, 0.9)',
-          color: '#000',
-          border: '1px solid rgba(255, 255, 255, 0.3)',
-          borderRadius: '6px',
-          padding: '4px 8px',
-          width: '70px',
-          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)'
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.background = 'rgba(255, 255, 255, 1)';
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.background = 'rgba(255, 255, 255, 0.9)';
-        }}
+        className="hex-button mt-2"
         onClick={onDownload}
         aria-label={`Download ${resume.domain} resume`}
       >

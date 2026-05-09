@@ -100,22 +100,7 @@ export default function CareerSkillHex({ skill, isExiting = false }: CareerSkill
                     e.stopPropagation();
                     window.open(`${STRAPI}${attachment.file.url}`, '_blank');
                   }}
-                  className="text-[9px] font-semibold cursor-pointer whitespace-nowrap overflow-hidden text-ellipsis transition-all duration-200 active:scale-95"
-                  style={{ 
-                    background: 'rgba(255, 255, 255, 0.9)',
-                    color: '#000',
-                    border: '1px solid rgba(255, 255, 255, 0.3)',
-                    borderRadius: '6px',
-                    padding: '4px 8px',
-                    maxWidth: '100px',
-                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background = 'rgba(255, 255, 255, 1)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background = 'rgba(255, 255, 255, 0.9)';
-                  }}
+                  className="hex-button max-w-[100px] truncate"
                   aria-label={`View ${attachment.label}`}
                 >
                   {attachment.label}

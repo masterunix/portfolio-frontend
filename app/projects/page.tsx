@@ -1,9 +1,11 @@
 import ProjectsClient from './ProjectsClient';
-import { getProjects } from '@/lib/api';
+import { getProjects, getSkills } from '@/lib/api';
 
 export default async function ProjectsPage() {
   let projects = [];
+  let skills = [];
   
+  // Fetch projects
   try {
     projects = await getProjects();
     if (!projects || projects.length === 0) {
@@ -30,5 +32,27 @@ export default async function ProjectsPage() {
     ];
   }
 
-  return <ProjectsClient projects={projects} />;
+  // Fetch skills
+  try {
+    skills = await getSkills();
+    if (!skills || skills.length === 0) {
+      throw new Error('No skills found in Strapi');
+    }
+  } catch (error) {
+    console.warn('Failed to fetch skills (Strapi might be down):', error);
+    // Fallback to static data
+    skills = [
+      { id: 1, name: 'React', description: 'Modern UI', color: '#61dafb', icon: '⚛️', order: 0 },
+      { id: 2, name: 'Node.js', description: 'Backend', color: '#339933', icon: '🟢', order: 1 },
+      { id: 3, name: 'Next.js', description: 'Framework', color: '#000000', icon: '▲', order: 2 },
+      { id: 4, name: 'TypeScript', description: 'Type Safety', color: '#3178c6', icon: '📘', order: 3 },
+      { id: 5, name: 'MongoDB', description: 'Database', color: '#47a248', icon: '🍃', order: 4 },
+      { id: 6, name: 'Docker', description: 'DevOps', color: '#2496ed', icon: '🐳', order: 5 },
+      { id: 7, name: 'Python', description: 'AI/ML', color: '#3776ab', icon: '🐍', order: 6 },
+      { id: 8, name: 'Tailwind', description: 'Styling', color: '#06b6d4', icon: '🎨', order: 7 }
+    ];
+  }
+
+  return <ProjectsClient projects={projects} skills={skills} />;
 }
+
