@@ -277,7 +277,7 @@ export default function ResumesClient({ resumes }: { resumes: Resume[] }) {
             height: `${layout.hexHeight}px`
           };
 
-          const commonClassName = `transition-all duration-300 hover:scale-[1.05] hover:z-10 hover:brightness-120 cursor-pointer`;
+          const commonClassName = `transition-all duration-300 cursor-pointer`;
 
           // Feedback tile
           if (item.type === 'feedback') {

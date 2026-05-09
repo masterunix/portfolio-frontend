@@ -56,11 +56,11 @@ export default function CarouselHex({
   return (
     <motion.div
       className="absolute"
-      initial={setIndex === 0 ? { opacity: 0, y: 20 } : { opacity: 1, y: 0 }}
+      initial={setIndex === 0 ? { opacity: 0, marginTop: 20 } : { opacity: 1, marginTop: 0 }}
       animate={
         isExiting
-          ? { opacity: 0, y: 20 }
-          : { opacity: 1, y: 0 }
+          ? { opacity: 0, marginTop: 20 }
+          : { opacity: 1, marginTop: 0 }
       }
       transition={{
         duration: 0.15,
@@ -71,15 +71,11 @@ export default function CarouselHex({
         left: x,
         top: y,
         width,
-        height,
-        
-        willChange: 'transform',
-        backfaceVisibility: 'hidden',
-        WebkitBackfaceVisibility: 'hidden'
+        height
       }}
     >
       <div 
-        className="w-full h-full transition-all duration-[400ms] ease-[cubic-bezier(0.25,0.46,0.45,0.94)] hover:scale-105 hover:z-10 hover:brightness-110"
+        className="w-full h-full transition-all duration-[400ms] ease-[cubic-bezier(0.25,0.46,0.45,0.94)]"
         style={{ pointerEvents: isExiting ? 'none' : 'auto' }}
       >
         {children}

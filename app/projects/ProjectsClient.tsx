@@ -152,7 +152,7 @@ export default function ProjectsClient({ projects = [], skills = [] }: ProjectsC
   const totalWidth = setWidth * NUM_SETS;
 
   return (
-    <main className="relative w-full h-screen overflow-hidden bg-black">
+    <main className="relative w-full h-screen overflow-hidden">
       {/* Header */}
       <header
         className={`fixed left-1/2 -translate-x-1/2 text-center z-[100] transition-opacity duration-500 ${isExiting ? 'opacity-0' : 'opacity-100'}`}

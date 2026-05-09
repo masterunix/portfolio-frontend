@@ -26,7 +26,7 @@ export default function TechHex({ skill, isExiting = false }: TechHexProps) {
     <div className="group relative w-full h-full">
             
       {/* Hexagon SVG Background */}
-      <div className="hex-glass-blur group-hover:bg-black/10 group-hover:backdrop-blur-md" />
+      <div className="hex-glass-mask"><div className="hex-glass-blur" /></div>
       <svg
         viewBox="0 0 190 212"
         preserveAspectRatio="none"

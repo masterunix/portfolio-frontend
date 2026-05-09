@@ -204,7 +204,7 @@ export default function DSAClient({ platforms }: DSAClientProps) {
             height: `${layout.hexHeight}px`
           };
 
-          const className = `transition-all duration-300 hover:scale-[1.05] hover:z-10 hover:brightness-120 ${item.type === 'platform' ? 'cursor-pointer' : ''}`;
+          const className = `transition-all duration-300 ${item.type === 'platform' ? 'cursor-pointer' : ''}`;
 
           return (
             <Hexagon

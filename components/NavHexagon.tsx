@@ -34,7 +34,7 @@ export default function NavHexagon({
   return (
     <Hexagon 
       delay={delay} 
-      className="transition-all duration-[400ms] ease-[cubic-bezier(0.25,0.46,0.45,0.94)] hover:scale-105 hover:z-10 hover:brightness-110" 
+      className="transition-all duration-[400ms] ease-[cubic-bezier(0.25,0.46,0.45,0.94)]" 
       style={style} 
       isExiting={isExiting}
     >

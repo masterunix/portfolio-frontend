@@ -39,11 +39,11 @@ export default function Hexagon({
 }: HexagonProps) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: animateY ? 20 : 0 }}
+      initial={{ opacity: 0, marginTop: animateY ? 20 : 0 }}
       animate={
         isExiting
-          ? { opacity: 0, y: 20 }
-          : { opacity: 1, y: 0 }
+          ? { opacity: 0, marginTop: 20 }
+          : { opacity: 1, marginTop: 0 }
       }
       transition={{
         duration: 0.15,
@@ -53,7 +53,6 @@ export default function Hexagon({
       className="relative"
       style={{
         ...style,
-        willChange: 'transform',
         backfaceVisibility: 'hidden',
         WebkitBackfaceVisibility: 'hidden'
       }}
@@ -65,7 +64,7 @@ export default function Hexagon({
         style={{ pointerEvents: isExiting ? 'none' : 'auto' }}
       >
         {/* Liquid glass hexagon outline — fills whatever size the parent provides */}
-        <div className="hex-glass-blur group-hover:bg-black/10 group-hover:backdrop-blur-md" />
+        <div className="hex-glass-mask"><div className="hex-glass-blur" /></div>
         <svg
           viewBox="0 0 190 212"
           className="absolute inset-0 w-full h-full pointer-events-none"
