@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import { adjustColor } from '@/lib/utils';
 import { DSAPlatform } from './DSAClient';
 
+const STRAPI = process.env.NEXT_PUBLIC_STRAPI_URL || 'http://localhost:1337';
+
 interface DSAMobileProps {
   platforms: DSAPlatform[];
 }
@@ -29,6 +31,10 @@ export default function DSAMobile({ platforms }: DSAMobileProps) {
       <div className="mobile-scroll" style={{ gap: '16px' }}>
         {/* Platforms */}
         {platforms.map((platform, index) => {
+          const logoUrl = platform.logo?.url 
+            ? `${STRAPI}${platform.logo.url}`
+            : `/${platform.logoPath}`;
+
           return (
             <div
               key={platform.id}
@@ -40,7 +46,18 @@ export default function DSAMobile({ platforms }: DSAMobileProps) {
                 className="mobile-icon"
                 style={{ width: '56px', height: '56px', minWidth: '56px', background: `linear-gradient(135deg, ${platform.color} 0%, ${adjustColor(platform.color, -20)} 100%)` }}
               >
-                <span className="text-2xl font-bold text-white">{platform.name.charAt(0)}</span>
+                <img 
+                  src={logoUrl} 
+                  alt={platform.name} 
+                  className="w-[32px] h-[32px] object-contain brightness-110"
+                  onError={(e) => {
+                    // Fallback to text if image fails
+                    (e.currentTarget as any).style.display = 'none';
+                    const fallback = e.currentTarget.parentElement?.querySelector('.fallback-text');
+                    if (fallback) (fallback as any).style.display = 'block';
+                  }}
+                />
+                <span className="fallback-text text-2xl font-bold text-white hidden">{platform.name.charAt(0)}</span>
               </div>
               <div className="mobile-card-text">
                 <div className="mobile-card-title" style={{ fontSize: '17px' }}>{platform.name}</div>

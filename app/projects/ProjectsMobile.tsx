@@ -66,25 +66,26 @@ export default function ProjectsMobile({ projects = [] }: ProjectsMobileProps) {
 
             <div className="mobile-card-desc" style={{ marginTop: '8px' }}>{project.description}</div>
 
-            {/* Links matching Experience style */}
-            {(project.github || project.visit) && (
-              <div className="mobile-card-actions">
-                {project.github && !PLACEHOLDER_VALUES.includes(project.github) && (
-                  <button className="hex-button pointer-events-auto" onClick={() => window.open(project.github!, '_blank')}>
-                    GitHub
-                  </button>
-                )}
-                {project.visit && !PLACEHOLDER_VALUES.includes(project.visit) && (
-                  <button className="hex-button pointer-events-auto" onClick={() => {
-                    const url = project.visit!;
-                    if (url.startsWith('/')) router.push(url);
-                    else window.open(url.startsWith('http') ? url : `https://${url}`, '_blank');
-                  }}>
-                    Visit
-                  </button>
-                )}
-              </div>
-            )}
+            <div className="mobile-card-actions">
+              {project.github && !PLACEHOLDER_VALUES.includes(project.github) && (
+                <button className="hex-button pointer-events-auto" onClick={(e) => {
+                  e.stopPropagation();
+                  window.open(project.github!, '_blank');
+                }}>
+                  GitHub
+                </button>
+              )}
+              {project.visit && !PLACEHOLDER_VALUES.includes(project.visit) && (
+                <button className="hex-button pointer-events-auto" onClick={(e) => {
+                  e.stopPropagation();
+                  const url = project.visit!;
+                  if (url.startsWith('/')) router.push(url);
+                  else window.open(url.startsWith('http') ? url : `https://${url}`, '_blank');
+                }}>
+                  Visit
+                </button>
+              )}
+            </div>
           </div>
         ))}
       </div>
