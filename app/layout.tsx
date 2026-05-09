@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import GleckNoticeWrapper from "@/components/GleckNoticeWrapper";
 import ShaderBackground from "@/components/ShaderBackground";
+import GleckNoticeWrapper from "@/components/GleckNoticeWrapper";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -27,10 +27,13 @@ export default function RootLayout({
     <html lang="en" className={`${inter.variable} h-full antialiased`}>
       <body className="min-h-full bg-black relative">
         <ShaderBackground />
+        {/* Vignette overlay - persists across all pages to prevent flash */}
+        <div className="vignette" />
+        {/* Gleck mascot - persists across all pages */}
+        <GleckNoticeWrapper />
         <div className="relative z-10">
           {children}
         </div>
-        <GleckNoticeWrapper />
       </body>
     </html>
   );

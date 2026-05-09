@@ -58,6 +58,7 @@ export default function Hexagon({
           fill="rgba(255,255,255,0.05)"
           stroke="rgba(255,255,255,0.1)"
           strokeWidth="1"
+          style={{ backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)' }}
           className="transition-all duration-[400ms] ease-[cubic-bezier(0.25,0.46,0.45,0.94)] group-hover:fill-[rgba(255,255,255,0.1)] group-hover:stroke-[rgba(255,255,255,0.2)]"
         />
       </svg>

@@ -1,10 +1,10 @@
 'use client';
 
-import { useEffect, useState, useCallback, useMemo } from 'react';
+import { useEffect, useState, useCallback, useMemo, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { adjustColor } from '@/lib/utils';
 import Hexagon from '@/components/Hexagon';
+import ResumeHex from '@/components/ResumeHex';
+import FeedbackHex from '@/components/FeedbackHex';
 import { skipList } from '@/lib/constants';
 
 interface Resume {
@@ -32,10 +32,25 @@ interface GridItem {
   data?: any;
 }
 
+/**
+ * ResumesClient — displays a grid of downloadable resumes organized by domain.
+ * 
+ * Architecture:
+ * - Static honeycomb grid layout (4 rows × 8 cols)
+ * - Resume tiles with download functionality
+ * - Feedback tile for user communication
+ * - Empty tiles for visual balance
+ * - No DOM manipulation - uses hidden React link for downloads
+ */
 export default function ResumesClient({ resumes }: { resumes: Resume[] }) {
   const [mounted, setMounted] = useState(false);
   const router = useRouter();
   const [isExiting, setIsExiting] = useState(false);
+  
+  // Download state - React way, no DOM manipulation
+  const downloadLinkRef = useRef<HTMLAnchorElement>(null);
+  const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
+  const [downloadFilename, setDownloadFilename] = useState<string>('');
 
   const feedbackData = useMemo(() => ({
     domain: 'Feedback',
@@ -72,7 +87,10 @@ export default function ResumesClient({ resumes }: { resumes: Resume[] }) {
     setMounted(true);
   }, []);
 
-  /** Download a resume — can be called from either the tile or the inner button */
+  /**
+   * Download a resume file without DOM manipulation.
+   * Uses React state to trigger a hidden <a> element.
+   */
   const downloadResume = useCallback(async (resume: Resume) => {
     try {
       let fileUrl: string;
@@ -89,18 +107,24 @@ export default function ResumesClient({ resumes }: { resumes: Resume[] }) {
 
       const response = await fetch(fileUrl);
       const blob = await response.blob();
-      const blobUrl = window.URL.createObjectURL(blob);
+      const blobUrl = URL.createObjectURL(blob);
 
-      const link = document.createElement('a');
-      link.href = blobUrl;
-      link.download = fileName;
-      link.style.display = 'none';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(blobUrl);
+      // Set state to trigger download via hidden React link
+      setDownloadUrl(blobUrl);
+      setDownloadFilename(fileName);
+      
+      // Trigger click on next render
+      setTimeout(() => {
+        downloadLinkRef.current?.click();
+        // Cleanup blob URL after download
+        setTimeout(() => {
+          URL.revokeObjectURL(blobUrl);
+          setDownloadUrl(null);
+        }, 100);
+      }, 0);
     } catch (error) {
       console.error('Download failed:', error);
+      // Fallback: open in new tab
       const fallbackUrl = resume.file?.url
         ? `${process.env.NEXT_PUBLIC_STRAPI_URL || 'http://localhost:1337'}${resume.file.url}`
         : `/Assets/Resumes/${resume.filename}`;
@@ -108,24 +132,33 @@ export default function ResumesClient({ resumes }: { resumes: Resume[] }) {
     }
   }, []);
 
-  /** Open feedback email — can be called from either the tile or the inner button */
+  /**
+   * Open feedback email in default mail client.
+   */
   const openFeedbackEmail = useCallback(() => {
     const emailBody = encodeURIComponent("I came from vatsalgoyal.me's resume section and I have feedback for you:\n\n");
     window.open(`mailto:${feedbackData.email}?subject=Portfolio Feedback&body=${emailBody}`, '_blank');
   }, [feedbackData.email]);
 
-  // Wrappers for inner buttons that need stopPropagation
+  /**
+   * Handle download button click with event propagation stop.
+   */
   const handleDownloadButton = useCallback((e: React.MouseEvent, resume: Resume) => {
     e.stopPropagation();
     downloadResume(resume);
   }, [downloadResume]);
 
+  /**
+   * Handle feedback button click with event propagation stop.
+   */
   const handleFeedbackButton = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
     openFeedbackEmail();
   }, [openFeedbackEmail]);
 
-
+  /**
+   * Handle navigation back to home with exit animation.
+   */
   const handleNavigateOut = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
     setIsExiting(true);
@@ -134,68 +167,119 @@ export default function ResumesClient({ resumes }: { resumes: Resume[] }) {
     }, 650);
   }, [router]);
 
-  if (!mounted || !layout) return null;
-
-  const shouldSkip = (row: number, col: number) => {
+  /**
+   * Check if a grid position should be skipped (empty space).
+   */
+  const shouldSkip = useCallback((row: number, col: number) => {
     return skipList.some(([r, c]) => r === row && c === col);
-  };
+  }, []);
 
-  const resumePositions: Record<string, number> = {
+  /**
+   * Map of grid positions to resume indices.
+   * Position '2-5' is reserved for feedback tile (-1).
+   */
+  const resumePositions: Record<string, number> = useMemo(() => ({
     '1-1': 0, '1-2': 1, '1-3': 2, '1-4': 3, '1-5': 4,
     '2-2': 5, '2-3': 6, '2-4': 7, '2-5': -1 
-  };
+  }), []);
 
-  const gridItems: GridItem[] = [];
-  for (let row = 0; row < layout.rows; row++) {
-    for (let col = 0; col < layout.cols; col++) {
-      if (shouldSkip(row, col)) continue;
+  /**
+   * Build grid items with positions and types.
+   * Memoized to prevent recalculation on every render.
+   */
+  const gridItems = useMemo((): GridItem[] => {
+    if (!layout) return [];
+    
+    const items: GridItem[] = [];
+    
+    for (let row = 0; row < layout.rows; row++) {
+      for (let col = 0; col < layout.cols; col++) {
+        if (shouldSkip(row, col)) continue;
 
-      const offsetX = (row % 2 === 1) ? layout.hexSpacingX / 2 : 0;
-      const x = layout.startX + col * layout.hexSpacingX + offsetX;
-      const y = layout.startY + row * layout.hexSpacingY;
-      const hexId = `${row}-${col}`;
-      
-      let type: 'resume' | 'feedback' | 'empty' = 'empty';
-      let data = null;
+        const offsetX = (row % 2 === 1) ? layout.hexSpacingX / 2 : 0;
+        const x = layout.startX + col * layout.hexSpacingX + offsetX;
+        const y = layout.startY + row * layout.hexSpacingY;
+        const hexId = `${row}-${col}`;
+        
+        let type: 'resume' | 'feedback' | 'empty' = 'empty';
+        let data = null;
 
-      const resumeIndex = resumePositions[hexId];
-      if (resumeIndex === -1) {
-        type = 'feedback';
-        data = feedbackData;
-      } else if (resumeIndex !== undefined && resumeIndex < resumes.length) {
-        type = 'resume';
-        data = resumes[resumeIndex];
+        const resumeIndex = resumePositions[hexId];
+        if (resumeIndex === -1) {
+          type = 'feedback';
+          data = feedbackData;
+        } else if (resumeIndex !== undefined && resumeIndex < resumes.length) {
+          type = 'resume';
+          data = resumes[resumeIndex];
+        }
+
+        items.push({
+          id: hexId,
+          row,
+          col,
+          x,
+          y,
+          delay: (col + row) * 0.05,
+          type,
+          data
+        });
       }
-
-      gridItems.push({
-        id: hexId,
-        row,
-        col,
-        x,
-        y,
-        delay: (col + row) * 0.05,
-        type,
-        data
-      });
     }
-  }
+    
+    return items;
+  }, [layout, resumes, feedbackData, shouldSkip, resumePositions]);
+
+  // Early return AFTER all hooks
+  if (!mounted || !layout) return null;
 
   return (
     <main className="relative w-full h-screen overflow-hidden bg-black">
-      <div className="vignette" />
+      {/* Hidden download link - React way, no DOM manipulation */}
+      {downloadUrl && (
+        <a
+          ref={downloadLinkRef}
+          href={downloadUrl}
+          download={downloadFilename}
+          className="hidden"
+          aria-hidden="true"
+        />
+      )}
 
       <header 
-        className={`fixed left-1/2 -translate-x-1/2 text-center z-[100] transition-opacity duration-300 ${isExiting ? 'opacity-0' : 'opacity-100'}`}
+        className={`fixed left-1/2 -translate-x-1/2 text-center z-[100] transition-opacity duration-500 ${isExiting ? 'opacity-0' : ''}`}
         style={{ top: '20px', animation: 'fadeIn 0.5s ease-out forwards 200ms', opacity: 0 }}
       >
-        <h1 className="text-white text-3xl font-bold mb-2 tracking-wide drop-shadow-md whitespace-nowrap font-['Inter']">
+        <h1 className="text-white text-[32px] font-bold tracking-wide drop-shadow-[0_2px_8px_rgba(0,0,0,0.7)] whitespace-nowrap" style={{ fontFamily: "'Inter', sans-serif", marginBottom: '12px' }}>
           Different Domains, Different Resumes
         </h1>
-        <div className="backdrop-blur-md bg-white/10 border border-white/20 rounded-full px-4 py-1 text-sm inline-block">
-          <Link href="/" onClick={handleNavigateOut} className="text-white/80 hover:text-white transition-colors">
-            ← Back to Home
-          </Link>
-        </div>
+        <a
+          href="/"
+          onClick={handleNavigateOut}
+          className="inline-block transition-all duration-300"
+          style={{
+            background: 'linear-gradient(135deg,rgba(255,255,255,0.1) 0%,rgba(255,255,255,0.05) 100%)',
+            border: '1px solid rgba(255,255,255,0.18)',
+            color: 'white',
+            padding: '10px 20px',
+            borderRadius: 25,
+            fontSize: 14,
+            fontWeight: 500,
+            backdropFilter: 'blur(15px) saturate(180%)',
+            WebkitBackdropFilter: 'blur(15px) saturate(180%)',
+            textDecoration: 'none',
+            boxShadow: '0 8px 32px 0 rgba(0,0,0,0.37),inset 0 1px 0 0 rgba(255,255,255,0.1)',
+          }}
+          onMouseEnter={e => {
+            e.currentTarget.style.background = 'linear-gradient(135deg,rgba(255,255,255,0.15) 0%,rgba(255,255,255,0.08) 100%)';
+            e.currentTarget.style.transform = 'translateY(-2px)';
+          }}
+          onMouseLeave={e => {
+            e.currentTarget.style.background = 'linear-gradient(135deg,rgba(255,255,255,0.1) 0%,rgba(255,255,255,0.05) 100%)';
+            e.currentTarget.style.transform = 'translateY(0)';
+          }}
+        >
+          ← Back to Home
+        </a>
       </header>
 
       <div className="absolute inset-0">
@@ -205,74 +289,57 @@ export default function ResumesClient({ resumes }: { resumes: Resume[] }) {
             left: `${item.x}px`,
             top: `${item.y}px`,
             width: `${layout.hexWidth}px`,
-            height: `${layout.hexHeight}px`,
-            transitionDelay: isExiting ? `${(item.col + item.row) * 50}ms` : '0ms'
+            height: `${layout.hexHeight}px`
           };
 
+          const commonClassName = `transition-all duration-300 hover:scale-[1.05] hover:z-10 hover:brightness-120 cursor-pointer`;
+
+          // Feedback tile
           if (item.type === 'feedback') {
             return (
               <Hexagon
                 key={item.id}
                 delay={item.delay}
-                className={`transition-all duration-300 hover:scale-[1.035] hover:z-10 hover:brightness-120 cursor-pointer ${isExiting ? 'opacity-0 scale-95 pointer-events-none' : ''}`}
+                isExiting={isExiting}
+                className={commonClassName}
                 style={style}
                 onClick={openFeedbackEmail}
               >
-                <div className="absolute top-0 left-0 w-full h-full flex flex-col items-center justify-center gap-1.5 p-3 z-10 pointer-events-auto">
-                  <div 
-                    className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl shadow-lg shrink-0"
-                    style={{ background: `linear-gradient(135deg, ${item.data.color} 0%, ${adjustColor(item.data.color, -20)} 100%)` }}
-                  >
-                    {item.data.icon}
-                  </div>
-                  <div className="text-[13px] font-bold text-white text-center mt-1 shrink-0">{item.data.domain}</div>
-                  <div className="text-[10px] text-white/80 text-center mb-1 shrink-0">{item.data.description}</div>
-                  <button 
-                    className="bg-gradient-to-br from-[#00d2d3] to-[#00a8a9] text-white border-none px-3.5 py-1.5 rounded-md text-[10px] font-semibold cursor-pointer shadow-md transition-all duration-300 mt-1 shrink-0 hover:brightness-110"
-                    onClick={handleFeedbackButton}
-                  >
-                    Send Email
-                  </button>
-                </div>
+                <FeedbackHex 
+                  feedbackData={item.data}
+                  onSendEmail={handleFeedbackButton}
+                />
               </Hexagon>
             );
           }
 
+          // Resume tile
           if (item.type === 'resume') {
             return (
               <Hexagon
                 key={item.id}
                 delay={item.delay}
-                className={`transition-all duration-300 hover:scale-[1.035] hover:z-10 hover:brightness-120 cursor-pointer ${isExiting ? 'opacity-0 scale-95 pointer-events-none' : ''}`}
+                isExiting={isExiting}
+                className={commonClassName}
                 style={style}
                 onClick={() => downloadResume(item.data)}
               >
-                <div className="absolute top-0 left-0 w-full h-full flex flex-col items-center justify-center gap-1.5 p-3 z-10 pointer-events-auto">
-                  <div 
-                    className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl shadow-lg shrink-0"
-                    style={{ background: `linear-gradient(135deg, ${item.data.color} 0%, ${adjustColor(item.data.color, -20)} 100%)` }}
-                  >
-                    {item.data.icon}
-                  </div>
-                  <div className="text-[13px] font-bold text-white text-center mt-1 shrink-0">{item.data.domain}</div>
-                  <div className="text-[10px] text-white/80 text-center mb-0.5 shrink-0">{item.data.description}</div>
-                  <button 
-                    className="bg-gradient-to-br from-[#4CAF50] to-[#45a049] text-white border-none px-3.5 py-1.5 rounded-md text-[10px] font-semibold cursor-pointer shadow-md transition-all duration-300 mt-1 shrink-0 hover:brightness-110"
-                    onClick={(e) => handleDownloadButton(e, item.data)}
-                  >
-                    Download
-                  </button>
-                </div>
+                <ResumeHex 
+                  resume={item.data}
+                  onDownload={(e) => handleDownloadButton(e, item.data)}
+                />
               </Hexagon>
             );
           }
 
+          // Empty tile
           return (
             <Hexagon 
               key={item.id} 
-              delay={item.delay} 
+              delay={item.delay}
+              isExiting={isExiting}
               style={style}
-              className={`pointer-events-none opacity-50 ${isExiting ? 'opacity-0 scale-95' : ''}`} 
+              className="pointer-events-none opacity-50" 
             />
           );
         })}
@@ -280,7 +347,7 @@ export default function ResumesClient({ resumes }: { resumes: Resume[] }) {
 
       <footer 
         className={`fixed left-1/2 -translate-x-1/2 z-50 text-center transition-opacity duration-300 ${isExiting ? 'opacity-0' : 'opacity-100'}`}
-        style={{ bottom: '10px', animation: 'fadeIn 0.5s ease-out forwards 400ms', opacity: 0 }}
+        style={{ bottom: '10px', opacity: 0, animation: 'fadeIn 0.5s ease-out forwards', animationDelay: '400ms' }}
       >
         <p className="text-[12px] text-white/50 m-0 mb-1">© 2025 - 2026 Vatsal Goyal. All rights reserved.</p>
         <p className="text-[10px] text-white/40 m-0">This website uses Strapi, managed by Gleck, my Personal AI Agent.</p>

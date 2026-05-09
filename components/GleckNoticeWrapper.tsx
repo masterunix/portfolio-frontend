@@ -1,7 +1,15 @@
 'use client';
 
-import { useEffect, useState, useRef, useCallback } from 'react';
-import { getGleckNotices, getGleckSettings } from '@/lib/api';
+import { useState, useRef, useCallback, useEffect } from 'react';
+import DOMPurify from 'isomorphic-dompurify';
+import { useGleckData } from '@/hooks/useGleckData';
+import { useEyeTracking } from '@/hooks/useEyeTracking';
+import { useNoticeCarousel } from '@/hooks/useNoticeCarousel';
+
+// Constants
+const AUTO_EXPAND_DELAY = 3000;
+const AUTO_COLLAPSE_DELAY = 10000; // Auto-collapse after 10 seconds
+const BLINK_DURATION = 350;
 
 interface Notice {
   id: number;
@@ -10,15 +18,29 @@ interface Notice {
   order: number;
 }
 
-interface GleckSettings {
-  knowMoreLink: string;
-  knowMoreText: string;
-}
-
-/* ------------------------------------------------------------------ */
-/*  Simple anime-style eye: oval sclera + round iris/pupil + highlight */
-/* ------------------------------------------------------------------ */
-function AnimeEye({ w, h, px, py, closed }: { w: number; h: number; px: number; py: number; closed: boolean }) {
+/**
+ * AnimeEye — Simple anime-style eye component
+ * Renders an oval sclera with a round iris/pupil that follows cursor
+ * 
+ * @param w - Width of the eye SVG
+ * @param h - Height of the eye SVG
+ * @param px - Normalized X position of pupil (-1 to 1)
+ * @param py - Normalized Y position of pupil (-1 to 1)
+ * @param closed - Whether the eye is closed (blinking)
+ */
+function AnimeEye({ 
+  w, 
+  h, 
+  px, 
+  py, 
+  closed 
+}: { 
+  w: number; 
+  h: number; 
+  px: number; 
+  py: number; 
+  closed: boolean;
+}) {
   const ballR = h * 0.2;
   const cx = w / 2 + px * (w * 0.15);
   const cy = h / 2 + py * (h * 0.12);
@@ -45,6 +67,15 @@ function AnimeEye({ w, h, px, py, closed }: { w: number; h: number; px: number; 
   );
 }
 
+/**
+ * EyePair — Renders two anime eyes side by side
+ * 
+ * @param size - Base size for each eye
+ * @param px - Normalized X position of pupils
+ * @param py - Normalized Y position of pupils
+ * @param closed - Whether eyes are closed
+ * @param onClick - Optional click handler for blink animation
+ */
 function EyePair({
   size,
   px,
@@ -70,106 +101,204 @@ function EyePair({
   );
 }
 
-/* ================================================================== */
-/*  Main wrapper                                                       */
-/* ================================================================== */
-export default function GleckNoticeWrapper() {
-  const [notices, setNotices] = useState<Notice[]>([]);
-  const [settings, setSettings] = useState<GleckSettings>({
-    knowMoreLink: '#',
-    knowMoreText: 'Updates are managed by my AI Assistant, Gleck. Click here to know more.',
+/**
+ * Sanitizes HTML content to prevent XSS attacks
+ * 
+ * @param html - Raw HTML string from API
+ * @returns Sanitized HTML safe for rendering
+ */
+function sanitizeHTML(html: string): string {
+  return DOMPurify.sanitize(html, {
+    ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'a', 'br', 'p', 'span'],
+    ALLOWED_ATTR: ['href', 'target', 'rel']
   });
-  const [isExpanded, setIsExpanded] = useState(false);
+}
+
+/**
+ * GleckNoticeWrapper — Persistent notification widget with anime eyes
+ * 
+ * Features:
+ * - Fetches notices from Strapi
+ * - Auto-expands after 3 seconds
+ * - Eyes follow cursor
+ * - Cycles through multiple notices
+ * - Persists across page navigations (no flash)
+ * - Can be collapsed/expanded/enlarged
+ * - XSS protection with HTML sanitization
+ */
+export default function GleckNoticeWrapper() {
+  const [mounted, setMounted] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(true); // Start expanded by default
   const [isEnlarged, setIsEnlarged] = useState(false);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [eyePos, setEyePos] = useState({ x: 0, y: 0 });
   const [blink, setBlink] = useState(false);
+  const [userCollapsed, setUserCollapsed] = useState(false); // Track if user manually collapsed
+  
   const widgetRef = useRef<HTMLDivElement>(null);
+  const blinkTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  
+  // Custom hooks for separated concerns
+  const { notices, settings } = useGleckData();
+  const eyePos = useEyeTracking(widgetRef);
+  const { currentIndex, setCurrentIndex } = useNoticeCarousel(notices.length, isExpanded);
 
+  // Handle client-side mounting
   useEffect(() => {
-    getGleckNotices()
-      .then((data) => {
-        if (Array.isArray(data) && data.length > 0) setNotices(data);
-      })
-      .catch((err) => console.warn('Could not load Gleck notices:', err));
-
-    getGleckSettings()
-      .then((data) => {
-        if (data) {
-          setSettings({
-            knowMoreLink: data.knowMoreLink || '#',
-            knowMoreText: data.knowMoreText || 'Updates are managed by my AI Assistant, Gleck. Click here to know more.',
-          });
-        }
-      })
-      .catch((err) => console.warn('Could not load Gleck settings:', err));
+    setMounted(true);
   }, []);
 
+  // Auto-collapse after being expanded for a while (only if user hasn't manually collapsed)
   useEffect(() => {
-    const t = setTimeout(() => setIsExpanded(true), 3000);
-    return () => clearTimeout(t);
-  }, []);
+    if (!isExpanded || isEnlarged || userCollapsed) return;
+    
+    const timer = setTimeout(() => {
+      setIsExpanded(false);
+    }, AUTO_COLLAPSE_DELAY);
 
+    return () => clearTimeout(timer);
+  }, [isExpanded, isEnlarged, userCollapsed]);
+
+  // Auto-expand when user hasn't manually collapsed
   useEffect(() => {
-    const onMove = (e: MouseEvent) => {
-      if (!widgetRef.current) return;
-      const r = widgetRef.current.getBoundingClientRect();
-      const cx = r.left + r.width / 2;
-      const cy = r.top + r.height / 2;
-      const dx = e.clientX - cx;
-      const dy = e.clientY - cy;
-      const dist = Math.hypot(dx, dy);
-      const norm = Math.min(dist / 300, 1);
-      const angle = Math.atan2(dy, dx);
-      setEyePos({ x: Math.cos(angle) * norm, y: Math.sin(angle) * norm });
-    };
-    window.addEventListener('mousemove', onMove);
-    return () => window.removeEventListener('mousemove', onMove);
-  }, []);
+    if (!mounted || userCollapsed) return;
+    
+    // If collapsed and user hasn't manually closed it, expand after delay
+    if (!isExpanded) {
+      const timer = setTimeout(() => {
+        setIsExpanded(true);
+      }, AUTO_EXPAND_DELAY);
 
-  useEffect(() => {
-    if (!isExpanded || notices.length <= 1) return;
-    const iv = setInterval(() => setCurrentIndex((p) => (p + 1) % notices.length), 5000);
-    return () => clearInterval(iv);
-  }, [isExpanded, notices.length]);
+      return () => clearTimeout(timer);
+    }
+  }, [mounted, isExpanded, userCollapsed]);
 
+  /**
+   * Handles blink animation with proper cleanup
+   * Also expands widget if collapsed
+   */
   const handleBlink = useCallback(() => {
     setBlink(true);
-    setTimeout(() => setBlink(false), 350);
+    
+    // If collapsed, expand and reset userCollapsed flag
+    if (!isExpanded) {
+      setIsExpanded(true);
+      setUserCollapsed(false);
+    }
+    
+    // Clear any existing timer
+    if (blinkTimerRef.current) {
+      clearTimeout(blinkTimerRef.current);
+    }
+    
+    blinkTimerRef.current = setTimeout(() => {
+      setBlink(false);
+      blinkTimerRef.current = null;
+    }, BLINK_DURATION);
+  }, [isExpanded]);
+
+  // Cleanup blink timer on unmount
+  useEffect(() => {
+    return () => {
+      if (blinkTimerRef.current) {
+        clearTimeout(blinkTimerRef.current);
+      }
+    };
   }, []);
 
-  const currentNotice = notices[currentIndex];
-
-  const getContainerClasses = () => {
-    let classes = "box-border relative overflow-hidden flex flex-col transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] backdrop-blur-[20px] shadow-[0_8px_32px_0_rgba(0,0,0,0.37),inset_0_1px_0_0_rgba(255,255,255,0.1)] border border-white/20 bg-gradient-to-br from-white/10 to-white/5 ";
+  /**
+   * Generates dynamic inline styles based on widget state
+   * @returns Inline style object for container styling
+   */
+  const getContainerStyles = () => {
+    const baseStyles = {
+      boxSizing: 'border-box' as const,
+      position: 'relative' as const,
+      overflow: 'hidden' as const,
+      display: 'flex',
+      flexDirection: 'column' as const,
+      transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
+      backdropFilter: 'blur(20px)',
+      boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.37), inset 0 1px 0 0 rgba(255, 255, 255, 0.1)',
+      border: '1px solid rgba(255, 255, 255, 0.1)',
+      background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%)',
+      borderRadius: '16px'
+    };
     
     if (isExpanded) {
       if (isEnlarged) {
-        classes += "w-[33.333vw] h-[33.333vh] max-w-[33.333vw] rounded-2xl p-3 items-start scale-102";
-      } else {
-        classes += "w-auto h-auto min-w-[300px] max-w-[600px] min-h-[60px] rounded-2xl py-3 px-4 items-center scale-100";
+        return {
+          ...baseStyles,
+          width: '33.333vw',
+          height: '33.333vh',
+          maxWidth: '33.333vw',
+          padding: '12px',
+          alignItems: 'flex-start'
+        };
       }
-    } else {
-      classes += "w-[60px] h-[60px] min-w-[60px] max-w-[60px] min-h-[60px] rounded-xl p-0 items-center justify-center scale-100";
+      return {
+        ...baseStyles,
+        width: 'auto',
+        height: 'auto',
+        minWidth: '300px',
+        maxWidth: '600px',
+        minHeight: '60px',
+        paddingTop: '12px',
+        paddingBottom: '12px',
+        paddingLeft: '16px',
+        paddingRight: '16px',
+        alignItems: 'center'
+      };
     }
-    
-    return classes;
+    return {
+      ...baseStyles,
+      width: '60px',
+      height: '60px',
+      minWidth: '60px',
+      maxWidth: '60px',
+      minHeight: '60px',
+      padding: '0',
+      alignItems: 'center',
+      justifyContent: 'center'
+    };
   };
+
+  // Don't render on server or if no notices
+  if (!mounted || notices.length === 0) {
+    return null;
+  }
+
+  const currentNotice = notices[currentIndex];
 
   return (
     <div
       ref={widgetRef}
-      className="fixed bottom-4 left-4 z-[9999] transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] origin-bottom-left"
+      style={{
+        position: 'fixed',
+        bottom: '16px',
+        left: '16px',
+        zIndex: 9999
+      }}
+      className="transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] origin-bottom-left"
+      role="complementary"
+      aria-label="Gleck notification widget"
     >
-      <div className={getContainerClasses()}>
+      <div style={getContainerStyles()}>
+        {/* Collapsed state - Eyes only */}
         {!isExpanded && (
           <div className="flex items-center justify-center w-full h-full">
             <EyePair size={14} px={eyePos.x} py={eyePos.y} closed={blink} onClick={handleBlink} />
           </div>
         )}
 
+        {/* Expanded state - Notice content */}
         {isExpanded && (
-          <div className="flex gap-3 items-center w-full min-h-[36px] shrink-0">
+          <div style={{
+            display: 'flex',
+            gap: '12px',
+            alignItems: 'center',
+            width: '100%',
+            minHeight: '36px',
+            flexShrink: 0
+          }}>
             <EyePair size={14} px={eyePos.x} py={eyePos.y} closed={blink} onClick={handleBlink} />
 
             <div className="flex-1 min-w-0 overflow-hidden flex items-center">
@@ -178,21 +307,65 @@ export default function GleckNoticeWrapper() {
                   href={currentNotice.link}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={`text-white text-sm leading-[1.4] no-underline block w-full ${isEnlarged ? 'whitespace-normal overflow-visible' : 'whitespace-nowrap overflow-hidden text-ellipsis'}`}
-                  dangerouslySetInnerHTML={{ __html: currentNotice.text }}
+                  style={{
+                    color: 'white',
+                    textDecoration: 'none',
+                    fontSize: '14px',
+                    lineHeight: '1.4',
+                    display: 'block',
+                    width: '100%',
+                    whiteSpace: isEnlarged ? 'normal' : 'nowrap',
+                    overflow: isEnlarged ? 'visible' : 'hidden',
+                    textOverflow: 'ellipsis',
+                    transition: 'color 0.2s'
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.color = 'rgba(255, 255, 255, 0.8)'}
+                  onMouseLeave={(e) => e.currentTarget.style.color = 'white'}
+                  dangerouslySetInnerHTML={{ __html: sanitizeHTML(currentNotice.text) }}
                 />
               ) : (
                 <div
-                  className={`text-white text-sm leading-[1.4] ${isEnlarged ? 'whitespace-normal overflow-visible' : 'whitespace-nowrap overflow-hidden text-ellipsis'}`}
-                  dangerouslySetInnerHTML={{ __html: currentNotice?.text || 'No notices' }}
+                  style={{
+                    color: 'white',
+                    fontSize: '14px',
+                    lineHeight: '1.4',
+                    whiteSpace: isEnlarged ? 'normal' : 'nowrap',
+                    overflow: isEnlarged ? 'visible' : 'hidden',
+                    textOverflow: 'ellipsis'
+                  }}
+                  dangerouslySetInnerHTML={{ __html: sanitizeHTML(currentNotice?.text || 'No notices') }}
                 />
               )}
             </div>
 
+            {/* Enlarge/Shrink button */}
             <button
               onClick={() => setIsEnlarged(!isEnlarged)}
-              className="w-7 h-7 rounded-lg border border-white/15 bg-white/10 text-white cursor-pointer flex items-center justify-center shrink-0 transition-all duration-200 hover:bg-white/20 hover:border-white/30"
+              style={{
+                width: '28px',
+                height: '28px',
+                borderRadius: '8px',
+                border: '1px solid rgba(255, 255, 255, 0.15)',
+                background: 'rgba(255, 255, 255, 0.1)',
+                color: 'white',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0,
+                transition: 'all 0.2s',
+                padding: 0
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)';
+                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.3)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
+                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.15)';
+              }}
               title={isEnlarged ? 'Shrink' : 'Expand'}
+              aria-label={isEnlarged ? 'Shrink widget' : 'Expand widget'}
             >
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                 {isEnlarged ? (
@@ -203,13 +376,38 @@ export default function GleckNoticeWrapper() {
               </svg>
             </button>
 
+            {/* Collapse button */}
             <button
               onClick={() => {
                 setIsExpanded(false);
                 setIsEnlarged(false);
+                setUserCollapsed(true);
               }}
-              className="w-7 h-7 rounded-lg border border-white/15 bg-white/10 text-white cursor-pointer flex items-center justify-center shrink-0 transition-all duration-200 hover:bg-red-500/25 hover:border-red-500/50"
+              style={{
+                width: '28px',
+                height: '28px',
+                borderRadius: '8px',
+                border: '1px solid rgba(255, 255, 255, 0.15)',
+                background: 'rgba(255, 255, 255, 0.1)',
+                color: 'white',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0,
+                transition: 'all 0.2s',
+                padding: 0
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = 'rgba(239, 68, 68, 0.25)';
+                e.currentTarget.style.borderColor = 'rgba(239, 68, 68, 0.5)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
+                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.15)';
+              }}
               title="Collapse"
+              aria-label="Collapse widget"
             >
               <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
                 <path d="M2 2L10 10M10 2L2 10" stroke="white" strokeWidth="1.8" strokeLinecap="round" />
@@ -218,29 +416,87 @@ export default function GleckNoticeWrapper() {
           </div>
         )}
 
+        {/* Enlarged view - All notices */}
         {isExpanded && isEnlarged && (
-          <div className="flex-1 w-full pt-3 overflow-y-auto overflow-x-hidden box-border">
-            <div className="border-t border-white/10 pt-3">
-              <h3 className="m-0 mb-3 text-sm font-semibold text-white">All Updates</h3>
-              {notices.map((notice, idx) => (
+          <div style={{
+            flex: 1,
+            width: '100%',
+            paddingTop: '12px',
+            overflowY: 'auto',
+            overflowX: 'hidden',
+            boxSizing: 'border-box'
+          }}>
+            <div style={{
+              borderTop: '1px solid rgba(255, 255, 255, 0.1)',
+              paddingTop: '12px'
+            }}>
+              <h3 style={{
+                margin: 0,
+                marginBottom: '12px',
+                fontSize: '14px',
+                fontWeight: 600,
+                color: 'white'
+              }}>All Updates</h3>
+              {notices.map((notice: Notice, idx: number) => (
                 <div
                   key={notice.id}
-                  className={`p-2.5 mb-2 rounded-lg border transition-all duration-300 cursor-pointer box-border hover:bg-white/15 hover:border-white/25 ${idx === currentIndex ? 'bg-white/10 border-white/10' : 'bg-white/5 border-white/10'}`}
+                  style={{
+                    padding: '10px',
+                    marginBottom: '8px',
+                    borderRadius: '8px',
+                    border: idx === currentIndex ? '1px solid rgba(255, 255, 255, 0.2)' : '1px solid rgba(255, 255, 255, 0.1)',
+                    background: idx === currentIndex ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.05)',
+                    transition: 'all 0.3s',
+                    cursor: 'pointer',
+                    boxSizing: 'border-box'
+                  }}
                   onClick={() => setCurrentIndex(idx)}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)';
+                    e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.25)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = idx === currentIndex ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.05)';
+                    e.currentTarget.style.borderColor = idx === currentIndex ? 'rgba(255, 255, 255, 0.2)' : 'rgba(255, 255, 255, 0.1)';
+                  }}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      setCurrentIndex(idx);
+                    }
+                  }}
+                  aria-label={`Select notice ${idx + 1}`}
                 >
                   {notice.link ? (
                     <a
                       href={notice.link}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-[13px] leading-relaxed text-white break-words no-underline block"
-                      dangerouslySetInnerHTML={{ __html: notice.text }}
+                      style={{
+                        fontSize: '13px',
+                        lineHeight: '1.6',
+                        color: 'white',
+                        wordBreak: 'break-word',
+                        textDecoration: 'none',
+                        display: 'block',
+                        transition: 'color 0.2s'
+                      }}
+                      onMouseEnter={(e) => e.currentTarget.style.color = 'rgba(255, 255, 255, 0.8)'}
+                      onMouseLeave={(e) => e.currentTarget.style.color = 'white'}
+                      dangerouslySetInnerHTML={{ __html: sanitizeHTML(notice.text) }}
                       onClick={(e) => e.stopPropagation()}
                     />
                   ) : (
                     <div
-                      className="text-[13px] leading-relaxed text-white break-words"
-                      dangerouslySetInnerHTML={{ __html: notice.text }}
+                      style={{
+                        fontSize: '13px',
+                        lineHeight: '1.6',
+                        color: 'white',
+                        wordBreak: 'break-word'
+                      }}
+                      dangerouslySetInnerHTML={{ __html: sanitizeHTML(notice.text) }}
                     />
                   )}
                 </div>
@@ -249,20 +505,61 @@ export default function GleckNoticeWrapper() {
           </div>
         )}
 
+        {/* Expand button (when collapsed) */}
         {!isExpanded && (
           <button
-            onClick={() => setIsExpanded(true)}
-            className="absolute top-1 right-1 w-5 h-5 rounded-full border-none bg-white/10 text-white cursor-pointer text-xs flex items-center justify-center transition-all duration-300 hover:bg-white/20"
+            onClick={() => {
+              setIsExpanded(true);
+              setUserCollapsed(false);
+            }}
+            style={{
+              position: 'absolute',
+              top: '4px',
+              right: '4px',
+              width: '20px',
+              height: '20px',
+              borderRadius: '50%',
+              border: 'none',
+              background: 'rgba(255, 255, 255, 0.1)',
+              color: 'white',
+              cursor: 'pointer',
+              fontSize: '12px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              transition: 'all 0.3s',
+              padding: 0
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
+            }}
             title="Expand"
+            aria-label="Expand widget"
           >
             +
           </button>
         )}
       </div>
 
+      {/* Know more link - Always visible */}
       <a
         href={settings.knowMoreLink}
-        className={`block mt-2 text-[11px] text-white/60 no-underline pl-2 transition-colors duration-200 hover:text-white/90 ${isExpanded ? 'opacity-100' : 'opacity-70'}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        style={{
+          display: 'block',
+          marginTop: '8px',
+          fontSize: '11px',
+          color: 'rgba(255, 255, 255, 0.6)',
+          textDecoration: 'none',
+          paddingLeft: '8px',
+          transition: 'color 0.2s'
+        }}
+        onMouseEnter={(e) => e.currentTarget.style.color = 'rgba(255, 255, 255, 0.9)'}
+        onMouseLeave={(e) => e.currentTarget.style.color = 'rgba(255, 255, 255, 0.6)'}
       >
         {settings.knowMoreText}
       </a>

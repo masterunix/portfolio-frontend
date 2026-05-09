@@ -12,6 +12,7 @@ interface NavHexagonProps {
   color: string;
   delay?: number;
   style?: React.CSSProperties;
+  isExiting?: boolean;
 }
 
 /**
@@ -27,41 +28,46 @@ export default function NavHexagon({
   description,
   color,
   delay = 0,
-  style
+  style,
+  isExiting = false
 }: NavHexagonProps) {
   return (
-    <Hexagon delay={delay} className="group cursor-pointer" style={style}>
+    <Hexagon delay={delay} className="group cursor-pointer" style={style} isExiting={isExiting}>
       {/*
         Content centered within the hex — mirrors legacy hex-content:
         position:absolute;inset:0;display:flex;flex-direction:column;
         align-items:center;justify-content:center;gap:8px;padding:16px
       */}
-      <div className="absolute top-0 left-0 w-full h-full flex flex-col items-center justify-center gap-2 p-4 z-10">
+      {/* Content wrapper — centered flex column */}
+      <div className="hex-content pointer-events-none">
 
-        {/*
-          Icon box — 56×56px gradient rounded square.
-          text-white ensures SVG fill="currentColor" paths render white.
-          Matches legacy: width:56px;height:56px;border-radius:12px
-        */}
+        {/* Icon box — 56×56px gradient rounded square */}
         <div
-          className="w-14 h-14 rounded-xl flex items-center justify-center text-white shadow-lg transition-transform duration-300 group-hover:scale-110 shrink-0"
+          className="w-14 h-14 rounded-[12px] flex items-center justify-center text-white shadow-lg transition-transform duration-300 group-hover:scale-110 shrink-0"
           style={{
             background: `linear-gradient(135deg, ${color} 0%, ${adjustColor(color, -20)} 100%)`,
             boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
           }}
         >
-          {icon}
+          <div className="w-9 h-9 flex items-center justify-center" style={{ width: '36px', height: '36px' }}>
+            {React.isValidElement(icon) 
+              ? React.cloneElement(icon as React.ReactElement<any>, {
+                  style: { width: '100%', height: '100%', display: 'block' }
+                })
+              : icon
+            }
+          </div>
         </div>
 
-        {/* Title — 13px semibold, matches legacy font-size:13px;font-weight:600 */}
-        <span className="text-[13px] font-semibold text-white text-center leading-tight">
+        {/* Title — 13px bold */}
+        <div className="text-[13px] font-bold text-white text-center leading-[1.2] shrink-0">
           {title}
-        </span>
+        </div>
 
-        {/* Description — 10px muted, matches legacy font-size:10px;opacity:0.8 */}
-        <span className="text-[10px] text-white/80 text-center leading-snug">
+        {/* Description — 10px muted */}
+        <div className="text-[10px] text-white/80 text-center leading-[1.3] max-w-[140px] shrink-0">
           {description}
-        </span>
+        </div>
 
       </div>
     </Hexagon>
