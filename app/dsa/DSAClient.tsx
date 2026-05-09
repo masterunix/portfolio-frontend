@@ -29,17 +29,7 @@ export const DSA_CONCEPTS = [
   { title: 'Dynamic Programming', icon: '🧮', description: 'Optimization technique', color: '#c0392b' }
 ];
 
-// ─── Types ───────────────────────────────────────────────────────────────────
-
-export interface DSAPlatform {
-  id: number;
-  name: string;
-  url: string;
-  color: string;
-  logoPath?: string;
-  logo?: { url: string };
-  order: number;
-}
+import type { DSAPlatform } from '@/types';
 
 // ─── Component ───────────────────────────────────────────────────────────────
 

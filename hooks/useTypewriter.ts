@@ -54,8 +54,10 @@ export function useTypewriter(messages: TypewriterMessage[], typingSpeed = 50, p
         }, typingSpeed / 2);
       } else {
         // Fully deleted — advance to next message (wraps around)
-        setIsDeleting(false);
-        setMessageIndex((prev) => (prev + 1) % messages.length);
+        timeout = setTimeout(() => {
+          setIsDeleting(false);
+          setMessageIndex((prev) => (prev + 1) % messages.length);
+        }, 50); // small delay to prevent synchronous cascading renders
       }
     }
 

@@ -12,7 +12,7 @@
 
 import React from 'react';
 import Hexagon from './Hexagon';
-import { adjustColor } from '@/lib/utils';
+
 
 // ─── Props ───────────────────────────────────────────────────────────────────
 
@@ -58,7 +58,7 @@ export default function NavHexagon({
         <div
           className="w-[62px] h-[62px] rounded-[12px] flex items-center justify-center text-white shadow-lg transition-transform duration-300 group-hover:scale-110 shrink-0"
           style={{
-            background: `linear-gradient(135deg, ${color} 0%, ${adjustColor(color, -20)} 100%)`,
+            backgroundColor: color,
             boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
           }}
         >

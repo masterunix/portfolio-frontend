@@ -1,11 +1,13 @@
 'use client';
 
 import React, { useState, useCallback } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { adjustColor } from '@/lib/utils';
-import { Skill, DEFAULT_TOP_SKILLS, DEFAULT_BOTTOM_SKILLS } from './SkillsClient';
 
-const STRAPI = process.env.NEXT_PUBLIC_STRAPI_URL || 'http://localhost:1337';
+import Footer from '@/components/Footer';
+import { STRAPI_URL } from '@/lib/api';
+import type { Skill } from '@/types';
+import { DEFAULT_TOP_SKILLS, DEFAULT_BOTTOM_SKILLS } from './SkillsClient';
 
 interface SkillsMobileProps {
   careerSkills: Skill[];
@@ -40,7 +42,7 @@ export default function SkillsMobile({ careerSkills, topSkills, bottomSkills }: 
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px', width: '100%' }}>
         <div
           className="mobile-icon"
-          style={{ background: `linear-gradient(135deg, ${skill.color} 0%, ${adjustColor(skill.color, -20)} 100%)` }}
+          style={{ backgroundColor: skill.color }}
         >
           <span className="text-xl">{skill.icon || '📦'}</span>
         </div>
@@ -54,14 +56,14 @@ export default function SkillsMobile({ careerSkills, topSkills, bottomSkills }: 
 
       {skill.attachments && skill.attachments.length > 0 && (
         <div className="mobile-card-actions">
-          {skill.attachments.map((att) => (
-            att.file?.url && (
+          {skill.attachments
+            .filter((att) => att.file?.url)
+            .map((att) => (
               <button key={att.id} className="hex-button"
-                onClick={() => window.open(`${STRAPI}${att.file.url}`, '_blank')}>
+                onClick={() => window.open(`${STRAPI_URL}${att.file.url}`, '_blank')}>
                 {att.label}
               </button>
-            )
-          ))}
+            ))}
         </div>
       )}
     </div>
@@ -70,7 +72,7 @@ export default function SkillsMobile({ careerSkills, topSkills, bottomSkills }: 
   return (
     <main className="relative w-full min-h-screen">
       <div className="mobile-header">
-        <a href="/" onClick={handleBack} className="mobile-back">← Back</a>
+        <Link href="/" onClick={handleBack} className="mobile-back">← Back</Link>
         <h1 className="text-white font-bold text-xl mt-3" style={{ fontFamily: "'Inter', sans-serif" }}>
           {activeCategory === 'experience' ? 'Experience' : 'Skills'}
         </h1>
@@ -100,9 +102,7 @@ export default function SkillsMobile({ careerSkills, topSkills, bottomSkills }: 
         )}
       </div>
 
-      <footer className="w-full text-center py-6 mt-4 opacity-70">
-        <p className="text-[11px] text-white/50 m-0">© 2025 - 2026 Vatsal Goyal. All rights reserved.</p>
-      </footer>
+      <Footer variant="minimal" className="w-full text-center py-6 mt-4 opacity-70" />
     </main>
   );
 }

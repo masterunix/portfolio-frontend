@@ -3,15 +3,11 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import { navigationContent, NavigationItem } from '@/lib/constants';
-import { adjustColor } from '@/lib/utils';
+
 import { useTypewriter } from '@/hooks/useTypewriter';
 
-interface HomeMessage {
-  id: number;
-  text: string;
-  link?: string;
-  order: number;
-}
+import Footer from '@/components/Footer';
+import type { HomeMessage } from '@/types';
 
 export default function HomeMobile({ messages }: { messages: HomeMessage[] }) {
   const router = useRouter();
@@ -69,7 +65,7 @@ export default function HomeMobile({ messages }: { messages: HomeMessage[] }) {
             <div
               className="mobile-icon"
               style={{
-                background: `linear-gradient(135deg, ${nav.color} 0%, ${adjustColor(nav.color, -20)} 100%)`
+                backgroundColor: nav.color
               }}
             >
               <div className="w-6 h-6 text-white flex items-center justify-center">
@@ -92,9 +88,7 @@ export default function HomeMobile({ messages }: { messages: HomeMessage[] }) {
       </div>
 
       {/* Mobile Footer */}
-      <footer className="w-full text-center py-6 mt-4 opacity-70">
-        <p className="text-[11px] text-white/50 m-0">© 2025 - 2026 Vatsal Goyal. All rights reserved.</p>
-      </footer>
+      <Footer variant="minimal" className="w-full text-center py-6 mt-4 opacity-70" />
     </main>
   );
 }

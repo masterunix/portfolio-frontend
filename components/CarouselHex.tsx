@@ -72,7 +72,7 @@ export default function CarouselHex({
    */
   const x = useTransform(carouselOffset, (offset) => {
     const rawX = baseX - offset;
-    let wrappedX = ((rawX % totalWidth) + totalWidth) % totalWidth;
+    const wrappedX = ((rawX % totalWidth) + totalWidth) % totalWidth;
     return wrappedX - hexSpacing;
   });
 

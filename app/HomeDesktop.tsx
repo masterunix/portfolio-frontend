@@ -4,15 +4,10 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import NavHexagon from '@/components/NavHexagon';
 import Hexagon from '@/components/Hexagon';
+import Footer from '@/components/Footer';
 import { useTypewriter } from '@/hooks/useTypewriter';
 import { navigationContent, skipList, NavigationItem } from '@/lib/constants';
-
-interface HomeMessage {
-  id: number;
-  text: string;
-  link?: string;
-  order: number;
-}
+import type { HomeMessage } from '@/types';
 
 interface GridItem {
   id: string;
@@ -173,13 +168,11 @@ export default function HomeDesktop({ messages }: { messages: HomeMessage[] }) {
       </div>
 
       {/* Footer */}
-      <footer 
+      <Footer 
+        variant="full"
         className={`fixed left-1/2 -translate-x-1/2 z-50 text-center transition-opacity duration-300 ${isExiting ? 'opacity-0' : 'opacity-100'}`}
         style={{ bottom: '10px' }}
-      >
-        <p className="text-[12px] text-white/50 m-0 mb-1">© 2025 - 2026 Vatsal Goyal. All rights reserved.</p>
-        <p className="text-[10px] text-white/40 m-0">This website uses Strapi, managed by <a href="https://github.com/masterunix/gleck" target="_blank" rel="noopener noreferrer" className="underline hover:text-white/60 transition-colors">Gleck</a>, my Personal AI Agent.</p>
-      </footer>
+      />
     </main>
   );
 }

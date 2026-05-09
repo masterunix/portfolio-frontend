@@ -13,31 +13,7 @@ import { useIsMobile } from '@/hooks/useIsMobile';
 import ProjectsMobile from './ProjectsMobile';
 import ProjectsDesktop from './ProjectsDesktop';
 
-// ─── Types ───────────────────────────────────────────────────────────────────
-
-export interface Project {
-  id: number;
-  title: string;
-  tech: string;
-  description: string;
-  icon?: string;
-  logo?: { url: string };
-  color: string;
-  github?: string | null;
-  visit?: string | null;
-  order: number;
-}
-
-export interface Skill {
-  id: number;
-  name: string;
-  description: string;
-  icon?: string;
-  color: string;
-  category?: string;
-  type?: string;
-  order: number;
-}
+import type { Project, Skill } from '@/types';
 
 interface ProjectsClientProps {
   projects: Project[];

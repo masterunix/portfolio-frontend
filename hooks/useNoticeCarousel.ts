@@ -47,8 +47,8 @@ export function useNoticeCarousel(noticeCount: number, isExpanded: boolean) {
 
   // Guard: Reset index if notice count shrinks below current position
   useEffect(() => {
-    if (currentIndex >= noticeCount) {
-      setCurrentIndex(0);
+    if (currentIndex >= noticeCount && noticeCount > 0) {
+      setTimeout(() => setCurrentIndex(0), 0);
     }
   }, [noticeCount, currentIndex]);
 

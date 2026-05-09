@@ -1,90 +1,80 @@
 /**
  * SkillTechHex.tsx — Displays a technology/tool in a hexagonal tile.
  *
- * Used in the Skills carousel (top and bottom rows) to show
- * complementary tech skills alongside the career experience tiles.
+ * Pure content component — renders inside a parent <HexShell> or <Hexagon>.
+ * Used in the Skills carousel (top and bottom rows).
  *
- * Simpler than CareerSkillHex — no attachments or category badges.
+ * Shows the tech icon/logo, name, description, and proficiency level badge.
  * Supports both emoji icons and Strapi-hosted logos.
  */
 'use client';
 
 import React from 'react';
-import { adjustColor } from '@/lib/utils';
-import { HEX_SVG_PATH } from '@/lib/constants';
 
-// ─── Constants ───────────────────────────────────────────────────────────────
+import { STRAPI_URL } from '@/lib/api';
+import type { TechSkill } from '@/types';
 
-const STRAPI = process.env.NEXT_PUBLIC_STRAPI_URL || 'http://localhost:1337';
+// ─── Proficiency Badge Config ────────────────────────────────────────────────
 
-// ─── Props ───────────────────────────────────────────────────────────────────
-
-interface SkillTechHexProps {
-  tech: {
-    name: string;
-    description: string;
-    icon?: string;
-    color: string;
-    logo?: { url: string };
-  };
-  /** Disable hover transitions during exit animation */
-  isExiting?: boolean;
-}
+const PROFICIENCY_STYLES: Record<string, { bg: string; text: string; glow: string }> = {
+  beginner:     { bg: 'rgba(251, 191, 36, 0.15)', text: '#fbbf24', glow: 'rgba(251, 191, 36, 0.3)' },
+  intermediate: { bg: 'rgba(59, 130, 246, 0.15)', text: '#60a5fa', glow: 'rgba(59, 130, 246, 0.3)' },
+  proficient:   { bg: 'rgba(52, 211, 153, 0.15)', text: '#34d399', glow: 'rgba(52, 211, 153, 0.3)' },
+};
 
 // ─── Component ───────────────────────────────────────────────────────────────
 
-export default function SkillTechHex({ tech, isExiting = false }: SkillTechHexProps) {
+export default function SkillTechHex({ tech }: { tech: TechSkill }) {
+  const proficiency = tech.category?.toLowerCase();
+  const badge = proficiency ? PROFICIENCY_STYLES[proficiency] : null;
+
   return (
-    <div className="group relative w-full h-full">
-      {/* Frosted glass blur layer */}
-      <div className="hex-glass-blur" />
-
-      {/* Hexagonal SVG outline */}
-      <svg
-        viewBox="0 0 190 212"
-        preserveAspectRatio="none"
-        className="absolute inset-0 w-full h-full pointer-events-none"
+    <div className="hex-content">
+      {/* Tech Icon/Logo */}
+      <div
+        className="w-[45px] h-[45px] rounded-[12px] flex items-center justify-center text-xl shadow-lg transition-transform duration-300 group-hover:scale-110 shrink-0"
+        style={{
+          backgroundColor: tech.color,
+          boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
+        }}
       >
-        <path
-          d={HEX_SVG_PATH}
-          fill="rgba(255,255,255,0.05)"
-          stroke="rgba(255,255,255,0.1)"
-          strokeWidth="1"
-          className={isExiting ? '' : 'transition-all duration-[400ms] ease-[cubic-bezier(0.25,0.46,0.45,0.94)] group-hover:fill-[rgba(255,255,255,0.1)] group-hover:stroke-[rgba(255,255,255,0.2)]'}
-        />
-      </svg>
+        {tech.logo?.url ? (
+          <img
+            src={`${STRAPI_URL}${tech.logo.url}`}
+            alt={tech.name}
+            className="w-[25px] h-[25px] object-contain"
+          />
+        ) : (
+          <span>{tech.icon || '⚡'}</span>
+        )}
+      </div>
 
-      {/* Content */}
-      <div className="hex-content">
-        {/* Tech Icon/Logo — gradient rounded square */}
+      {/* Tech Name */}
+      <div className="text-[12px] font-bold text-white text-center mt-1 shrink-0">
+        {tech.name}
+      </div>
+
+      {/* Description */}
+      <div className="text-[9px] text-white/70 text-center leading-[1.2] shrink-0">
+        {tech.description}
+      </div>
+
+      {/* Proficiency Badge */}
+      {badge && proficiency && (
         <div
-          className="w-[45px] h-[45px] rounded-[12px] flex items-center justify-center text-xl shadow-lg transition-transform duration-300 group-hover:scale-110 shrink-0"
+          className="mt-1 rounded-full text-[9px] font-bold uppercase tracking-wider shrink-0 transition-all duration-300"
           style={{
-            background: `linear-gradient(135deg, ${tech.color} 0%, ${adjustColor(tech.color, -20)} 100%)`,
-            boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
+            padding: '5px 14px',
+            backgroundColor: badge.bg,
+            color: badge.text,
+            border: `1px solid ${badge.text}30`,
+            boxShadow: `0 0 8px ${badge.glow}`,
+            letterSpacing: '0.08em'
           }}
         >
-          {tech.logo?.url ? (
-            <img
-              src={`${STRAPI}${tech.logo.url}`}
-              alt={tech.name}
-              className="w-[25px] h-[25px] object-contain"
-            />
-          ) : (
-            <span>{tech.icon || '⚡'}</span>
-          )}
+          {proficiency}
         </div>
-
-        {/* Tech Name */}
-        <div className="text-[12px] font-bold text-white text-center mt-1 shrink-0">
-          {tech.name}
-        </div>
-
-        {/* Description */}
-        <div className="text-[9px] text-white/70 text-center leading-[1.2] shrink-0">
-          {tech.description}
-        </div>
-      </div>
+      )}
     </div>
   );
 }

@@ -10,7 +10,7 @@
 'use client';
 
 import React from 'react';
-import { adjustColor } from '@/lib/utils';
+
 
 // ─── Props ───────────────────────────────────────────────────────────────────
 
@@ -41,7 +41,7 @@ export default function ResumeHex({ resume, onDownload }: ResumeHexProps) {
       <div 
         className="w-[50px] h-[50px] rounded-[12px] flex items-center justify-center text-2xl shadow-lg shrink-0 transition-transform duration-300 group-hover:scale-110"
         style={{ 
-          background: `linear-gradient(135deg, ${resume.color} 0%, ${adjustColor(resume.color, -20)} 100%)`,
+          backgroundColor: resume.color,
           boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
         }}
       >

@@ -31,20 +31,7 @@ export const DEFAULT_BOTTOM_SKILLS = [
   { name: 'Jenkins', description: 'Automation server', icon: '🔧', color: '#d24939' },
 ];
 
-// ─── Types ───────────────────────────────────────────────────────────────────
-
-export interface Skill {
-  id: number;
-  name: string;
-  description: string;
-  type?: 'skills_top' | 'skills_bottom' | 'career';
-  category?: string;
-  color: string;
-  icon?: string;
-  logo?: { url: string };
-  attachments?: Array<{ id: number; label: string; file: { url: string }; }>;
-  order: number;
-}
+import type { Skill } from '@/types';
 
 // ─── Component ───────────────────────────────────────────────────────────────
 
@@ -64,5 +51,8 @@ export default function SkillsClient({ skills }: { skills: Skill[] }) {
     return <SkillsMobile careerSkills={careerSkills} topSkills={topSkills} bottomSkills={bottomSkills} />;
   }
 
-  return <SkillsDesktop careerSkills={careerSkills} topSkills={topSkills} bottomSkills={bottomSkills} />;
+  // Combine top and bottom for desktop
+  const techSkills = [...topSkills, ...bottomSkills];
+
+  return <SkillsDesktop careerSkills={careerSkills} techSkills={techSkills} />;
 }

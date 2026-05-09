@@ -38,6 +38,8 @@ export interface GridConfig {
   cols: number;
   /** Gap between hexagons in pixels */
   gap: number;
+  /** Divisor used to scale the hexagon width based on viewport width (e.g. 4.27 for large, 5.69 for small). Defaults to 4.27. */
+  scaleDivisor?: number;
 }
 
 // ─── Layout Computation ──────────────────────────────────────────────────────
@@ -47,7 +49,7 @@ export interface GridConfig {
  *
  * @param viewportWidth  - Window inner width in pixels
  * @param viewportHeight - Window inner height in pixels
- * @param config         - Grid configuration (rows, cols, gap)
+ * @param config         - Grid configuration (rows, cols, gap, scaleDivisor)
  * @returns Layout measurements for positioning hexagons
  */
 export function computeHexLayout(
@@ -55,10 +57,11 @@ export function computeHexLayout(
   viewportHeight: number,
   config: GridConfig
 ): HexLayout {
-  const { rows, cols, gap } = config;
+  const { rows, cols, gap, scaleDivisor = 4.27 } = config;
   
-  // Base hex width is 1/4.27 of viewport (25% smaller than original 1/3.2)
-  let hexWidth = Math.floor(viewportWidth / 4.27);
+  // Base hex width scaled by the divisor
+  let hexWidth = Math.floor(viewportWidth / scaleDivisor);
+
   
   /**
    * Chromium Bug Fix: Chrome snaps mask/clip boundaries to physical integers
@@ -102,12 +105,12 @@ export function computeHexLayout(
  * Calculate X position for a hexagon in the grid.
  * Odd rows are offset by half a hex width for the honeycomb pattern.
  *
- * @param row        - Row index (0-based)
- * @param col        - Column index (0-based)
+ * @param row         - Row index (0-based)
+ * @param col         - Column index (0-based)
  * @param hexSpacingX - Horizontal spacing between hex centers
- * @param setIndex   - Which set (for infinite carousel: 0, 1, or 2)
- * @param setWidth   - Width of one complete set
- * @returns X position in pixels
+ * @param setIndex    - Which set (for infinite carousel: 0, 1, or 2)
+ * @param setWidth    - Width of one complete set
+ * @returns X position in pixels (without any additional padding)
  */
 export function calculateHexX(
   row: number,
@@ -117,10 +120,10 @@ export function calculateHexX(
   setWidth: number
 ): number {
   // Honeycomb offset: odd rows shift right by half spacing
-  const rowOffset = row % 2 === 1 ? hexSpacingX / 2 : 0;
+  const rowOffset = (row % 2 === 1) ? (hexSpacingX / 2) : 0;
   
-  // Base position within the set (shifted left by one hex for visual padding)
-  const baseX = col * hexSpacingX + rowOffset - hexSpacingX;
+  // Base position within the set
+  const baseX = col * hexSpacingX + rowOffset;
   
   // Add set offset for carousel duplication
   const setOffset = setIndex * setWidth;

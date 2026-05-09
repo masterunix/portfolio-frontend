@@ -1,14 +1,17 @@
 'use client';
 
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { adjustColor } from '@/lib/utils';
+
 import { computeHexLayout, calculateHexX, calculateHexY } from '@/lib/layoutUtils';
 import { useCarousel } from '@/hooks/useCarousel';
 import CarouselHex from '@/components/CarouselHex';
+import HexShell from '@/components/HexShell';
 import CareerSkillHex from '@/components/CareerSkillHex';
 import SkillTechHex from '@/components/SkillTechHex';
-import { Skill, DEFAULT_TOP_SKILLS, DEFAULT_BOTTOM_SKILLS } from './SkillsClient';
+import Footer from '@/components/Footer';
+import type { Skill, TechSkill } from '@/types';
 
 const GRID_CONFIG = { rows: 3, cols: 14, gap: 20 };
 const NUM_SETS = 3;
@@ -21,23 +24,19 @@ interface GridItem {
   x: number;
   y: number;
   isCareer: boolean;
-  data: Skill | typeof DEFAULT_TOP_SKILLS[0];
+  data: Skill | TechSkill;
 }
 
 interface SkillsDesktopProps {
   careerSkills: Skill[];
-  topSkills: Skill[];
-  bottomSkills: Skill[];
+  techSkills: TechSkill[];
 }
 
-export default function SkillsDesktop({ careerSkills, topSkills, bottomSkills }: SkillsDesktopProps) {
+export default function SkillsDesktop({ careerSkills = [], techSkills = [] }: SkillsDesktopProps) {
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
   const [isExiting, setIsExiting] = useState(false);
-
-  const topTech = topSkills.length > 0 ? topSkills : DEFAULT_TOP_SKILLS;
-  const bottomTech = bottomSkills.length > 0 ? bottomSkills : DEFAULT_BOTTOM_SKILLS;
 
   const layout = useMemo(() => {
     if (typeof window === 'undefined') return null;
@@ -45,7 +44,7 @@ export default function SkillsDesktop({ careerSkills, topSkills, bottomSkills }:
   }, [mounted]);
 
   const { carouselOffset, navigateToItem } = useCarousel({
-    itemCount: careerSkills.length,
+    itemCount: careerSkills.length || 1,
     itemSpacing: layout?.hexSpacingX || 0,
     setWidth: layout?.setWidth || 0,
     autoScrollSpeed: 0.39,
@@ -65,27 +64,35 @@ export default function SkillsDesktop({ careerSkills, topSkills, bottomSkills }:
     if (!layout) return [];
     const items: GridItem[] = [];
     const { hexSpacingX, hexSpacingY, startY, setWidth } = layout;
+    const careerLen = careerSkills.length || 1;
+    const techLen = techSkills.length || 1;
 
     for (let setIndex = 0; setIndex < NUM_SETS; setIndex++) {
       for (let row = 0; row < GRID_CONFIG.rows; row++) {
         for (let col = 0; col < GRID_CONFIG.cols; col++) {
-          let data: Skill | typeof DEFAULT_TOP_SKILLS[0];
+          let data: Skill | TechSkill;
           let isCareer = false;
-          if (row === 1) { data = careerSkills[col % careerSkills.length]; isCareer = true; }
-          else if (row === 0) { data = topTech[col % topTech.length]; }
-          else { data = bottomTech[col % bottomTech.length]; }
-
-          items.push({
-            id: `${setIndex}-${row}-${col}`, row, col, setIndex,
-            x: calculateHexX(row, col, hexSpacingX, setIndex, setWidth),
-            y: calculateHexY(row, hexSpacingY, startY),
-            isCareer, data
-          });
+          
+          if (row === 1) {
+            data = careerSkills[col % careerLen] || careerSkills[0];
+            isCareer = true;
+          } else {
+            data = techSkills[col % techLen] || techSkills[0];
+          }
+          
+          if (data) {
+            items.push({
+              id: `${setIndex}-${row}-${col}`, row, col, setIndex,
+              x: calculateHexX(row, col, hexSpacingX, setIndex, setWidth) - hexSpacingX,
+              y: calculateHexY(row, hexSpacingY, startY),
+              isCareer, data
+            });
+          }
         }
       }
     }
     return items;
-  }, [layout, careerSkills, topTech, bottomTech]);
+  }, [layout, careerSkills, techSkills]);
 
   if (!mounted || !layout) return null;
 
@@ -100,27 +107,34 @@ export default function SkillsDesktop({ careerSkills, topSkills, bottomSkills }:
       >
         <h1 className="text-white text-4xl font-bold tracking-wide drop-shadow-[0_2px_8px_rgba(0,0,0,0.7)] whitespace-nowrap"
           style={{ fontFamily: "'Inter', sans-serif", marginBottom: '12px' }}>
-          Experience and Skills
+          Experience &amp; Skills
         </h1>
-        <div className="back-button-glass"><a href="/" onClick={handleBack}>← Back to Home</a></div>
+        <div className="back-button-glass">
+          <Link href="/" onClick={handleBack}>← Back to Home</Link>
+        </div>
       </header>
 
       <div className="absolute inset-0">
         {gridItems.map((item) => (
-          <CarouselHex key={item.id} baseX={item.x} y={item.y} width={hexWidth} height={hexHeight}
+          <CarouselHex
+            key={item.id} baseX={item.x} y={item.y} width={hexWidth} height={hexHeight}
             row={item.row} col={item.col} setIndex={item.setIndex}
             carouselOffset={carouselOffset} totalWidth={totalWidth}
-            hexSpacing={hexSpacingX} isExiting={isExiting}>
-            {item.isCareer ? (
-              <CareerSkillHex skill={item.data as Skill} isExiting={isExiting} />
-            ) : (
-              <SkillTechHex tech={item.data} isExiting={isExiting} />
-            )}
+            hexSpacing={hexSpacingX} isExiting={isExiting}
+          >
+            <HexShell isExiting={isExiting}>
+              {item.isCareer ? (
+                <CareerSkillHex skill={item.data as Skill} />
+              ) : (
+                <SkillTechHex tech={item.data as TechSkill} />
+              )}
+            </HexShell>
           </CarouselHex>
         ))}
       </div>
 
-      <nav className="fixed left-1/2 -translate-x-1/2 flex items-center rounded-[25px] z-[1000]"
+      <nav
+        className="fixed left-1/2 -translate-x-1/2 flex items-center rounded-[25px] z-[1000]"
         style={{
           bottom: 125, gap: '8px', padding: '12px 24px',
           opacity: isExiting ? undefined : 0,
@@ -131,7 +145,7 @@ export default function SkillsDesktop({ careerSkills, topSkills, bottomSkills }:
           boxShadow: '0 8px 32px 0 rgba(0,0,0,0.37),inset 0 1px 0 0 rgba(255,255,255,0.1),0 0 20px rgba(255,255,255,0.1)',
           justifyContent: 'center', alignItems: 'center'
         }}
-        aria-label="Skills navigation"
+        aria-label="Skill navigation"
       >
         {careerSkills.map((skill, index) => (
           <button key={skill.id} onClick={() => navigateToItem(index)} title={skill.name}
@@ -140,7 +154,7 @@ export default function SkillsDesktop({ careerSkills, topSkills, bottomSkills }:
             style={{
               width: 32, height: 32, borderRadius: 8,
               border: index === activeIndex ? '2px solid rgba(255,255,255,0.5)' : '2px solid rgba(255,255,255,0.2)',
-              background: `linear-gradient(135deg,${skill.color} 0%,${adjustColor(skill.color, -20)} 100%)`,
+              backgroundColor: skill.color,
               boxShadow: index === activeIndex
                 ? `0 0 20px ${skill.color}80,0 0 40px ${skill.color}40,0 4px 12px rgba(0,0,0,0.4),inset 0 1px 0 0 rgba(255,255,255,0.2)`
                 : '0 2px 8px rgba(0,0,0,0.3)',
@@ -148,8 +162,21 @@ export default function SkillsDesktop({ careerSkills, topSkills, bottomSkills }:
             }}
           >
             <span>{skill.icon}</span>
-            <div className="absolute bottom-full mb-2 px-3 py-1.5 rounded-md text-xs font-medium whitespace-nowrap bg-black/90 text-white left-1/2 -translate-x-1/2 opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity">
-              {skill.name}
+            <div
+              className="absolute bottom-full mb-3 left-1/2 -translate-x-1/2 opacity-0 pointer-events-none group-hover:opacity-100 transition-all duration-300 group-hover:-translate-y-1"
+              style={{
+                minWidth: '140px', maxWidth: '200px', padding: '10px 14px',
+                borderRadius: '12px',
+                background: 'linear-gradient(135deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.04) 100%)',
+                backdropFilter: 'blur(20px) saturate(180%)',
+                WebkitBackdropFilter: 'blur(20px) saturate(180%)',
+                border: '1px solid rgba(255,255,255,0.15)',
+                boxShadow: `0 8px 32px rgba(0,0,0,0.4), 0 0 16px ${skill.color}20`
+              }}
+            >
+              <div style={{ width: '100%', height: '2px', borderRadius: '1px', backgroundColor: skill.color, marginBottom: '6px', opacity: 0.7 }} />
+              <div className="text-[11px] font-bold text-white whitespace-nowrap text-center">{skill.name}</div>
+              <div className="text-[9px] text-white/60 text-center mt-0.5 leading-tight">{skill.description}</div>
             </div>
           </button>
         ))}
@@ -159,15 +186,15 @@ export default function SkillsDesktop({ careerSkills, topSkills, bottomSkills }:
         style={{ bottom: 80, opacity: isExiting ? undefined : 0,
           animation: isExiting ? 'fadeOut 0.5s ease-out forwards' : 'fadeIn 0.5s ease-out forwards 800ms',
           fontSize: '12px', letterSpacing: '0.5px', fontWeight: 400, textAlign: 'center' }}>
-        Use arrow keys to control the skills carousel
+        Use arrow keys to navigate experiences
       </div>
 
-      <footer className="fixed left-1/2 -translate-x-1/2 z-50 text-center"
+      <Footer
+        variant="full"
+        className="fixed left-1/2 -translate-x-1/2 z-50 text-center"
         style={{ bottom: 10, opacity: isExiting ? undefined : 0,
-          animation: isExiting ? 'fadeOut 0.5s ease-out forwards' : 'fadeIn 0.5s ease-out forwards 1000ms' }}>
-        <p className="text-[12px] text-white/50 m-0 mb-1">© 2025 - 2026 Vatsal Goyal. All rights reserved.</p>
-        <p className="text-[10px] text-white/40 m-0">This website uses Strapi, managed by <a href="https://github.com/masterunix/gleck" target="_blank" rel="noopener noreferrer" className="underline hover:text-white/60 transition-colors">Gleck</a>, my Personal AI Agent.</p>
-      </footer>
+          animation: isExiting ? 'fadeOut 0.5s ease-out forwards' : 'fadeIn 0.5s ease-out forwards 1000ms' }}
+      />
     </main>
   );
 }

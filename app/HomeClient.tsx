@@ -10,37 +10,10 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
-import NavHexagon from '@/components/NavHexagon';
-import Hexagon from '@/components/Hexagon';
-import { useTypewriter } from '@/hooks/useTypewriter';
 import { useIsMobile } from '@/hooks/useIsMobile';
-import { navigationContent, skipList, NavigationItem } from '@/lib/constants';
-import { adjustColor } from '@/lib/utils';
 import HomeMobile from './HomeMobile';
 import HomeDesktop from './HomeDesktop';
-
-// ─── Types ───────────────────────────────────────────────────────────────────
-
-interface HomeMessage {
-  id: number;
-  text: string;
-  link?: string;
-  order: number;
-}
-
-interface GridItem {
-  id: string;
-  row: number;
-  col: number;
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  delay: number;
-  /** Navigation data — undefined for empty/decorative hexagons */
-  navData?: NavigationItem;
-}
+import type { HomeMessage } from '@/types';
 
 // ─── Component ───────────────────────────────────────────────────────────────
 

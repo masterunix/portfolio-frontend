@@ -1,13 +1,18 @@
 'use client';
 
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+
+import { computeHexLayout, calculateHexX, calculateHexY } from '@/lib/layoutUtils';
 import Hexagon from '@/components/Hexagon';
 import DSAPlatformHex from '@/components/DSAPlatformHex';
 import DSAConceptHex from '@/components/DSAConceptHex';
-import { DSAPlatform, DSA_CONCEPTS } from './DSAClient';
+import Footer from '@/components/Footer';
+import type { DSAPlatform, DSAConcept } from '@/types';
+import { DSA_CONCEPTS } from './DSAClient';
 
-const GRID_CONFIG = { rows: 3, gap: 20 };
+const GRID_CONFIG = { rows: 3, cols: 5, gap: 20 };
 
 interface GridItem {
   id: string;
@@ -15,34 +20,22 @@ interface GridItem {
   col: number;
   x: number;
   y: number;
-  delay: number;
-  type: 'platform' | 'concept';
-  data: DSAPlatform | typeof DSA_CONCEPTS[0];
+  isPlatform: boolean;
+  data: DSAPlatform | DSAConcept;
 }
 
 interface DSADesktopProps {
   platforms: DSAPlatform[];
 }
 
-export default function DSADesktop({ platforms }: DSADesktopProps) {
+export default function DSADesktop({ platforms = [] }: DSADesktopProps) {
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
   const [isExiting, setIsExiting] = useState(false);
 
   const layout = useMemo(() => {
     if (typeof window === 'undefined') return null;
-    const vw = window.innerWidth;
-    const vh = window.innerHeight;
-    const hexWidth = Math.floor(vw / 4.27);
-    const hexHeight = Math.floor(hexWidth * 1.1547);
-    const hexSpacingX = hexWidth + GRID_CONFIG.gap;
-    const hexSpacingY = hexHeight * 0.75 + GRID_CONFIG.gap;
-    const maxCols = 5;
-    const gridWidth = (maxCols - 1) * hexSpacingX + hexWidth;
-    const gridHeight = (GRID_CONFIG.rows - 1) * hexSpacingY + hexHeight;
-    const startX = (vw - gridWidth) / 2;
-    const startY = (vh - gridHeight) / 2;
-    return { hexWidth, hexHeight, hexSpacingX, hexSpacingY, startX, startY };
+    return computeHexLayout(window.innerWidth, window.innerHeight, GRID_CONFIG);
   }, [mounted]);
 
   useEffect(() => { setMounted(true); }, []);
@@ -50,35 +43,64 @@ export default function DSADesktop({ platforms }: DSADesktopProps) {
   const handleBack = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
     setIsExiting(true);
-    const maxDelay = (5 + GRID_CONFIG.rows) * 50;
+    const maxDelay = (GRID_CONFIG.cols + GRID_CONFIG.rows) * 50;
     setTimeout(() => router.push('/'), maxDelay + 200);
   }, [router]);
-
-  const handleVisitPlatform = useCallback((e: React.MouseEvent, url: string) => {
-    e.stopPropagation();
-    window.open(url, '_blank');
-  }, []);
 
   const gridItems = useMemo((): GridItem[] => {
     if (!layout) return [];
     const items: GridItem[] = [];
+    const { hexSpacingX, hexSpacingY, startY, hexWidth } = layout;
+
     for (let row = 0; row < GRID_CONFIG.rows; row++) {
-      const colsInRow = (row === 1) ? 4 : 5;
-      for (let col = 0; col < colsInRow; col++) {
-        const offsetX = (row % 2 === 1) ? layout.hexSpacingX / 2 : 0;
-        const x = layout.startX + col * layout.hexSpacingX + offsetX;
-        const y = layout.startY + row * layout.hexSpacingY;
-        let type: 'platform' | 'concept';
-        let data: DSAPlatform | typeof DSA_CONCEPTS[0];
-        if (row === 1) { type = 'platform'; data = platforms[col]; if (!data) continue; }
-        else { type = 'concept'; const ci = row === 0 ? col : (col + 5); data = DSA_CONCEPTS[ci]; if (!data) continue; }
-        items.push({ id: `${row}-${col}`, row, col, x, y, delay: (col + row) * 0.05, type, data });
+      for (let col = 0; col < GRID_CONFIG.cols; col++) {
+        let data: DSAPlatform | DSAConcept | undefined;
+        let isPlatform = false;
+
+        if (row === 1) {
+          const platformsCount = platforms.length;
+          const startCol = Math.max(0, Math.floor((GRID_CONFIG.cols - platformsCount) / 2));
+          const platformIndex = col - startCol;
+          
+          if (platformIndex >= 0 && platformIndex < platformsCount) {
+            data = platforms[platformIndex];
+            isPlatform = true;
+          }
+        } else if (row === 0) {
+          if (col < 5 && DSA_CONCEPTS[col]) {
+            data = DSA_CONCEPTS[col];
+          }
+        } else if (row === 2) {
+          const conceptIndex = col + 5;
+          if (col < 5 && DSA_CONCEPTS[conceptIndex]) {
+            data = DSA_CONCEPTS[conceptIndex];
+          }
+        }
+
+        if (data) {
+          items.push({
+            id: `${row}-${col}`, row, col,
+            x: calculateHexX(row, col, hexSpacingX, 0, layout.setWidth),
+            y: calculateHexY(row, hexSpacingY, startY),
+            isPlatform, data
+          });
+        }
       }
     }
+    
+    // Centering logic: Match the original gridWidth calculation
+    const windowWidth = typeof window !== 'undefined' ? window.innerWidth : 1200;
+    const gridContentWidth = (GRID_CONFIG.cols - 1) * hexSpacingX + hexWidth;
+    const shiftX = (windowWidth - gridContentWidth) / 2;
+    
+    items.forEach(item => { item.x += shiftX; });
+
     return items;
   }, [layout, platforms]);
 
   if (!mounted || !layout) return null;
+
+  const { hexWidth, hexHeight } = layout;
 
   return (
     <main className="relative w-full h-screen overflow-hidden">
@@ -90,37 +112,41 @@ export default function DSADesktop({ platforms }: DSADesktopProps) {
           style={{ fontFamily: "'Inter', sans-serif", marginBottom: '12px' }}>
           DSA Stats
         </h1>
-        <div className="back-button-glass"><a href="/" onClick={handleBack}>← Back to Home</a></div>
+        <div className="back-button-glass">
+          <Link href="/" onClick={handleBack}>← Back to Home</Link>
+        </div>
       </header>
 
       <div className="absolute inset-0">
         {gridItems.map((item) => {
-          const style = {
-            position: 'absolute' as const,
-            left: `${item.x}px`, top: `${item.y}px`,
-            width: `${layout.hexWidth}px`, height: `${layout.hexHeight}px`
-          };
+          const delay = (item.col + item.row) * 0.05;
           return (
-            <Hexagon key={item.id} delay={item.delay} isExiting={isExiting}
-              className={`transition-all duration-300 ${item.type === 'platform' ? 'cursor-pointer' : ''}`}
-              style={style}
-              onClick={() => { if (item.type === 'platform') window.open((item.data as DSAPlatform).url, '_blank'); }}>
-              {item.type === 'platform' ? (
-                <DSAPlatformHex platform={item.data as DSAPlatform} onVisit={(e) => handleVisitPlatform(e, (item.data as DSAPlatform).url)} />
+            <Hexagon
+              key={item.id} isExiting={isExiting} delay={delay}
+              style={{ position: 'absolute', left: item.x, top: item.y, width: hexWidth, height: hexHeight }}
+            >
+              {item.isPlatform ? (
+                <DSAPlatformHex
+                  platform={item.data as DSAPlatform}
+                  onVisit={(e) => {
+                    e.stopPropagation();
+                    window.open((item.data as DSAPlatform).url, '_blank', 'noopener,noreferrer');
+                  }}
+                />
               ) : (
-                <DSAConceptHex concept={item.data as typeof DSA_CONCEPTS[0]} />
+                <DSAConceptHex concept={item.data as DSAConcept} />
               )}
             </Hexagon>
           );
         })}
       </div>
 
-      <footer
-        className={`fixed left-1/2 -translate-x-1/2 z-50 text-center transition-opacity duration-500 ${isExiting ? 'opacity-0' : ''}`}
-        style={{ bottom: 10, opacity: 0, animation: 'fadeIn 0.5s ease-out forwards', animationDelay: '400ms' }}>
-        <p className="text-[12px] text-white/50 m-0 mb-1">© 2025 - 2026 Vatsal Goyal. All rights reserved.</p>
-        <p className="text-[10px] text-white/40 m-0">This website uses Strapi, managed by <a href="https://github.com/masterunix/gleck" target="_blank" rel="noopener noreferrer" className="underline hover:text-white/60 transition-colors">Gleck</a>, my Personal AI Agent.</p>
-      </footer>
+      <Footer
+        variant="full"
+        className="fixed left-1/2 -translate-x-1/2 z-50 text-center"
+        style={{ bottom: 10, opacity: isExiting ? undefined : 0,
+          animation: isExiting ? 'fadeOut 0.5s ease-out forwards' : 'fadeIn 0.5s ease-out forwards 1000ms' }}
+      />
     </main>
   );
 }

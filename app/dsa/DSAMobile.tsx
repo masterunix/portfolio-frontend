@@ -1,11 +1,12 @@
 'use client';
 
 import React, { useCallback } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { adjustColor } from '@/lib/utils';
-import { DSAPlatform } from './DSAClient';
 
-const STRAPI = process.env.NEXT_PUBLIC_STRAPI_URL || 'http://localhost:1337';
+import Footer from '@/components/Footer';
+import { STRAPI_URL } from '@/lib/api';
+import type { DSAPlatform } from '@/types';
 
 interface DSAMobileProps {
   platforms: DSAPlatform[];
@@ -22,7 +23,7 @@ export default function DSAMobile({ platforms }: DSAMobileProps) {
   return (
     <main className="relative w-full min-h-screen">
       <div className="mobile-header">
-        <a href="/" onClick={handleBack} className="mobile-back">← Back</a>
+        <Link href="/" onClick={handleBack} className="mobile-back">← Back</Link>
         <h1 className="text-white font-bold text-xl mt-3" style={{ fontFamily: "'Inter', sans-serif" }}>
           DSA Stats
         </h1>
@@ -32,7 +33,7 @@ export default function DSAMobile({ platforms }: DSAMobileProps) {
         {/* Platforms */}
         {platforms.map((platform, index) => {
           const logoUrl = platform.logo?.url 
-            ? `${STRAPI}${platform.logo.url}`
+            ? `${STRAPI_URL}${platform.logo.url}`
             : `/${platform.logoPath}`;
 
           return (
@@ -44,7 +45,7 @@ export default function DSAMobile({ platforms }: DSAMobileProps) {
             >
               <div
                 className="mobile-icon"
-                style={{ width: '56px', height: '56px', minWidth: '56px', background: `linear-gradient(135deg, ${platform.color} 0%, ${adjustColor(platform.color, -20)} 100%)` }}
+                style={{ width: '56px', height: '56px', minWidth: '56px', backgroundColor: platform.color }}
               >
                 <img 
                   src={logoUrl} 
@@ -71,9 +72,7 @@ export default function DSAMobile({ platforms }: DSAMobileProps) {
         })}
       </div>
 
-      <footer className="w-full text-center py-6 mt-4 opacity-70">
-        <p className="text-[11px] text-white/50 m-0">© 2025 - 2026 Vatsal Goyal. All rights reserved.</p>
-      </footer>
+      <Footer variant="minimal" className="w-full text-center py-6 mt-4 opacity-70" />
     </main>
   );
 }

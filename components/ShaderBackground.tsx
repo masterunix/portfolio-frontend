@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 import { Canvas, useFrame, extend } from '@react-three/fiber';
 import * as THREE from 'three';
@@ -210,7 +210,7 @@ function AnimatedMesh({ colors, speed, grainIntensity }: AnimatedMeshProps) {
   );
 }
 
-interface BackgroundTheme {
+export interface BackgroundTheme {
   id: number;
   documentId: string;
   name: string;
@@ -228,9 +228,7 @@ interface BackgroundTheme {
   }>;
 }
 
-export default function ShaderBackground() {
-  const [theme, setTheme] = useState<BackgroundTheme | null>(null);
-  const [loading, setLoading] = useState(true);
+export default function ShaderBackground({ theme }: { theme: BackgroundTheme | null }) {
   const pathname = usePathname();
 
   // Determine current page
@@ -241,41 +239,8 @@ export default function ShaderBackground() {
           : pathname.startsWith('/resumes') ? 'resumes'
             : 'all';
 
-  useEffect(() => {
-    // Fetch active theme from Strapi
-    const fetchTheme = async () => {
-      try {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_STRAPI_URL || 'http://localhost:1337'}/api/background-themes?filters[enabled][$eq]=true&sort=order:asc&populate=*`
-        );
-        const data = await response.json();
-
-        console.log('Background theme data:', data);
-
-        if (data.data && data.data.length > 0) {
-          // Find first non-static theme
-          const activeTheme = data.data.find((t: BackgroundTheme) =>
-            t.animationType !== 'static' &&
-            t.slug !== 'default' &&
-            t.slug !== 'background-theme'
-          );
-
-          if (activeTheme) {
-            setTheme(activeTheme);
-          }
-        }
-      } catch (error) {
-        console.warn('Failed to fetch background theme (Strapi might be down):', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchTheme();
-  }, []);
-
-  // Don't render if loading, no theme, or theme is default/static
-  if (loading || !theme) {
+  // Don't render if no theme or theme is default/static
+  if (!theme) {
     return null;
   }
 

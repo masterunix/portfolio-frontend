@@ -10,9 +10,7 @@
 
 import { useState, useEffect } from 'react';
 
-// ─── Constants ───────────────────────────────────────────────────────────────
-
-const STRAPI = process.env.NEXT_PUBLIC_STRAPI_URL || 'http://localhost:1337';
+import { STRAPI_URL } from '@/lib/api';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -57,7 +55,7 @@ export function useGleckData() {
       try {
         // Fetch active notices, sorted by display order
         const noticesRes = await fetch(
-          `${STRAPI}/api/gleck-notices?filters[active][$eq]=true&sort=order:asc`
+          `${STRAPI_URL}/api/gleck-notices?filters[active][$eq]=true&sort=order:asc`
         );
         const noticesData = await noticesRes.json();
 
@@ -72,8 +70,7 @@ export function useGleckData() {
           );
         }
 
-        // Fetch widget settings (single-type in Strapi)
-        const settingsRes = await fetch(`${STRAPI}/api/gleck-setting`);
+        const settingsRes = await fetch(`${STRAPI_URL}/api/gleck-setting`);
         const settingsData = await settingsRes.json();
 
         if (settingsData.data) {

@@ -1,25 +1,22 @@
 /**
- * Hexagon.tsx — Base hexagonal glass component.
+ * Hexagon.tsx — Animated hexagonal glass component.
  *
- * Renders a liquid-glass hexagonal shell consisting of:
- * 1. A backdrop-filter blur layer (`.hex-glass-blur`) clipped to the hex shape
- * 2. An SVG stroke outline for the visible hexagonal border
+ * Combines:
+ * 1. Framer-motion entrance/exit animation (diagonal wave stagger)
+ * 2. HexShell — the visual glass blur + SVG outline
  * 3. A children slot for consumer content (icons, text, buttons)
  *
  * Dimensions are always provided via the `style` prop or parent layout.
- * No hardcoded Tailwind size classes — they conflict with inline styles.
+ * No hardcoded size classes — they conflict with inline styles.
  *
- * Hover visual feedback uses CSS `group` classes so consumers can
- * choose their own interaction feel without framer-motion scale conflicts.
- *
- * Animation: Uses framer-motion for entrance/exit with a diagonal wave
- * delay pattern (col + row stagger).
+ * For carousel pages where CarouselHex handles animation, use
+ * <HexShell> directly instead of this component.
  */
 'use client';
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { HEX_SVG_PATH } from '@/lib/constants';
+import HexShell from './HexShell';
 
 // ─── Props ───────────────────────────────────────────────────────────────────
 
@@ -64,33 +61,9 @@ export default function Hexagon({
       className="relative"
       style={style}
     >
-      {/* Inner wrapper — applies hover effects and click handling */}
-      <div 
-        className={`w-full h-full group ${className} ${onClick ? 'cursor-pointer' : ''}`}
-        onClick={onClick}
-        style={{ pointerEvents: isExiting ? 'none' : 'auto' }}
-      >
-        {/* Frosted glass blur layer — clipped to hex shape via CSS clip-path */}
-        <div className="hex-glass-blur" />
-
-        {/* Hexagonal SVG outline — renders the visible white stroke border */}
-        <svg
-          viewBox="0 0 190 212"
-          className="absolute inset-0 w-full h-full pointer-events-none"
-          preserveAspectRatio="none"
-        >
-          <path
-            d={HEX_SVG_PATH}
-            fill="rgba(255,255,255,0.05)"
-            stroke="rgba(255,255,255,0.1)"
-            strokeWidth="1"
-            className="transition-all duration-[400ms] ease-[cubic-bezier(0.25,0.46,0.45,0.94)] group-hover:fill-[rgba(255,255,255,0.1)] group-hover:stroke-[rgba(255,255,255,0.2)]"
-          />
-        </svg>
-
-        {/* Children slot — consumers own their own layout (icons, text, etc.) */}
+      <HexShell className={className} onClick={onClick} isExiting={isExiting}>
         {children}
-      </div>
+      </HexShell>
     </motion.div>
   );
 }

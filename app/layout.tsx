@@ -17,6 +17,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import ShaderBackground from "@/components/ShaderBackground";
 import GleckNoticeWrapper from "@/components/GleckNoticeWrapper";
+import { getActiveBackgroundTheme } from "@/lib/api";
 
 // ─── Font ────────────────────────────────────────────────────────────────────
 
@@ -45,16 +46,30 @@ export const viewport: Viewport = {
 
 // ─── Layout ──────────────────────────────────────────────────────────────────
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  let theme = null;
+  try {
+    const data = await getActiveBackgroundTheme();
+    if (data && data.length > 0) {
+      theme = data.find((t: any) =>
+        t.animationType !== 'static' &&
+        t.slug !== 'default' &&
+        t.slug !== 'background-theme'
+      ) || null;
+    }
+  } catch (err) {
+    console.warn('Failed to fetch theme in layout:', err);
+  }
+
   return (
     <html lang="en" className={`${inter.variable} h-full antialiased`}>
       <body className="min-h-full bg-black relative">
         {/* WebGL animated gradient — renders behind everything */}
-        <ShaderBackground />
+        <ShaderBackground theme={theme} />
         {/* Gleck AI mascot — persists across all pages */}
         <GleckNoticeWrapper />
         {/* Page content — rendered above the background */}

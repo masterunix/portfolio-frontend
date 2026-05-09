@@ -100,7 +100,6 @@ export function useCarousel({
 
   return {
     carouselOffset,
-    navigateToItem,
-    activeIndex: activeIndexRef.current
+    navigateToItem
   };
 }

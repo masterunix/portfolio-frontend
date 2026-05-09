@@ -13,7 +13,7 @@
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
-const API_URL = process.env.NEXT_PUBLIC_STRAPI_URL || 'http://localhost:1337';
+export const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_URL || 'http://localhost:1337';
 
 // ─── Core Fetch ──────────────────────────────────────────────────────────────
 
@@ -26,7 +26,7 @@ const API_URL = process.env.NEXT_PUBLIC_STRAPI_URL || 'http://localhost:1337';
  * @throws Error if the HTTP response is not OK
  */
 export async function fetchAPI(endpoint: string) {
-  const res = await fetch(`${API_URL}/api/${endpoint}`, {
+  const res = await fetch(`${STRAPI_URL}/api/${endpoint}`, {
     next: { revalidate: 60 }, // ISR: revalidate every 60 seconds
   });
 

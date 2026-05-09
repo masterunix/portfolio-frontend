@@ -10,7 +10,7 @@
 'use client';
 
 import React from 'react';
-import { adjustColor } from '@/lib/utils';
+
 
 // ─── Props ───────────────────────────────────────────────────────────────────
 
@@ -35,7 +35,7 @@ export default function FeedbackHex({ feedbackData, onSendEmail }: FeedbackHexPr
       <div 
         className="w-[50px] h-[50px] rounded-[12px] flex items-center justify-center text-2xl shadow-lg shrink-0 transition-transform duration-300 group-hover:scale-110"
         style={{ 
-          background: `linear-gradient(135deg, ${feedbackData.color} 0%, ${adjustColor(feedbackData.color, -20)} 100%)`,
+          backgroundColor: feedbackData.color,
           boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
         }}
       >
