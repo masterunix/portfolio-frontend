@@ -2,7 +2,7 @@
  * types/index.ts — Canonical type definitions for the portfolio application.
  *
  * All shared interfaces live here. Components import from '@/types'
- * instead of re-declaring their own copies.
+ * instead of re-declaring their own copies..
  */
 
 // ─── CMS Data Types ─────────────────────────────────────────────────────────
