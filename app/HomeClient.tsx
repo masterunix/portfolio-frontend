@@ -17,7 +17,7 @@ import HomeMobile from './HomeMobile';
 import HomeDesktop from './HomeDesktop';
 import type { HomeMessage } from '@/types';
 
-// ─── Component ───────────────────────────────────────────────────────────────
+// ─── Component ──────────────────────────────────────────────────────────────
 
 export default function HomeClient({ messages }: { messages: HomeMessage[] }) {
   const [mounted, setMounted] = useState(false);
