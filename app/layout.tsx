@@ -32,7 +32,7 @@ export const metadata: Metadata = {
   title: "Vatsal Goyal - Portfolio",
   description: "Full-stack developer, AI/ML enthusiast, and problem solver. Explore my projects, skills, and journey.",
   icons: {
-    icon: "/website logo.png",
+    icon: "/favicon.ico",
   },
 };
 
