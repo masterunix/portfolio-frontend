@@ -5,7 +5,7 @@
  * Mobile:  Vertically scrollable card list with glass effect.
  *
  * Navigation is handled by this component (not by NavHexagon) so that
- * exit animations can run before the route change occurs.
+ * exit animations can run before the route change occurs...
  */
 'use client';
 
