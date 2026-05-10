@@ -42,22 +42,22 @@ export async function fetchAPI(endpoint: string) {
 
 /** Fetches all projects with logos, sorted by display order */
 export async function getProjects() {
-  return fetchAPI('projects?sort=order:asc&populate=logo');
+  return fetchAPI('projects?sort=order:asc&populate[logo][populate]=*');
 }
 
 /** Fetches all skills with logos and nested attachment files, sorted by order */
 export async function getSkills() {
-  return fetchAPI('skills?sort=order:asc&populate[0]=logo&populate[1]=attachments.file');
+  return fetchAPI('skills?sort=order:asc&populate[logo][populate]=*&populate[attachments][populate]=file');
 }
 
 /** Fetches all resumes with all relations populated, sorted by order */
 export async function getResumes() {
-  return fetchAPI('resumes?sort=order:asc&populate=*');
+  return fetchAPI('resumes?sort=order:asc&populate[file][populate]=*');
 }
 
 /** Fetches all DSA platforms with logos, sorted by order */
 export async function getDSAPlatforms() {
-  return fetchAPI('dsa-platforms?sort=order:asc&populate=logo');
+  return fetchAPI('dsa-platforms?sort=order:asc&populate[logo][populate]=*');
 }
 
 /** Fetches home page typewriter messages, sorted by order */
@@ -67,10 +67,10 @@ export async function getHomeMessages() {
 
 /** Fetches navigation items with icons/logos, sorted by order */
 export async function getNavigationItems() {
-  return fetchAPI('navigation-items?sort=order:asc&populate[0]=icon&populate[1]=logo');
+  return fetchAPI('navigation-items?sort=order:asc&populate[icon][populate]=*&populate[logo][populate]=*');
 }
 
 /** Fetches the active (enabled) background theme with all relations */
 export async function getActiveBackgroundTheme() {
-  return fetchAPI('background-themes?filters[enabled][$eq]=true&sort=order:asc&populate=*');
+  return fetchAPI('background-themes?filters[enabled][$eq]=true&sort=order:asc&populate[colorPalettes][populate]=*');
 }
