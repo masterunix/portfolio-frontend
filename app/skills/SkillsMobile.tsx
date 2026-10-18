@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 import Footer from '@/components/Footer';
-import { getStrapiMedia } from '@/lib/api';
+import ItemIcon from '@/components/ItemIcon';
 import type { Skill } from '@/types';
 
 interface SkillsMobileProps {
@@ -43,7 +43,7 @@ export default function SkillsMobile({ careerSkills, topSkills, bottomSkills }: 
           className="mobile-icon"
           style={{ backgroundColor: skill.color }}
         >
-          <span className="text-xl">{skill.icon || '📦'}</span>
+          <ItemIcon logo={skill.logo} icon={<span className="text-xl">{skill.icon || '📦'}</span>} alt={skill.name} size={28} />
         </div>
         <div className="mobile-card-text">
           <div className="mobile-card-title">{skill.name}</div>
@@ -53,13 +53,12 @@ export default function SkillsMobile({ careerSkills, topSkills, bottomSkills }: 
 
       <div className="mobile-card-desc" style={{ marginTop: '8px' }}>{skill.description}</div>
 
-      {skill.attachments && skill.attachments.length > 0 && (
+      {skill.attachments.length > 0 && (
         <div className="mobile-card-actions">
           {skill.attachments
-            .filter((att) => att.file?.url)
             .map((att) => (
               <button key={att.id} className="hex-button"
-                onClick={() => window.open(getStrapiMedia(att.file.url), '_blank')}>
+                onClick={() => window.open(att.file.url, '_blank')}>
                 {att.label}
               </button>
             ))}

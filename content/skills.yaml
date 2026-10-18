@@ -1,0 +1,78 @@
+# Skills and experience.
+# type: career (default; the middle row of /skills), skills_top or skills_bottom (the outer rows)
+# category: beginner, intermediate, proficient or expert (the badge on skill tiles)
+# name, description, color: required
+# icon: an emoji or short text, shown when there is no logo (default 📦, ⚡ on skill tiles)
+# logo: an image in public/
+# attachments: buttons that open a file: { label (default "View File"), file (required) }
+#
+# Entries show in `order` (lowest first, default 0); equal orders keep the order of this file.
+# `draft: true` hides an entry, like an unpublished entry in Strapi.
+# Media paths point into public/ (e.g. /media/logos/leetcode.png) and must exist, or the build fails.
+# Links must start with https://, http://, mailto:, tel:, / or #.
+# Field rules: lib/content.ts.
+
+- name: Dxpress.JS
+  description: DNot Node
+  type: skills_bottom
+  category: intermediate
+  color: yellow
+  icon: e
+  order: 0
+- name: PREACT
+  description: EPPxpertedededed
+  type: skills_bottom
+  category: proficient
+  color: red
+  icon: x
+  order: 0
+- name: Lode.JS
+  description: Lxpertededededsdfasdf
+  type: skills_top
+  category: intermediate
+  color: pink
+  icon: x
+  order: 0
+- name: Losdfde.JS
+  description: Lxpertedededed
+  type: skills_top
+  category: intermediate
+  color: red
+  icon: x
+  order: 0
+- name: Pigispheresasdfasdfa
+  description: Punfd
+  type: career
+  color: White
+  logo: /media/logos/digisphere.jpeg
+  attachments:
+    - label: One
+      file: /media/attachments/10th.pdf
+    - label: Two
+      file: /media/attachments/6th-sem.pdf
+  order: 0
+- name: Pigispheres
+  description: Punior Web Developer and Prof. Video Editor
+  type: career
+  color: White
+  icon: D
+  logo: /media/logos/digisphere.jpeg
+  attachments:
+    - label: One
+      file: /media/attachments/10th.pdf
+    - label: Two
+      file: /media/attachments/6th-sem.pdf
+  order: 0
+- name: LLXebia
+  description: "Created Job Nest "
+  type: career
+  color: Purple
+  icon: X
+  attachments:
+    - label: View File
+      file: /media/attachments/10th.pdf
+    - label: View File
+      file: /media/attachments/codef.webp
+    - label: View File
+      file: /media/attachments/6th-sem.pdf
+  order: 1

@@ -5,13 +5,13 @@
  * Used in the Skills carousel (top and bottom rows).
  *
  * Shows the tech icon/logo, name, description, and proficiency level badge.
- * Supports both emoji icons and Strapi-hosted logos.
+ * Shows the logo, or the icon when there is none.
  */
 'use client';
 
 import React from 'react';
 
-import { getStrapiMedia } from '@/lib/api';
+import ItemIcon from '@/components/ItemIcon';
 import type { TechSkill } from '@/types';
 
 // ─── Proficiency Badge Config ────────────────────────────────────────────────
@@ -20,6 +20,7 @@ const PROFICIENCY_STYLES: Record<string, { bg: string; text: string; glow: strin
   beginner:     { bg: 'rgba(251, 191, 36, 0.15)', text: '#fbbf24', glow: 'rgba(251, 191, 36, 0.3)' },
   intermediate: { bg: 'rgba(59, 130, 246, 0.15)', text: '#60a5fa', glow: 'rgba(59, 130, 246, 0.3)' },
   proficient:   { bg: 'rgba(52, 211, 153, 0.15)', text: '#34d399', glow: 'rgba(52, 211, 153, 0.3)' },
+  expert:       { bg: 'rgba(192, 132, 252, 0.15)', text: '#c084fc', glow: 'rgba(192, 132, 252, 0.3)' },
 };
 
 // ─── Component ───────────────────────────────────────────────────────────────
@@ -38,15 +39,7 @@ export default function SkillTechHex({ tech }: { tech: TechSkill }) {
           boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
         }}
       >
-        {tech.logo?.url ? (
-          <img
-            src={getStrapiMedia(tech.logo.url)}
-            alt={tech.name}
-            className="w-[25px] h-[25px] object-contain"
-          />
-        ) : (
-          <span>{tech.icon || '⚡'}</span>
-        )}
+        <ItemIcon logo={tech.logo} icon={<span>{tech.icon || '⚡'}</span>} alt={tech.name} size={25} />
       </div>
 
       {/* Tech Name */}

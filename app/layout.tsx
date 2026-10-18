@@ -15,9 +15,9 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import ShaderBackground, { type BackgroundTheme } from "@/components/ShaderBackground";
+import ShaderBackground from "@/components/ShaderBackground";
 import GleckNoticeWrapper from "@/components/GleckNoticeWrapper";
-import { getActiveBackgroundTheme } from "@/lib/api";
+import { getBackgroundTheme, getGleckNotices, getGleckSettings } from "@/lib/content";
 
 // ─── Font ────────────────────────────────────────────────────────────────────
 
@@ -45,24 +45,12 @@ export const viewport: Viewport = {
 
 // ─── Layout ──────────────────────────────────────────────────────────────────
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  let theme: BackgroundTheme | null = null;
-  try {
-    const data: BackgroundTheme[] = await getActiveBackgroundTheme();
-    if (data && data.length > 0) {
-      theme = data.find((t) =>
-        t.animationType !== 'static' &&
-        t.slug !== 'default' &&
-        t.slug !== 'background-theme'
-      ) || null;
-    }
-  } catch (err) {
-    console.warn('Failed to fetch theme in layout:', err);
-  }
+  const theme = getBackgroundTheme();
 
   return (
     <html lang="en" className={`${inter.variable} h-full antialiased`}>
@@ -70,7 +58,7 @@ export default async function RootLayout({
         {/* WebGL animated gradient — renders behind everything */}
         <ShaderBackground theme={theme} />
         {/* Gleck AI mascot — persists across all pages */}
-        <GleckNoticeWrapper />
+        <GleckNoticeWrapper notices={getGleckNotices()} settings={getGleckSettings()} />
         {/* Page content — rendered above the background */}
         <div className="relative z-10">
           {children}

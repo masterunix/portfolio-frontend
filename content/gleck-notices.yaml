@@ -1,0 +1,24 @@
+# Gleck's notices (the widget at the bottom left).
+# text: required; may use <b> <i> <em> <strong> <a> <br> <p> <span>
+# link: makes the notice clickable. active: false hides it (default true).
+#
+# Entries show in `order` (lowest first, default 0); equal orders keep the order of this file.
+# `draft: true` hides an entry, like an unpublished entry in Strapi.
+# Media paths point into public/ (e.g. /media/logos/leetcode.png) and must exist, or the build fails.
+# Links must start with https://, http://, mailto:, tel:, / or #.
+# Field rules: lib/content.ts.
+
+- text: HIHIHIHHIHIHIHHIHIHIIHI
+  active: true
+  order: 0
+- text: "ajdsifjaisd jfiudsfij;asdilf kj;f lkasdfsdf d. la;jd "
+  link: https://google.com
+  active: true
+  order: 1
+- text: herehehrherhehre
+  link: https://www.google.com
+  active: true
+  order: 2
+- text: BBBYBYBBBBYBYYB
+  active: true
+  order: 4

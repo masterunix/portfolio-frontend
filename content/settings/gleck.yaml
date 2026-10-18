@@ -1,0 +1,6 @@
+# The Gleck widget's "know more" link: under the notices on desktop, and the eyes on mobile.
+# knowMoreLink: required, a link (https://…). knowMoreText: required.
+# Field rules: lib/content.ts.
+
+knowMoreLink: https://github.com/masterunix/gleck
+knowMoreText: Updates are managed by Gleck, my AI Assistant. Click to learn more.

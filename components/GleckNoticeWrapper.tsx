@@ -2,10 +2,10 @@
  * GleckNoticeWrapper.tsx — Persistent AI assistant notification widget.
  *
  * Desktop: Full notice widget with eyes, expandable notices, enlarge view.
- * Mobile:  Eyes-only with a link to Gleck's GitHub repository.
+ * Mobile:  Eyes-only with the "know more" link (Gleck's GitHub repository).
  *
  * Features:
- * - Fetches notices from Strapi CMS
+ * - Notices and the "know more" link come from content/ via the root layout
  * - Auto-expands after 3s, auto-collapses after 10s (desktop only)
  * - Eyes follow cursor position
  * - Cycles through multiple notices
@@ -15,29 +15,17 @@
 
 import { useState, useRef, useCallback, useEffect } from 'react';
 import DOMPurify from 'isomorphic-dompurify';
-import { useGleckData } from '@/hooks/useGleckData';
 import { useEyeTracking } from '@/hooks/useEyeTracking';
 import { useNoticeCarousel } from '@/hooks/useNoticeCarousel';
 import { useIsMobile } from '@/hooks/useIsMobile';
 import { useMounted } from '@/hooks/useMounted';
+import type { GleckNotice, GleckSettings } from '@/types';
 
 // ─── Constants ───────────────────────────────────────────────────────────────
-
-/** Canonical URL for all Gleck references */
-const GLECK_URL = 'https://github.com/masterunix/gleck';
 
 const AUTO_EXPAND_DELAY = 3000;
 const AUTO_COLLAPSE_DELAY = 10000;
 const BLINK_DURATION = 350;
-
-// ─── Types ───────────────────────────────────────────────────────────────────
-
-interface Notice {
-  id: number;
-  text: string;
-  link?: string;
-  order: number;
-}
 
 // ─── Sub-Components ──────────────────────────────────────────────────────────
 
@@ -92,7 +80,10 @@ function sanitizeHTML(html: string): string {
 
 // ─── Main Component ──────────────────────────────────────────────────────────
 
-export default function GleckNoticeWrapper() {
+export default function GleckNoticeWrapper({ notices, settings }: {
+  notices: GleckNotice[];
+  settings: GleckSettings;
+}) {
   const mounted = useMounted();
   const [isExpanded, setIsExpanded] = useState(true);
   const [isEnlarged, setIsEnlarged] = useState(false);
@@ -103,7 +94,6 @@ export default function GleckNoticeWrapper() {
   const blinkTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isMobile = useIsMobile();
   
-  const { notices } = useGleckData();
   const eyePos = useEyeTracking(widgetRef);
   const { currentIndex, setCurrentIndex } = useNoticeCarousel(notices.length, isExpanded);
 
@@ -158,7 +148,7 @@ export default function GleckNoticeWrapper() {
 
   if (!mounted) return null;
 
-  // ─── Mobile: Eyes-only with link to Gleck GitHub ─────────────────────────
+  // ─── Mobile: Eyes-only with the "know more" link ─────────────────────────
 
   if (isMobile) {
     return (
@@ -167,7 +157,7 @@ export default function GleckNoticeWrapper() {
         style={{ position: 'fixed', bottom: '16px', left: '16px', zIndex: 9999 }}
       >
         <a
-          href={GLECK_URL}
+          href={settings.knowMoreLink}
           target="_blank"
           rel="noopener noreferrer"
           className="gleck-widget"
@@ -265,7 +255,7 @@ export default function GleckNoticeWrapper() {
           <div style={{ flex: 1, width: '100%', paddingTop: '12px', overflowY: 'auto', overflowX: 'hidden', boxSizing: 'border-box' }}>
             <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.1)', paddingTop: '12px' }}>
               <h3 style={{ margin: 0, marginBottom: '12px', fontSize: '14px', fontWeight: 600, color: 'white' }}>All Updates</h3>
-              {notices.map((notice: Notice, idx: number) => (
+              {notices.map((notice: GleckNotice, idx: number) => (
                 <div key={notice.id}
                   className={`gleck-notice-item ${idx === currentIndex ? 'active' : ''}`}
                   onClick={() => setCurrentIndex(idx)} role="button" tabIndex={0}
@@ -302,15 +292,15 @@ export default function GleckNoticeWrapper() {
         )}
       </div>
 
-      {/* Know more link — always points to Gleck GitHub */}
+      {/* Know more link — content/settings/gleck.yaml */}
       <a
-        href={GLECK_URL}
+        href={settings.knowMoreLink}
         target="_blank"
         rel="noopener noreferrer"
         className="gleck-link"
         style={{ display: 'block', marginTop: '8px', fontSize: '11px', paddingLeft: '8px', color: 'rgba(255, 255, 255, 0.6)' }}
       >
-        Updates are managed by Gleck, my AI Assistant. Click to learn more.
+        {settings.knowMoreText}
       </a>
     </div>
   );

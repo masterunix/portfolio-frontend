@@ -5,16 +5,16 @@
  * Used in the Skills carousel (middle row).
  *
  * Features:
- * - Icon or Strapi-hosted logo display
+ * - Logo, or its icon when there is none
  * - Name, description, and category badge
- * - Attachment buttons for certificates/documents (from Strapi)
+ * - Attachment buttons for certificates/documents
  * - Hover effects via CSS `group` class (provided by parent shell)
  */
 'use client';
 
 import React from 'react';
 
-import { getStrapiMedia } from '@/lib/api';
+import ItemIcon from '@/components/ItemIcon';
 import type { Skill } from '@/types';
 
 // ─── Component ───────────────────────────────────────────────────────────────
@@ -30,15 +30,7 @@ export default function CareerSkillHex({ skill }: { skill: Skill }) {
           boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
         }}
       >
-        {skill.logo?.url ? (
-          <img
-            src={getStrapiMedia(skill.logo.url)}
-            alt={skill.name}
-            className="w-[30px] h-[30px] object-contain"
-          />
-        ) : (
-          <span>{skill.icon || '📦'}</span>
-        )}
+        <ItemIcon logo={skill.logo} icon={<span>{skill.icon || '📦'}</span>} alt={skill.name} size={30} />
       </div>
 
       {/* Skill Name */}
@@ -58,17 +50,16 @@ export default function CareerSkillHex({ skill }: { skill: Skill }) {
         </div>
       )}
 
-      {/* Attachment Buttons — certificates/documents from Strapi */}
-      {skill.attachments && skill.attachments.length > 0 && (
+      {/* Attachment Buttons — certificates/documents */}
+      {skill.attachments.length > 0 && (
         <div className="flex flex-col mt-2 w-full items-center shrink-0" style={{ gap: '12px' }}>
           {skill.attachments
-            .filter((att) => att.file?.url)
             .map((attachment) => (
               <button
                 key={attachment.id}
                 onClick={(e) => {
                   e.stopPropagation();
-                  window.open(getStrapiMedia(attachment.file.url), '_blank');
+                  window.open(attachment.file.url, '_blank');
                 }}
                 className="hex-button max-w-[100px] truncate"
                 aria-label={`View ${attachment.label}`}

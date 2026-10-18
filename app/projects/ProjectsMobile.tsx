@@ -4,8 +4,8 @@ import React, { useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
-
 import Footer from '@/components/Footer';
+import ItemIcon from '@/components/ItemIcon';
 import type { Project } from '@/types';
 import { isPlaceholderLink } from '@/types';
 
@@ -47,7 +47,7 @@ export default function ProjectsMobile({ projects = [] }: ProjectsMobileProps) {
                 className="mobile-icon"
                 style={{ backgroundColor: project.color }}
               >
-                <span className="text-xl">{project.icon || '📦'}</span>
+                <ItemIcon logo={project.logo} icon={<span className="text-xl">{project.icon || '📦'}</span>} alt={project.title} size={28} />
               </div>
               <div className="mobile-card-text">
                 <div className="mobile-card-title">{project.title}</div>

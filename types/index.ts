@@ -5,70 +5,82 @@
  * instead of re-declaring their own copies..
  */
 
-// ─── CMS Data Types ─────────────────────────────────────────────────────────
+// ─── Content Types (content/*.yaml, loaded by lib/content.ts) ───────────────
 
-/** A project entry from Strapi */
+/** A file in public/, checked to exist when the content loads */
+export interface Media {
+  /** Site path, e.g. /media/logos/leetcode.png */
+  url: string;
+  /** The file's name, e.g. leetcode.png */
+  name: string;
+}
+
+/** A project entry */
 export interface Project {
   id: number;
   title: string;
   tech: string;
   description: string;
   icon?: string;
-  logo?: { url: string };
+  logo?: Media;
   color: string;
   github?: string | null;
   visit?: string | null;
   order: number;
 }
 
-/** A skill/experience entry from Strapi */
+export type SkillType = 'skills_top' | 'skills_bottom' | 'career';
+export type SkillCategory = 'beginner' | 'intermediate' | 'proficient' | 'expert';
+
+/** A skill/experience entry */
 export interface Skill {
   id: number;
   name: string;
   description: string;
-  type?: 'skills_top' | 'skills_bottom' | 'career';
-  category?: string;
+  type: SkillType;
+  category?: SkillCategory;
   color: string;
   icon?: string;
-  logo?: { url: string };
-  attachments?: Array<{
+  logo?: Media;
+  attachments: Array<{
     id: number;
     label: string;
-    file: { url: string };
+    file: Media;
   }>;
   order: number;
 }
 
-/** A lightweight tech skill (used in top/bottom carousel rows and fallback data) */
+/** A lightweight tech skill (used in top/bottom carousel rows) */
 export interface TechSkill {
   name: string;
   description: string;
   icon?: string;
   color: string;
-  logo?: { url: string };
+  logo?: Media;
   category?: string;
 }
 
-/** A resume entry from Strapi */
+/** A resume entry: downloads `file`, or opens `link` when there is no file */
 export interface Resume {
   id: number;
   domain: string;
   description: string;
-  filename: string;
+  /** The name the download is saved as */
+  filename?: string;
   color: string;
   icon: string;
   order: number;
-  file?: { url: string; name: string };
+  file?: Media;
+  link?: string;
 }
 
-/** A DSA platform entry from Strapi */
+/** A DSA platform entry */
 export interface DSAPlatform {
   id: number;
   name: string;
   url: string;
   color: string;
-  logoPath?: string;
-  logo?: { url: string };
+  logo?: Media;
   order: number;
 }
 
@@ -80,12 +92,46 @@ export interface DSAConcept {
   color: string;
 }
 
-/** A home page typewriter message from Strapi */
+/** A home page typewriter message */
 export interface HomeMessage {
   id: number;
   text: string;
   link?: string;
   order: number;
+}
+
+/** A notice in the Gleck widget; `text` is HTML, sanitized before rendering */
+export interface GleckNotice {
+  id: number;
+  text: string;
+  link?: string;
+  order: number;
+}
+
+/** The Gleck widget's "know more" link (content/settings/gleck.yaml) */
+export interface GleckSettings {
+  knowMoreLink: string;
+  knowMoreText: string;
+}
+
+export type ThemePage = 'all' | 'home' | 'projects' | 'skills' | 'dsa' | 'resumes';
+
+/** A background theme for the animated shader */
+export interface BackgroundTheme {
+  id: number;
+  name: string;
+  slug: string;
+  enabled: boolean;
+  isDefault: boolean;
+  order: number;
+  animationType: 'static' | 'shader-mesh' | 'shader-wave' | 'css-gradient';
+  animationSpeed: number;
+  grainIntensity: number;
+  colorPalettes: Array<{
+    id: number;
+    page: ThemePage;
+    colors: string[];
+  }>;
 }
 
 /** Feedback tile data on the resumes page */

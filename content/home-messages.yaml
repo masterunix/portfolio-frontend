@@ -1,0 +1,15 @@
+# The typewriter lines at the top of the home page. text: required. link: opens on click.
+#
+# Entries show in `order` (lowest first, default 0); equal orders keep the order of this file.
+# `draft: true` hides an entry, like an unpublished entry in Strapi.
+# Media paths point into public/ (e.g. /media/logos/leetcode.png) and must exist, or the build fails.
+# Links must start with https://, http://, mailto:, tel:, / or #.
+# Field rules: lib/content.ts.
+
+- text: Hey I am YOU
+  order: 0
+- text: See my website https://www.vatsalgoyal.me
+  link: https://www.vatsalgoyal.me
+  order: 0
+- text: Who are you? HUH>?
+  order: 1

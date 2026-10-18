@@ -5,11 +5,13 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 import { computeHexLayout, calculateHexX, calculateHexY } from '@/lib/layoutUtils';
+import { withAlpha } from '@/lib/color';
 import { useCarousel } from '@/hooks/useCarousel';
 import { useViewportSize } from '@/hooks/useViewportSize';
 import { useMounted } from '@/hooks/useMounted';
 import CarouselHex from '@/components/CarouselHex';
 import HexShell from '@/components/HexShell';
+import ItemIcon from '@/components/ItemIcon';
 import ProjectHex from '@/components/ProjectHex';
 import TechHex from '@/components/TechHex';
 import Footer from '@/components/Footer';
@@ -155,12 +157,12 @@ export default function ProjectsDesktop({ projects = [], skills = [] }: Projects
               border: index === activeIndex ? '2px solid rgba(255,255,255,0.5)' : '2px solid rgba(255,255,255,0.2)',
               backgroundColor: project.color,
               boxShadow: index === activeIndex
-                ? `0 0 20px ${project.color}80,0 0 40px ${project.color}40,0 4px 12px rgba(0,0,0,0.4),inset 0 1px 0 0 rgba(255,255,255,0.2)`
+                ? `0 0 20px ${withAlpha(project.color, 0.5)},0 0 40px ${withAlpha(project.color, 0.25)},0 4px 12px rgba(0,0,0,0.4),inset 0 1px 0 0 rgba(255,255,255,0.2)`
                 : '0 2px 8px rgba(0,0,0,0.3)',
               transform: index === activeIndex ? 'scale(1.15)' : 'scale(1)', cursor: 'pointer'
             }}
           >
-            <span>{project.icon}</span>
+            <ItemIcon logo={project.logo} icon={<span>{project.icon || '📦'}</span>} alt="" size={20} />
             <div
               className="absolute bottom-full mb-3 left-1/2 -translate-x-1/2 opacity-0 pointer-events-none group-hover:opacity-100 transition-all duration-300 group-hover:-translate-y-1"
               style={{
@@ -170,7 +172,7 @@ export default function ProjectsDesktop({ projects = [], skills = [] }: Projects
                 backdropFilter: 'blur(20px) saturate(180%)',
                 WebkitBackdropFilter: 'blur(20px) saturate(180%)',
                 border: '1px solid rgba(255,255,255,0.15)',
-                boxShadow: `0 8px 32px rgba(0,0,0,0.4), 0 0 16px ${project.color}20`
+                boxShadow: `0 8px 32px rgba(0,0,0,0.4), 0 0 16px ${withAlpha(project.color, 0.125)}`
               }}
             >
               <div style={{ width: '100%', height: '2px', borderRadius: '1px', backgroundColor: project.color, marginBottom: '6px', opacity: 0.7 }} />

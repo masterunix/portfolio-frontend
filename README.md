@@ -5,9 +5,8 @@ This is a modern portfolio website built with Next.js 15, featuring glassmorphis
 ## 🚀 Getting Started
 
 ### Prerequisites
-- Node.js 18+ or 20+
+- Node.js 20+
 - npm or yarn
-- Strapi backend running on `http://localhost:1337`
 
 ### Installation
 
@@ -37,9 +36,13 @@ portfolio-frontend/
 │   ├── Hexagon.tsx           # Reusable hexagon component
 │   ├── NavHexagon.tsx        # Navigation hexagon with icon
 │   └── HoneycombGrid.tsx     # Grid layout component
+├── content/                  # The site's content (YAML), see "Content" below
 ├── lib/
-│   └── api.ts                # Strapi API utilities
-└── public/                   # Static assets
+│   └── content.ts            # Reads and checks content/
+├── public/
+│   └── media/                # Logos, resumes and attachments the content points to
+└── scripts/
+    └── export-strapi.mjs     # One-time export from the old Strapi CMS
 ```
 
 ## 🎨 Features
@@ -63,19 +66,44 @@ portfolio-frontend/
 - ⏳ **Skills** - Technical skills with ratings (TODO)
 - ⏳ **Resumes** - Different resumes for domains (TODO)
 
-## 🔗 Strapi Integration
+## 📝 Content
 
-The frontend fetches data from Strapi CMS:
+Everything the site shows is in `content/`, one YAML file per collection. Edit a file and
+it shows on reload in dev, and on the next deploy in production. There is no CMS or
+database to run.
 
-- **Projects** - `/api/projects`
-- **Skills** - `/api/skills`
-- **Experiences** - `/api/experiences`
-- **Certifications** - `/api/certifications`
-- **Resumes** - `/api/resumes`
-- **DSA Platforms** - `/api/dsa-platforms`
+| File | Shows on |
+|---|---|
+| `content/projects.yaml` | /projects (middle row, mobile cards) |
+| `content/skills.yaml` | /skills; also the outer rows of /projects |
+| `content/resumes.yaml` | /resumes |
+| `content/dsa-platforms.yaml` | /dsa (middle row) |
+| `content/home-messages.yaml` | the typewriter on the home page |
+| `content/gleck-notices.yaml` | Gleck's widget, bottom left |
+| `content/settings/gleck.yaml` | Gleck's "know more" link |
+| `content/background-themes.yaml` | the animated background |
 
-### Fallback Data
-If Strapi is not running, the app uses static fallback data to ensure the site remains functional.
+The comments at the top of each file list its fields. Logos, PDFs and other files go in
+`public/media/` and are referenced by their site path (`logo: /media/logos/leetcode.png`).
+
+`lib/content.ts` checks every entry when it loads: required fields, allowed values,
+number ranges, colours, links, and that each media path exists and is the right kind of
+file. A mistake shows as an error naming the file, entry and field (in the dev overlay,
+or as a failed build), so a broken logo or link can't reach the live site.
+
+Entries sort by `order` (lowest first); `draft: true` hides one.
+
+### Importing from Strapi
+
+The content was exported from the old Strapi CMS with:
+
+```bash
+node scripts/export-strapi.mjs https://your-strapi.example.com   # default: http://localhost:1337
+```
+
+It overwrites `content/*.yaml` (not `settings/`) and downloads the media into
+`public/media/`, printing every cleanup it makes (links without https://, placeholder
+text in link fields, hashed file names).
 
 ## 🎯 TODO - Complete Implementation
 
@@ -105,7 +133,7 @@ Create a honeycomb grid with:
 - **TypeScript** - Type safety
 - **Tailwind CSS** - Utility-first CSS
 - **Framer Motion** - Smooth animations
-- **Strapi** - Headless CMS backend
+- **YAML content files** - checked at build time by `lib/content.ts`
 
 ## 🎨 Design System
 
@@ -125,14 +153,6 @@ Create a honeycomb grid with:
 - Fade in up: 0.4s ease-out
 - Hover scale: 1.05 with 0.3s transition
 - Carousel: 0.39px per frame
-
-## 📝 Environment Variables
-
-Create `.env.local`:
-
-```env
-NEXT_PUBLIC_STRAPI_URL=http://localhost:1337
-```
 
 ## 🚀 Deployment
 

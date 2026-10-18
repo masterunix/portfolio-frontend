@@ -4,12 +4,14 @@
  * Pure content component — renders inside a parent <HexShell> or <Hexagon>.
  * Used in the Projects carousel (top and bottom rows).
  *
- * Simpler than ProjectHex — no action buttons, just icon + name + description.
+ * Simpler than ProjectHex — no action buttons, just logo/icon + name + description.
  */
 'use client';
 
 import React from 'react';
 
+import ItemIcon from '@/components/ItemIcon';
+import type { Media } from '@/types';
 
 // ─── Props ───────────────────────────────────────────────────────────────────
 
@@ -19,6 +21,7 @@ interface TechHexProps {
     name: string;
     description: string;
     icon?: string;
+    logo?: Media;
     color: string;
     category?: string;
   };
@@ -37,7 +40,7 @@ export default function TechHex({ skill }: TechHexProps) {
           boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
         }}
       >
-        {skill.icon || '⚙️'}
+        <ItemIcon logo={skill.logo} icon={skill.icon || '⚙️'} alt={skill.name} size={25} />
       </div>
 
       {/* Tech Title */}

@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 import { Canvas, useFrame, extend } from '@react-three/fiber';
 import * as THREE from 'three';
+import type { BackgroundTheme } from '@/types';
 
 // Bayer dithering implementation for ordered pixelation falloff
 const bayerDithering = `
@@ -210,23 +211,7 @@ function AnimatedMesh({ colors, speed, grainIntensity }: AnimatedMeshProps) {
   );
 }
 
-export interface BackgroundTheme {
-  id: number;
-  documentId: string;
-  name: string;
-  slug: string;
-  enabled: boolean;
-  isDefault: boolean;
-  order: number;
-  animationType: string;
-  animationSpeed: number;
-  grainIntensity: number;
-  colorPalettes: Array<{
-    id: number;
-    page: string;
-    colors: string[];
-  }>;
-}
+export type { BackgroundTheme };
 
 export default function ShaderBackground({ theme }: { theme: BackgroundTheme | null }) {
   const pathname = usePathname();

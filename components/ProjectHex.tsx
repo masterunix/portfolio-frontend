@@ -5,7 +5,7 @@
  * The hex glass shell is NOT included here (see HexShell.tsx).
  *
  * Features:
- * - Project icon or Strapi-hosted logo
+ * - Project logo, or its icon when there is none
  * - Title, tech stack, and description
  * - GitHub and Visit action buttons
  * - Hover effects via CSS `group` class (provided by parent shell)
@@ -15,7 +15,7 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 
-import { getStrapiMedia } from '@/lib/api';
+import ItemIcon from '@/components/ItemIcon';
 import { isPlaceholderLink } from '@/types';
 import type { Project } from '@/types';
 
@@ -37,15 +37,7 @@ export default function ProjectHex({ project }: { project: Project }) {
           boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
         }}
       >
-        {project.logo?.url ? (
-          <img
-            src={getStrapiMedia(project.logo.url)}
-            alt={project.title}
-            className="w-[30px] h-[30px] object-contain"
-          />
-        ) : (
-          <span>{project.icon || '📦'}</span>
-        )}
+        <ItemIcon logo={project.logo} icon={<span>{project.icon || '📦'}</span>} alt={project.title} size={30} />
       </div>
 
       {/* Project Title */}

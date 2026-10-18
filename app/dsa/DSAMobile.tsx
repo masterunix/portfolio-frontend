@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 import Footer from '@/components/Footer';
-import { getStrapiMedia } from '@/lib/api';
+import ItemIcon from '@/components/ItemIcon';
 import type { DSAPlatform } from '@/types';
 
 interface DSAMobileProps {
@@ -32,10 +32,6 @@ export default function DSAMobile({ platforms }: DSAMobileProps) {
       <div className="mobile-scroll" style={{ gap: '16px' }}>
         {/* Platforms */}
         {platforms.map((platform, index) => {
-          const logoUrl = platform.logo?.url
-            ? getStrapiMedia(platform.logo.url)
-            : `/${platform.logoPath}`;
-
           return (
             <div
               key={platform.id}
@@ -47,18 +43,13 @@ export default function DSAMobile({ platforms }: DSAMobileProps) {
                 className="mobile-icon"
                 style={{ width: '56px', height: '56px', minWidth: '56px', backgroundColor: platform.color }}
               >
-                <img 
-                  src={logoUrl} 
-                  alt={platform.name} 
-                  className="w-[32px] h-[32px] object-contain brightness-110"
-                  onError={(e) => {
-                    // Fallback to text if image fails
-                    e.currentTarget.style.display = 'none';
-                    const fallback = e.currentTarget.parentElement?.querySelector<HTMLElement>('.fallback-text');
-                    if (fallback) fallback.style.display = 'block';
-                  }}
+                <ItemIcon
+                  logo={platform.logo}
+                  icon={<span className="text-2xl font-bold text-white">{platform.name.charAt(0)}</span>}
+                  alt={platform.name}
+                  size={32}
+                  className="brightness-110"
                 />
-                <span className="fallback-text text-2xl font-bold text-white hidden">{platform.name.charAt(0)}</span>
               </div>
               <div className="mobile-card-text">
                 <div className="mobile-card-title" style={{ fontSize: '17px' }}>{platform.name}</div>

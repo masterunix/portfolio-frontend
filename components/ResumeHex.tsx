@@ -1,46 +1,38 @@
 /**
- * ResumeHex.tsx — Resume tile with download button.
+ * ResumeHex.tsx — Resume tile with a download (or open) button.
  *
  * Used on the Resumes page inside a parent <Hexagon> component.
- * Displays resume domain info and a download button.
+ * Displays resume domain info and one button: Download when the resume has a file,
+ * Open when it has a link instead, and none when it has neither.
  *
  * Pure presentational — receives data and callbacks, no business logic.
- * The actual download mechanism is handled by ResumesClient.
+ * The actual download/open is handled by ResumesClient.
  */
 'use client';
 
 import React from 'react';
 
+import type { Resume } from '@/types';
 
 // ─── Props ───────────────────────────────────────────────────────────────────
 
 interface ResumeHexProps {
-  resume: {
-    id: number;
-    domain: string;
-    description: string;
-    filename: string;
-    color: string;
-    icon: string;
-    order: number;
-    file?: {
-      url: string;
-      name: string;
-    };
-  };
-  /** Click handler for the download button */
-  onDownload: (e: React.MouseEvent) => void;
+  resume: Resume;
+  /** Click handler for the Download/Open button */
+  onOpen: (e: React.MouseEvent) => void;
 }
 
 // ─── Component ───────────────────────────────────────────────────────────────
 
-export default function ResumeHex({ resume, onDownload }: ResumeHexProps) {
+export default function ResumeHex({ resume, onOpen }: ResumeHexProps) {
+  const action = resume.file ? 'Download' : resume.link ? 'Open' : null;
+
   return (
     <div className="hex-content pointer-events-auto">
       {/* Resume Icon — gradient rounded square */}
-      <div 
+      <div
         className="w-[50px] h-[50px] rounded-[12px] flex items-center justify-center text-2xl shadow-lg shrink-0 transition-transform duration-300 group-hover:scale-110"
-        style={{ 
+        style={{
           backgroundColor: resume.color,
           boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
         }}
@@ -58,14 +50,16 @@ export default function ResumeHex({ resume, onDownload }: ResumeHexProps) {
         {resume.description}
       </div>
 
-      {/* Download Button */}
-      <button 
-        className="hex-button mt-2"
-        onClick={onDownload}
-        aria-label={`Download ${resume.domain} resume`}
-      >
-        Download
-      </button>
+      {/* Download/Open Button */}
+      {action && (
+        <button
+          className="hex-button mt-2"
+          onClick={onOpen}
+          aria-label={`${action} ${resume.domain}${resume.file ? ' resume' : ''}`}
+        >
+          {action}
+        </button>
+      )}
     </div>
   );
 }

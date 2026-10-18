@@ -1,0 +1,69 @@
+# Projects: the middle row of /projects and the cards on mobile.
+# title, description, tech, color: required
+# icon: an emoji or short text, shown when there is no logo (default 📦)
+# logo: an image in public/; when it fails to load, the icon shows instead
+# github, visit: links; leave out to hide the button. visit can be a page here (/dsa).
+#
+# Entries show in `order` (lowest first, default 0); equal orders keep the order of this file.
+# `draft: true` hides an entry, like an unpublished entry in Strapi.
+# Media paths point into public/ (e.g. /media/logos/leetcode.png) and must exist, or the build fails.
+# Links must start with https://, http://, mailto:, tel:, / or #.
+# Field rules: lib/content.ts.
+
+- title: Job Nest
+  description: A comprehensive platform for job seekers and employers with advanced matching algorithms
+  tech: MERN Stack
+  icon: 💼
+  color: "#667eea"
+  github: https://github.com/masterunix/JobNest-v1
+  visit: https://www.job-nest.app
+  order: 0
+- title: KLJIJOJOF
+  description: wqrweqrwqercw rwe platform for job seekers and employers with advanced matching algorithms
+  tech: MERN Stack
+  icon: 💼
+  color: "#667eea"
+  github: https://github.com/masterunix/JobNest-v1
+  visit: https://www.job-nest.app
+  order: 0
+- title: No House
+  description: Elegant website for artisanal sourdough bakery with e-commerce integration
+  tech: Modern Web Stack
+  icon: 🍞
+  color: "#d4a574"
+  visit: https://450houseofsourdough.com
+  order: 1
+- title: movie_fy
+  description: Feature-rich mobile app for movie enthusiasts with reviews and recommendations
+  tech: Flutter, Dart
+  icon: 🎬
+  color: "#e74c3c"
+  github: https://github.com/masterunix/Fluttter-Movie-App
+  order: 2
+- title: 450 House of Sourdough
+  description: Elegant website for artisanal sourdough bakery with e-commerce integration
+  tech: Modern Web Stack
+  icon: 🍞
+  color: "#d4a574"
+  visit: https://450houseofsourdough.com
+  order: 4
+- title: "465789"
+  description: Elegant website for artisanal sourdough bakery with e-commerce integration
+  tech: Modern Web Stack
+  icon: 🍞
+  color: "#d4a574"
+  visit: https://450houseofsourdough.com
+  order: 4
+- title: Small House
+  description: Elegant website for artisanal sourdough bakery with e-commerce integration
+  tech: Modern Web Stack
+  icon: 🍞
+  color: "#d4a574"
+  visit: https://450houseofsourdough.com
+  order: 5
+- title: Not House
+  description: HEHEH
+  tech: howi
+  icon: V
+  color: Blue
+  order: 7

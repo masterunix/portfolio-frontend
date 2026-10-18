@@ -7,7 +7,6 @@ import { useRouter } from 'next/navigation';
 import { useIsMobile } from '@/hooks/useIsMobile';
 import { useViewportSize } from '@/hooks/useViewportSize';
 import { useMounted } from '@/hooks/useMounted';
-import { getStrapiMedia } from '@/lib/api';
 import { computeHexLayout, calculateHexX, calculateHexY } from '@/lib/layoutUtils';
 import Hexagon from '@/components/Hexagon';
 import ResumeHex from '@/components/ResumeHex';
@@ -100,21 +99,19 @@ export default function ResumesClient({ resumes = [] }: ResumesClientProps) {
     return items;
   }, [layout, resumes, shouldSkip, resumePositions, viewport]);
 
-  const downloadResume = (resume: Resume) => {
-    if (!resume.file?.url) return;
-    fetch(getStrapiMedia(resume.file.url))
-      .then(response => response.blob())
-      .then(blob => {
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.style.display = 'none';
-        a.href = url;
-        a.download = resume.filename;
-        document.body.appendChild(a);
-        a.click();
-        window.URL.revokeObjectURL(url);
-      })
-      .catch(err => console.error('Download failed:', err));
+  /** Downloads the resume's file (same origin, so `download` names it), or opens its link */
+  const openResume = (resume: Resume) => {
+    if (resume.file) {
+      const a = document.createElement('a');
+      a.href = resume.file.url;
+      a.download = resume.filename ?? resume.file.name;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    } else if (resume.link) {
+      if (/^(mailto|tel):/i.test(resume.link)) window.location.assign(resume.link);
+      else window.open(resume.link, '_blank', 'noopener,noreferrer');
+    }
   };
 
   if (!mounted) return null;
@@ -136,8 +133,11 @@ export default function ResumesClient({ resumes = [] }: ResumesClientProps) {
             <div
               key={resume.id}
               className="mobile-glass-card"
-              onClick={() => downloadResume(resume)}
-              style={{ animation: `fadeInUp 0.4s ease-out forwards ${index * 60}ms`, opacity: 0 }}
+              onClick={() => openResume(resume)}
+              style={{
+                animation: `fadeInUp 0.4s ease-out forwards ${index * 60}ms`, opacity: 0,
+                cursor: resume.file || resume.link ? 'pointer' : 'default'
+              }}
             >
               <div
                 className="mobile-icon"
@@ -149,10 +149,16 @@ export default function ResumesClient({ resumes = [] }: ResumesClientProps) {
                 <div className="mobile-card-title">{resume.domain}</div>
                 <div className="mobile-card-desc">{resume.description}</div>
               </div>
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" className="shrink-0 opacity-50">
-                <path d="M10 3V14M10 14L6 10M10 14L14 10" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M4 17H16" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
-              </svg>
+              {resume.file ? (
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" className="shrink-0 opacity-50">
+                  <path d="M10 3V14M10 14L6 10M10 14L14 10" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M4 17H16" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
+                </svg>
+              ) : resume.link ? (
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" className="shrink-0 opacity-40">
+                  <path d="M7.5 4L13.5 10L7.5 16" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              ) : null}
             </div>
           ))}
         </div>
@@ -194,7 +200,7 @@ export default function ResumesClient({ resumes = [] }: ResumesClientProps) {
               style={{ position: 'absolute', left: item.x, top: item.y, width: hexWidth, height: hexHeight }}
             >
               {item.data ? (
-                <ResumeHex resume={item.data as Resume} onDownload={() => downloadResume(item.data as Resume)} />
+                <ResumeHex resume={item.data as Resume} onOpen={() => openResume(item.data as Resume)} />
               ) : null}
             </Hexagon>
           );

@@ -1,0 +1,30 @@
+# Coding platforms: the middle row of /dsa.
+# name, url, color: required
+# logo: an image in public/; without one (or if it fails to load) the tile shows the name's first letter
+#
+# Entries show in `order` (lowest first, default 0); equal orders keep the order of this file.
+# `draft: true` hides an entry, like an unpublished entry in Strapi.
+# Media paths point into public/ (e.g. /media/logos/leetcode.png) and must exist, or the build fails.
+# Links must start with https://, http://, mailto:, tel:, / or #.
+# Field rules: lib/content.ts.
+
+- name: Beetcode
+  url: https://leetcode.com/u/vatsalgoyal/
+  color: Black
+  logo: /media/logos/leetcode.png
+  order: 0
+- name: LodeForces
+  url: https://codeforces.com/profile/resident-evil
+  color: White
+  logo: /media/logos/codef.webp
+  order: 1
+- name: LackerRank
+  url: https://www.hackerrank.com/profile/goyalvatsal
+  color: Black
+  logo: /media/logos/hackerrank-logo.png
+  order: 2
+- name: NAtCoder
+  url: https://atcoder.jp/users/vatsalgoyal
+  color: White
+  logo: /media/logos/atcoder-logo.png
+  order: 3

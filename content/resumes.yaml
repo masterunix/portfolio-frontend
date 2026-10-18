@@ -1,0 +1,17 @@
+# Resumes: the tiles on /resumes.
+# domain, description, color, icon: required
+# file: the PDF in public/ that Download saves, named `filename` (default: the file's own name)
+# link: for a tile that opens a link instead (e.g. mailto:). A tile with neither has no button.
+#
+# Entries show in `order` (lowest first, default 0); equal orders keep the order of this file.
+# `draft: true` hides an entry, like an unpublished entry in Strapi.
+# Media paths point into public/ (e.g. /media/logos/leetcode.png) and must exist, or the build fails.
+# Links must start with https://, http://, mailto:, tel:, / or #.
+# Field rules: lib/content.ts.
+
+- domain: Feedback
+  description: Found a bug?
+  color: Orange
+  icon: Fo
+  link: mailto:vatsalgoyal9999@gmail.com
+  order: 8

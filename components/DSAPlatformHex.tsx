@@ -5,7 +5,7 @@
  * Used in the DSA Stats page (middle row).
  *
  * Features:
- * - Platform logo (from Strapi or local fallback)
+ * - Platform logo, or the name's first letter when there is none
  * - Platform name, category, and languages
  * - Visit profile button
  * - Hover effects via CSS `group` class (provided by parent shell)
@@ -14,7 +14,7 @@
 
 import React from 'react';
 
-import { getStrapiMedia } from '@/lib/api';
+import ItemIcon from '@/components/ItemIcon';
 import type { DSAPlatform } from '@/types';
 
 // ─── Props ───────────────────────────────────────────────────────────────────
@@ -31,11 +31,6 @@ interface DSAPlatformHexProps {
 // ─── Component ───────────────────────────────────────────────────────────────
 
 export default function DSAPlatformHex({ platform, onVisit }: DSAPlatformHexProps) {
-  /** Resolve logo URL — prefer Strapi-hosted, fall back to local public/ */
-  const logoUrl = platform.logo?.url
-    ? getStrapiMedia(platform.logo.url)
-    : `/${platform.logoPath}`;
-
   return (
     <div className="hex-content pointer-events-auto">
       {/* Platform Logo — gradient rounded square */}
@@ -46,10 +41,12 @@ export default function DSAPlatformHex({ platform, onVisit }: DSAPlatformHexProp
           boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
         }}
       >
-        <img 
-          src={logoUrl}
+        <ItemIcon
+          logo={platform.logo}
+          icon={<span className="text-xl font-bold text-white">{platform.name.charAt(0)}</span>}
           alt={platform.name}
-          className="w-[30px] h-[30px] object-contain brightness-110"
+          size={30}
+          className="brightness-110"
         />
       </div>
 
