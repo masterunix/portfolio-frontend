@@ -252,6 +252,26 @@ body {
    compositor from causing sub-pixel phase jitter during animations.
    ═══════════════════════════════════════════════════════════════════════════ */
 
+/* ─── Hex fade ───────────────────────────────────────────────────────────────
+   Hexagons fade in and out by animating --hex-fade on their wrapper, never
+   `opacity`. An ancestor with opacity < 1 stops a backdrop-filter from seeing
+   what's behind it (it becomes the "backdrop root"), so fading the wrapper made
+   each hex's glass pop in only after its outline had finished fading: a second
+   wave. Each layer applies the fade to itself instead, which keeps the blur working.
+   @property makes the variable animatable from CSS keyframes (hexFadeOutDown). */
+
+@property --hex-fade {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 1;
+}
+
+.hex-glass-blur,
+.hex-outline,
+.hex-content {
+  opacity: var(--hex-fade);
+}
+
 .hex-glass-blur {
   position: absolute;
   inset: 0;
@@ -360,6 +380,18 @@ body {
   }
   to {
     opacity: 0;
+    transform: translateY(20px);
+  }
+}
+
+/* fadeOutDown for hexagons: fades via --hex-fade so the glass fades with the outline */
+@keyframes hexFadeOutDown {
+  from {
+    --hex-fade: 1;
+    transform: translateY(0);
+  }
+  to {
+    --hex-fade: 0;
     transform: translateY(20px);
   }
 }

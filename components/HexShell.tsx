@@ -7,6 +7,10 @@
  * - Carousel page call sites (where <CarouselHex> handles animation)
  *
  * Children are rendered inside the shell for content.
+ *
+ * To fade a hex, animate `--hex-fade` (0–1) on a wrapper, not `opacity`: an
+ * ancestor with opacity < 1 switches off the glass blur until the fade ends.
+ * The blur, outline and .hex-content each read the variable (globals.css).
  */
 'use client';
 
@@ -43,7 +47,7 @@ export default function HexShell({
       {/* Hexagonal SVG outline — renders the visible white stroke border */}
       <svg
         viewBox="0 0 190 212"
-        className="absolute inset-0 w-full h-full pointer-events-none"
+        className="hex-outline absolute inset-0 w-full h-full pointer-events-none"
         preserveAspectRatio="none"
       >
         <path

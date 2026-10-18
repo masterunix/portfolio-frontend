@@ -131,7 +131,7 @@ export default function HomeDesktop({ messages }: { messages: HomeMessage[] }) {
             top: `${item.y}px`,
             width: `${item.width}px`,
             height: `${item.height}px`,
-            animation: isExiting ? `fadeOutDown 0.15s ease-in forwards ${(item.col + item.row) * 50}ms` : undefined
+            animation: isExiting ? `hexFadeOutDown 0.15s ease-in forwards ${(item.col + item.row) * 50}ms` : undefined
           };
 
           if (item.navData) {

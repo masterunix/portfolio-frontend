@@ -77,13 +77,14 @@ export default function CarouselHex({
   });
 
   return (
+    // Fades via --hex-fade, not opacity, so the glass fades in with the outline (see HexShell)
     <motion.div
       className="absolute"
-      initial={setIndex === 0 ? { opacity: 0, marginTop: 20 } : { opacity: 1, marginTop: 0 }}
+      initial={setIndex === 0 ? { '--hex-fade': 0, marginTop: 20 } : { '--hex-fade': 1, marginTop: 0 }}
       animate={
         isExiting
-          ? { opacity: 0, marginTop: 20 }
-          : { opacity: 1, marginTop: 0 }
+          ? { '--hex-fade': 0, marginTop: 20 }
+          : { '--hex-fade': 1, marginTop: 0 }
       }
       transition={{
         duration: 0.15,
