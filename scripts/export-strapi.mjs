@@ -106,7 +106,7 @@ function write(file, header, data) {
 
 const COMMON = `
 Entries show in \`order\` (lowest first, default 0); equal orders keep the order of this file.
-\`draft: true\` hides an entry, like an unpublished entry in Strapi.
+\`draft: true\` hides an entry.
 Media paths point into public/ (e.g. /media/logos/leetcode.png) and must exist, or the build fails.
 Links must start with https://, http://, mailto:, tel:, / or #.
 Field rules: lib/content.ts.`;

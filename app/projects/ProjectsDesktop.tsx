@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 
 import { computeHexLayout, calculateHexX, calculateHexY } from '@/lib/layoutUtils';
 import { withAlpha } from '@/lib/color';
+import { carouselLastStep, exitDurationMs } from '@/lib/hexTransition';
 import { useCarousel } from '@/hooks/useCarousel';
 import { useViewportSize } from '@/hooks/useViewportSize';
 import { useMounted } from '@/hooks/useMounted';
@@ -56,12 +57,14 @@ export default function ProjectsDesktop({ projects = [], skills = [] }: Projects
     onIndexChange: setActiveIndex
   });
 
+  // The exit wave runs over what is on screen, and navigates when it ends
+  const lastStep = viewport && layout ? carouselLastStep(viewport.width, layout.hexSpacingX, GRID_CONFIG.rows) : 0;
+
   const handleBack = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
     setIsExiting(true);
-    const maxDelay = (GRID_CONFIG.cols + GRID_CONFIG.rows) * 50;
-    setTimeout(() => router.push('/'), maxDelay + 200);
-  }, [router]);
+    setTimeout(() => router.push('/'), exitDurationMs(lastStep));
+  }, [router, lastStep]);
 
   const gridItems = useMemo((): GridItem[] => {
     if (!layout) return [];
@@ -121,7 +124,7 @@ export default function ProjectsDesktop({ projects = [], skills = [] }: Projects
             key={item.id} baseX={item.x} y={item.y} width={hexWidth} height={hexHeight}
             row={item.row} col={item.col} setIndex={item.setIndex}
             carouselOffset={carouselOffset} totalWidth={totalWidth}
-            hexSpacing={hexSpacingX} isExiting={isExiting}
+            hexSpacing={hexSpacingX} lastStep={lastStep} isExiting={isExiting}
           >
             <HexShell isExiting={isExiting}>
               {item.isProject ? (

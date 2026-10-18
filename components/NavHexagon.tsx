@@ -25,8 +25,10 @@ interface NavHexagonProps {
   description: string;
   /** Gradient base color (hex string, e.g. '#667eea') */
   color: string;
-  /** Entrance animation delay in seconds */
+  /** Intro delay in seconds */
   delay?: number;
+  /** Outro delay in seconds */
+  exitDelay?: number;
   /** Inline positioning styles from the grid calculator */
   style?: React.CSSProperties;
   /** When true, plays the exit animation */
@@ -41,12 +43,14 @@ export default function NavHexagon({
   description,
   color,
   delay = 0,
+  exitDelay = 0,
   style,
   isExiting = false
 }: NavHexagonProps) {
   return (
-    <Hexagon 
-      delay={delay} 
+    <Hexagon
+      delay={delay}
+      exitDelay={exitDelay}
       className="transition-all duration-[400ms] ease-[cubic-bezier(0.25,0.46,0.45,0.94)]" 
       style={style} 
       isExiting={isExiting}

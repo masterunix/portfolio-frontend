@@ -11,8 +11,7 @@
  * To fade a hex, animate `--hex-fade` (0–1) on a wrapper, not `opacity`: an
  * ancestor with opacity < 1 switches off the glass blur until the fade ends.
  * The blur, outline and .hex-content each read the variable (globals.css).
- * On exit, also set `--hex-blur` to 0 right away: the blur switching off as each
- * hex starts leaving is what makes the exit sweep across the grid.
+ * Timing for the intro and outro: lib/hexTransition.ts.
  */
 'use client';
 

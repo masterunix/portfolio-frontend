@@ -222,7 +222,7 @@ body {
   color: white;
 }
 
-/* Make richtext links from Strapi visible and clickable */
+/* Make links inside Gleck notices visible and clickable */
 .gleck-notice-content a,
 .gleck-notice-content a:link,
 .gleck-notice-content a:visited {
@@ -259,19 +259,10 @@ body {
    each hex's glass pop in only after its outline had finished fading: a second
    wave. Each layer applies the fade to itself instead, which keeps the blur working.
 
-   --hex-blur (1 = blurred, 0 = no blur) drives the exit sweep: when a hex starts
-   leaving, its blur switches off at once, so a sharp edge sweeps across the grid
-   while the tint, outline and content fade out behind it. The entrance keeps it at 1.
-
-   @property makes both variables animatable from CSS keyframes (hexFadeOutDown). */
+   The timing of the intro and outro (the intro backwards) is in lib/hexTransition.ts.
+   @property types the variable and defaults it to 1 for hexes outside a wrapper. */
 
 @property --hex-fade {
-  syntax: '<number>';
-  inherits: true;
-  initial-value: 1;
-}
-
-@property --hex-blur {
   syntax: '<number>';
   inherits: true;
   initial-value: 1;
@@ -290,8 +281,8 @@ body {
   height: 100%;
   pointer-events: none;
   background: rgba(0, 0, 0, 0.25);
-  -webkit-backdrop-filter: blur(calc(8px * var(--hex-blur)));
-  backdrop-filter: blur(calc(8px * var(--hex-blur)));
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
   
   /* 31 points tracing the exact SVG bezier curves */
   clip-path: polygon(
@@ -391,21 +382,6 @@ body {
   }
   to {
     opacity: 0;
-    transform: translateY(20px);
-  }
-}
-
-/* fadeOutDown for hexagons: fades via --hex-fade, and drops the blur the moment the
-   hex starts leaving (--hex-blur 0 throughout), which makes the exit sweep */
-@keyframes hexFadeOutDown {
-  from {
-    --hex-fade: 1;
-    --hex-blur: 0;
-    transform: translateY(0);
-  }
-  to {
-    --hex-fade: 0;
-    --hex-blur: 0;
     transform: translateY(20px);
   }
 }

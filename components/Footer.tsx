@@ -30,7 +30,7 @@ export default function Footer({ variant = 'full', className = '', style }: Foot
       </p>
       {variant === 'full' && (
         <p className="text-[10px] text-white/40 m-0">
-          This website uses Strapi, managed by{' '}
+          This website is managed by{' '}
           <a
             href="https://github.com/masterunix/gleck"
             target="_blank"

@@ -17,6 +17,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import HexShell from './HexShell';
+import { ENTER_EASE, EXIT_EASE, HEX_FADE_DURATION, HEX_SLIDE } from '@/lib/hexTransition';
 
 // ─── Props ───────────────────────────────────────────────────────────────────
 
@@ -24,13 +25,15 @@ interface HexagonProps {
   children?: React.ReactNode;
   className?: string;
   onClick?: () => void;
-  /** Entrance animation delay in seconds (typically col + row * 0.05) */
+  /** Intro delay in seconds (enterDelay in lib/hexTransition) */
   delay?: number;
+  /** Outro delay in seconds (exitDelay in lib/hexTransition) */
+  exitDelay?: number;
   /** Set to false to skip the y-slide entrance (used for off-screen carousel items) */
   animateY?: boolean;
   /** Inline styles — must include position, left, top, width, height */
   style?: React.CSSProperties;
-  /** When true, plays the exit animation (fade + slide down) */
+  /** When true, plays the outro (the intro backwards) */
   isExiting?: boolean;
 }
 
@@ -41,25 +44,24 @@ export default function Hexagon({
   className = '',
   onClick,
   delay = 0,
+  exitDelay = 0,
   animateY = true,
   style,
   isExiting = false
 }: HexagonProps) {
   return (
-    // Fades via --hex-fade, not opacity, so the glass fades in with the outline. On exit
-    // the blur drops at once (--hex-blur), which makes the sweep (see HexShell)
+    // Fades via --hex-fade, not opacity, so the glass fades with the outline (see HexShell)
     <motion.div
-      initial={{ '--hex-fade': 0, '--hex-blur': 1, marginTop: animateY ? 20 : 0 }}
+      initial={{ '--hex-fade': 0, marginTop: animateY ? HEX_SLIDE : 0 }}
       animate={
         isExiting
-          ? { '--hex-fade': 0, '--hex-blur': 0, marginTop: 20 }
-          : { '--hex-fade': 1, '--hex-blur': 1, marginTop: 0 }
+          ? { '--hex-fade': 0, marginTop: HEX_SLIDE }
+          : { '--hex-fade': 1, marginTop: 0 }
       }
       transition={{
-        duration: 0.15,
-        delay,
-        ease: isExiting ? 'easeIn' : [0.25, 0.46, 0.45, 0.94],
-        '--hex-blur': { duration: 0, delay }
+        duration: HEX_FADE_DURATION,
+        delay: isExiting ? exitDelay : delay,
+        ease: isExiting ? EXIT_EASE : ENTER_EASE
       }}
       className="relative"
       style={style}

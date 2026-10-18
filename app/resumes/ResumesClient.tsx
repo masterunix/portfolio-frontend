@@ -8,6 +8,7 @@ import { useIsMobile } from '@/hooks/useIsMobile';
 import { useViewportSize } from '@/hooks/useViewportSize';
 import { useMounted } from '@/hooks/useMounted';
 import { computeHexLayout, calculateHexX, calculateHexY } from '@/lib/layoutUtils';
+import { enterDelay, exitDelay, exitDurationMs, lastStepOf } from '@/lib/hexTransition';
 import Hexagon from '@/components/Hexagon';
 import ResumeHex from '@/components/ResumeHex';
 import Footer from '@/components/Footer';
@@ -39,13 +40,6 @@ export default function ResumesClient({ resumes = [] }: ResumesClientProps) {
     if (!viewport) return null;
     return computeHexLayout(viewport.width, viewport.height, GRID_CONFIG);
   }, [viewport]);
-
-  const handleBack = useCallback((e: React.MouseEvent) => {
-    e.preventDefault();
-    setIsExiting(true);
-    const maxDelay = (GRID_CONFIG.cols + GRID_CONFIG.rows) * 50;
-    setTimeout(() => router.push('/'), maxDelay + 200);
-  }, [router]);
 
   const shouldSkip = useCallback((row: number, col: number) => {
     const skipList = [[0, 0], [2, 0], [0, 7], [2, 7], [1, 7], [3, 7]];
@@ -98,6 +92,15 @@ export default function ResumesClient({ resumes = [] }: ResumesClientProps) {
 
     return items;
   }, [layout, resumes, shouldSkip, resumePositions, viewport]);
+
+  // The exit is the entrance backwards, and navigates when it ends
+  const lastStep = lastStepOf(gridItems);
+
+  const handleBack = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsExiting(true);
+    setTimeout(() => router.push('/'), exitDurationMs(lastStep));
+  }, [router, lastStep]);
 
   /** Downloads the resume's file (same origin, so `download` names it), or opens its link */
   const openResume = (resume: Resume) => {
@@ -193,10 +196,11 @@ export default function ResumesClient({ resumes = [] }: ResumesClientProps) {
 
       <div className="absolute inset-0">
         {gridItems.map((item) => {
-          const delay = (item.col + item.row) * 0.05;
           return (
             <Hexagon
-              key={item.id} isExiting={isExiting} delay={delay}
+              key={item.id} isExiting={isExiting}
+              delay={enterDelay(item.row, item.col)}
+              exitDelay={exitDelay(item.row, item.col, lastStep)}
               style={{ position: 'absolute', left: item.x, top: item.y, width: hexWidth, height: hexHeight }}
             >
               {item.data ? (

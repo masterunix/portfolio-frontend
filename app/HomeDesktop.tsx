@@ -9,7 +9,11 @@ import { useTypewriter } from '@/hooks/useTypewriter';
 import { useViewportSize } from '@/hooks/useViewportSize';
 import { useMounted } from '@/hooks/useMounted';
 import { navigationContent, skipList, NavigationItem } from '@/lib/constants';
+import { enterDelay, exitDelay, exitDurationMs, lastStepOf } from '@/lib/hexTransition';
 import type { HomeMessage } from '@/types';
+
+/** The home grid's wave is a little slower than the sub-pages' */
+const HOME_STAGGER = 0.06;
 
 interface GridItem {
   id: string;
@@ -20,6 +24,7 @@ interface GridItem {
   width: number;
   height: number;
   delay: number;
+  exitDelay: number;
   navData?: NavigationItem;
 }
 
@@ -69,14 +74,18 @@ export default function HomeDesktop({ messages }: { messages: HomeMessage[] }) {
         const y = startY + row * hexSpacingY;
         const hexId = `${row}-${col}`;
         const navData = navigationContent[hexId];
-        const delay = (col + row) * 0.06;
 
         newGridItems.push({
           id: hexId, row, col, x, y,
-          width: hexWidth, height: hexHeight, delay, navData
+          width: hexWidth, height: hexHeight,
+          delay: enterDelay(row, col, HOME_STAGGER), exitDelay: 0, navData
         });
       }
     }
+
+    // The exit is the entrance backwards: the last hex in leaves first
+    const lastStep = lastStepOf(newGridItems);
+    newGridItems.forEach((item) => { item.exitDelay = exitDelay(item.row, item.col, lastStep, HOME_STAGGER); });
 
     return newGridItems;
   }, [viewport]);
@@ -88,12 +97,12 @@ export default function HomeDesktop({ messages }: { messages: HomeMessage[] }) {
       return;
     }
 
+    // Navigate the moment the exit wave ends
     setIsExiting(true);
-    const maxDelay = 600; 
     setTimeout(() => {
       router.push(href);
-    }, maxDelay + 200);
-  }, [router]);
+    }, exitDurationMs(lastStepOf(gridItems), HOME_STAGGER));
+  }, [router, gridItems]);
 
   if (!mounted) return null;
 
@@ -131,7 +140,6 @@ export default function HomeDesktop({ messages }: { messages: HomeMessage[] }) {
             top: `${item.y}px`,
             width: `${item.width}px`,
             height: `${item.height}px`,
-            animation: isExiting ? `hexFadeOutDown 0.15s ease-in forwards ${(item.col + item.row) * 50}ms` : undefined
           };
 
           if (item.navData) {
@@ -148,6 +156,8 @@ export default function HomeDesktop({ messages }: { messages: HomeMessage[] }) {
                   description={nav.description}
                   color={nav.color}
                   delay={item.delay}
+                  exitDelay={item.exitDelay}
+                  isExiting={isExiting}
                   style={style}
                 />
               </div>
@@ -155,9 +165,11 @@ export default function HomeDesktop({ messages }: { messages: HomeMessage[] }) {
           }
 
           return (
-            <Hexagon 
-              key={item.id} 
-              delay={item.delay} 
+            <Hexagon
+              key={item.id}
+              delay={item.delay}
+              exitDelay={item.exitDelay}
+              isExiting={isExiting}
               style={style}
               className="pointer-events-none" 
             />
