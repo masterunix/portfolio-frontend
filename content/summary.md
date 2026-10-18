@@ -17,41 +17,44 @@
 #   :::timeline                  a timeline; ### 2021 – 2023 | Role at Company
 #   :::columns                   side by side; put a +++ line between columns
 title: Hi, I'm Vatsal
-tagline: I build for the web, and an AI agent called Gleck that helps run this site.
+tagline: I build for the web and with AI, including Gleck, the agent that manages this site.
 links:
   - { label: GitHub, href: "https://github.com/masterunix" }
   - { label: LinkedIn, href: "https://www.linkedin.com/in/vatsal-goyal-05a896165" }
+  - { label: Resume, href: "/media/resumes/vatsal-resume.pdf" }
   - { label: Email, href: "mailto:vatsalgoyal9999@gmail.com" }
 ---
 
-Replace this paragraph with a few sentences about who you are, what you work on and what
-you're looking for. Everything on this page comes from `content/summary.md`.
+I'm a developer working across full-stack web development and AI.
 
 :::callout Right now
-Replace this with what you're focused on at the moment.
+Interning in full-stack development, and building [Gleck](https://github.com/masterunix/gleck) and AxeSuite.
 :::
 
-## What I do
+## What I build
 
 :::cards
-### Web
-Replace this with the kind of web work you do.
-
 ### AI agents
-[Gleck](https://github.com/masterunix/gleck) is my personal AI agent; it manages this website.
+Gleck, my personal AI agent: it runs locally, manages everyday tasks and websites (this one included), sends mail and helps with research.
 
-### Something else
-Replace this, or delete the card.
+### Web apps
+AxeSuite, interconnected apps for learning CS; JobNest, a job portal built at Xebia; and client sites like 450 House of Sourdough.
+
+### Models
+PocketLM: eight local models trained and fine-tuned on a MacBook, measuring political polarization.
 :::
 
 ## Journey
 
 :::timeline
-### 2024 – now | Your current role
-Replace this with what you do there.
+### Jan – Jul 2026 | Internship
+Full-stack development.
 
-### 2022 – 2024 | An earlier role
-Replace this, or delete the entry.
+### Jun – Jul 2025 | Full Stack Intern, Xebia
+Built JobNest, a job-finding portal.
+
+### 2023 – 2024 | Junior Web Developer, Digispheres
+Created websites and managed clients.
 :::
 
 ## More
