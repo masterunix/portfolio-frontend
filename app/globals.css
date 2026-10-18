@@ -257,13 +257,15 @@ body {
    ═══════════════════════════════════════════════════════════════════════════ */
 
 /* ─── Hex fade ───────────────────────────────────────────────────────────────
-   Hexagons fade in and out by animating --hex-fade on their wrapper, never
-   `opacity`. An ancestor with opacity < 1 stops a backdrop-filter from seeing
-   what's behind it (it becomes the "backdrop root"), so fading the wrapper made
-   each hex's glass pop in only after its outline had finished fading: a second
-   wave. Each layer applies the fade to itself instead, which keeps the blur working.
+   Hexagons fade in by animating --hex-fade on their wrapper, not `opacity`. An
+   ancestor with opacity < 1 stops a backdrop-filter from seeing what's behind it
+   (it becomes the "backdrop root"), so fading the wrapper made each hex's glass pop
+   in only after its outline had finished fading: a second wave. Each layer applies
+   the fade to itself instead, which keeps the blur working.
 
-   The timing of the intro and outro (the intro backwards) is in lib/hexTransition.ts.
+   They fade out with the wrapper's real opacity on purpose: each hex's blur drops
+   off the moment it starts leaving, so a sharp edge sweeps across the grid. Timing
+   for both is in lib/hexTransition.ts.
    @property types the variable and defaults it to 1 for hexes outside a wrapper. */
 
 @property --hex-fade {

@@ -93,7 +93,7 @@ export default function ResumesClient({ resumes = [] }: ResumesClientProps) {
     return items;
   }, [layout, resumes, shouldSkip, resumePositions, viewport]);
 
-  // The exit is the entrance backwards, and navigates when it ends
+  // The exit wave's length: when to navigate
   const lastStep = lastStepOf(gridItems);
 
   const handleBack = useCallback((e: React.MouseEvent) => {
@@ -200,7 +200,7 @@ export default function ResumesClient({ resumes = [] }: ResumesClientProps) {
             <Hexagon
               key={item.id} isExiting={isExiting}
               delay={enterDelay(item.row, item.col)}
-              exitDelay={exitDelay(item.row, item.col, lastStep)}
+              exitDelay={exitDelay(item.row, item.col)}
               style={{ position: 'absolute', left: item.x, top: item.y, width: hexWidth, height: hexHeight }}
             >
               {item.data ? (

@@ -93,7 +93,7 @@ export default function BlogClient({ posts }: { posts: BlogPostSummary[] }) {
     return items;
   }, [layout, posts, viewport]);
 
-  // The exit is the entrance backwards, and navigates when it ends
+  // The exit wave's length: when to navigate
   const lastStep = lastStepOf(gridItems);
 
   /** Plays the exit animation (desktop honeycomb only), then navigates */
@@ -179,7 +179,7 @@ export default function BlogClient({ posts }: { posts: BlogPostSummary[] }) {
           <Hexagon
             key={item.id} isExiting={isExiting}
             delay={enterDelay(item.row, item.col)}
-            exitDelay={exitDelay(item.row, item.col, lastStep)}
+            exitDelay={exitDelay(item.row, item.col)}
             onClick={item.post ? () => leaveTo(`/blog/${item.post!.slug}`, true) : undefined}
             style={{ position: 'absolute', left: item.x, top: item.y, width: hexWidth, height: hexHeight }}
           >

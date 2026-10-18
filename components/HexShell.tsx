@@ -8,10 +8,11 @@
  *
  * Children are rendered inside the shell for content.
  *
- * To fade a hex, animate `--hex-fade` (0–1) on a wrapper, not `opacity`: an
- * ancestor with opacity < 1 switches off the glass blur until the fade ends.
- * The blur, outline and .hex-content each read the variable (globals.css).
- * Timing for the intro and outro: lib/hexTransition.ts.
+ * An ancestor with opacity < 1 switches off the glass blur until the fade ends.
+ * So a hex fades in by animating `--hex-fade` (0–1) on a wrapper, which the blur,
+ * outline and .hex-content each read (globals.css): the glass fades in with the
+ * outline. It fades out with real `opacity` on purpose: the blur drops off the
+ * moment it starts leaving, which makes the exit sweep. Timing: lib/hexTransition.ts.
  */
 'use client';
 

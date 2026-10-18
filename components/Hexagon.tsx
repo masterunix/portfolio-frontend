@@ -50,13 +50,14 @@ export default function Hexagon({
   isExiting = false
 }: HexagonProps) {
   return (
-    // Fades via --hex-fade, not opacity, so the glass fades with the outline (see HexShell)
+    // Fades in via --hex-fade, so the glass fades in with the outline, and out via
+    // opacity, so the blur drops off at once (see lib/hexTransition and HexShell)
     <motion.div
-      initial={{ '--hex-fade': 0, marginTop: animateY ? HEX_SLIDE : 0 }}
+      initial={{ opacity: 1, '--hex-fade': 0, marginTop: animateY ? HEX_SLIDE : 0 }}
       animate={
         isExiting
-          ? { '--hex-fade': 0, marginTop: HEX_SLIDE }
-          : { '--hex-fade': 1, marginTop: 0 }
+          ? { opacity: 0, '--hex-fade': 1, marginTop: HEX_SLIDE }
+          : { opacity: 1, '--hex-fade': 1, marginTop: 0 }
       }
       transition={{
         duration: HEX_FADE_DURATION,

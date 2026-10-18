@@ -4,7 +4,7 @@
  * Handles three animation phases:
  * 1. Entrance: Diagonal wave using framer-motion (col+row stagger)
  * 2. Active:   Smooth horizontal scrolling via useTransform (declarative)
- * 3. Exit:     The entrance played backwards (lib/hexTransition)
+ * 3. Exit:     The same diagonal wave, fading out and sliding down (lib/hexTransition)
  *
  * The X position is computed declaratively via framer-motion's useTransform,
  * which wraps the offset using modular arithmetic for seamless infinite looping.
@@ -48,8 +48,6 @@ interface CarouselHexProps {
   totalWidth: number;
   /** Horizontal spacing between hex centers */
   hexSpacing: number;
-  /** The largest screen row + column (carouselLastStep), so the exit starts there */
-  lastStep: number;
   /** When true, plays the exit animation */
   isExiting: boolean;
 }
@@ -68,7 +66,6 @@ export default function CarouselHex({
   carouselOffset,
   totalWidth,
   hexSpacing,
-  lastStep,
   isExiting
 }: CarouselHexProps) {
   /**
@@ -87,22 +84,28 @@ export default function CarouselHex({
   const entranceDelay = setIndex === 0 ? enterDelay(row, col) : 0;
 
   // Read once when the exit starts: the screen column this hex is in right now.
-  // Hexes off screen get no delay (exitDelay clamps them to 0).
+  // Odd rows sit half a hex to the right; taking that off first keeps every row's
+  // columns on the same diagonals at any scroll position. Hexes off screen to the
+  // left get no delay.
   const exitDelaySec = useMemo(() => {
     if (!isExiting) return 0;
-    const screenCol = Math.round(x.get() / hexSpacing) + 1;
-    return screenCol < 0 ? 0 : exitDelay(row, screenCol, lastStep);
-  }, [isExiting, x, hexSpacing, row, lastStep]);
+    const rowOffset = row % 2 === 1 ? hexSpacing / 2 : 0;
+    const screenCol = Math.round((x.get() - rowOffset) / hexSpacing) + 1;
+    return screenCol < 0 ? 0 : exitDelay(row, screenCol);
+  }, [isExiting, x, hexSpacing, row]);
 
   return (
-    // Fades via --hex-fade, not opacity, so the glass fades with the outline (see HexShell)
+    // Fades in via --hex-fade, so the glass fades in with the outline, and out via
+    // opacity, so the blur drops off at once (see lib/hexTransition and HexShell)
     <motion.div
       className="absolute"
-      initial={setIndex === 0 ? { '--hex-fade': 0, marginTop: HEX_SLIDE } : { '--hex-fade': 1, marginTop: 0 }}
+      initial={setIndex === 0
+        ? { opacity: 1, '--hex-fade': 0, marginTop: HEX_SLIDE }
+        : { opacity: 1, '--hex-fade': 1, marginTop: 0 }}
       animate={
         isExiting
-          ? { '--hex-fade': 0, marginTop: HEX_SLIDE }
-          : { '--hex-fade': 1, marginTop: 0 }
+          ? { opacity: 0, '--hex-fade': 1, marginTop: HEX_SLIDE }
+          : { opacity: 1, '--hex-fade': 1, marginTop: 0 }
       }
       transition={{
         duration: HEX_FADE_DURATION,

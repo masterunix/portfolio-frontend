@@ -57,7 +57,7 @@ export default function ProjectsDesktop({ projects = [], skills = [] }: Projects
     onIndexChange: setActiveIndex
   });
 
-  // The exit wave runs over what is on screen, and navigates when it ends
+  // The exit wave runs over what is on screen; its length is when to navigate
   const lastStep = viewport && layout ? carouselLastStep(viewport.width, layout.hexSpacingX, GRID_CONFIG.rows) : 0;
 
   const handleBack = useCallback((e: React.MouseEvent) => {
@@ -124,7 +124,7 @@ export default function ProjectsDesktop({ projects = [], skills = [] }: Projects
             key={item.id} baseX={item.x} y={item.y} width={hexWidth} height={hexHeight}
             row={item.row} col={item.col} setIndex={item.setIndex}
             carouselOffset={carouselOffset} totalWidth={totalWidth}
-            hexSpacing={hexSpacingX} lastStep={lastStep} isExiting={isExiting}
+            hexSpacing={hexSpacingX} isExiting={isExiting}
           >
             <HexShell isExiting={isExiting}>
               {item.isProject ? (

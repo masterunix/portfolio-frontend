@@ -12,7 +12,7 @@ import { navigationContent, skipList, NavigationItem } from '@/lib/constants';
 import { enterDelay, exitDelay, exitDurationMs, lastStepOf } from '@/lib/hexTransition';
 import type { HomeMessage } from '@/types';
 
-/** The home grid's wave is a little slower than the sub-pages' */
+/** The home grid's intro wave is a little slower than the sub-pages' */
 const HOME_STAGGER = 0.06;
 
 interface GridItem {
@@ -78,14 +78,10 @@ export default function HomeDesktop({ messages }: { messages: HomeMessage[] }) {
         newGridItems.push({
           id: hexId, row, col, x, y,
           width: hexWidth, height: hexHeight,
-          delay: enterDelay(row, col, HOME_STAGGER), exitDelay: 0, navData
+          delay: enterDelay(row, col, HOME_STAGGER), exitDelay: exitDelay(row, col), navData
         });
       }
     }
-
-    // The exit is the entrance backwards: the last hex in leaves first
-    const lastStep = lastStepOf(newGridItems);
-    newGridItems.forEach((item) => { item.exitDelay = exitDelay(item.row, item.col, lastStep, HOME_STAGGER); });
 
     return newGridItems;
   }, [viewport]);
@@ -97,11 +93,11 @@ export default function HomeDesktop({ messages }: { messages: HomeMessage[] }) {
       return;
     }
 
-    // Navigate the moment the exit wave ends
+    // Navigate a beat after the exit wave ends
     setIsExiting(true);
     setTimeout(() => {
       router.push(href);
-    }, exitDurationMs(lastStepOf(gridItems), HOME_STAGGER));
+    }, exitDurationMs(lastStepOf(gridItems)));
   }, [router, gridItems]);
 
   if (!mounted) return null;
