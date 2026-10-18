@@ -1,20 +1,17 @@
-import type { Metadata } from 'next';
-
 import HexPage from '@/components/HexPage';
 import Honeycomb from '@/components/Honeycomb';
 import MobileList from '@/components/MobileList';
-import { getDSAConcepts, getDSAPlatforms } from '@/lib/content';
+import { getDSAConcepts, getDSAPlatforms, getSite } from '@/lib/content';
 import type { GridConfig } from '@/lib/hexLayout';
+import { pageMetadata } from '@/lib/metadata';
 import { conceptTile, platformTile } from '@/lib/tiles';
 
-export const metadata: Metadata = {
-  title: 'DSA Stats | Vatsal Goyal',
-  description: 'My competitive programming profiles and data structures & algorithms achievements across Codeforces, LeetCode, and more.',
-};
+export const generateMetadata = () => pageMetadata('dsa');
 
 const GRID: GridConfig = { rows: 3, cols: 5, gap: 20, scale: 4.27 };
 
 export default function DSAPage() {
+  const { title } = getSite().pages.dsa;
   const platforms = getDSAPlatforms().map(platformTile);
   const concepts = getDSAConcepts().map(conceptTile);
   // Concepts fill the top row, then the bottom; platforms sit centred in the middle
@@ -26,7 +23,7 @@ export default function DSAPage() {
   ];
 
   return (
-    <HexPage title="DSA Stats" mobile={<MobileList title="DSA Stats" sections={[{ tiles: platforms }]} />}>
+    <HexPage title={title} mobile={<MobileList title={title} sections={[{ tiles: platforms }]} />}>
       <Honeycomb grid={GRID} cells={cells} fill={false} />
     </HexPage>
   );

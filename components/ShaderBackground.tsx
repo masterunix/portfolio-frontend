@@ -1,7 +1,7 @@
 /**
  * ShaderBackground.tsx — The animated background: dithered colour blobs drifting
  * behind every page, in the active theme's colours for the current page
- * (content/background-themes.yaml). Colours ease over when you change page.
+ * (content/background.md). Colours ease over when you change page.
  *
  * One fragment shader on a full-screen triangle, in plain WebGL: no 3D library to
  * download before the page can start.
@@ -11,7 +11,7 @@
 import { useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 
-import type { BackgroundTheme } from '@/types';
+import type { Background, ThemePage } from '@/types';
 
 /**
  * The blobs. Each drifts around (x, y) by `ax`/`ay`, at speeds `fx`/`fy`, along sin
@@ -106,15 +106,14 @@ function compile(gl: WebGLRenderingContext): WebGLProgram {
   return program;
 }
 
-export default function ShaderBackground({ theme }: { theme: BackgroundTheme | null }) {
+export default function ShaderBackground({ background }: { background: Background | null }) {
   const pathname = usePathname();
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   // "/" is home; "/blog/a-post" uses the blog's colours
   const page = pathname.split('/')[1] || 'home';
-  const palette = theme && (theme.colorPalettes.find((p) => p.page === page) ?? theme.colorPalettes.find((p) => p.page === 'all'));
-  const colors = palette?.colors.join(' ');
-  const speed = theme?.animationSpeed ?? 1;
+  const colors = background && (background.palettes[page as ThemePage] ?? background.palettes.all).join(' ');
+  const speed = background?.speed ?? 1;
 
   // The render loop reads these, so changing page eases colours without restarting
   const target = useRef<number[][]>([]);

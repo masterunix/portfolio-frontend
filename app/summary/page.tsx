@@ -14,7 +14,7 @@ import { getSummary } from '@/lib/content';
 export function generateMetadata(): Metadata {
   const { title, tagline } = getSummary();
   return {
-    title: `${title} | Vatsal Goyal`,
+    title,
     description: tagline,
     openGraph: { title, description: tagline, type: 'profile' },
   };

@@ -10,9 +10,9 @@ export interface Media {
   name: string;
 }
 
-/** A project entry */
+/** content/projects/<slug>.md */
 export interface Project {
-  id: number;
+  slug: string;
   title: string;
   tech: string;
   description: string;
@@ -21,84 +21,106 @@ export interface Project {
   color: string;
   github?: string;
   visit?: string;
-  order: number;
 }
 
-export type SkillType = 'skills_top' | 'skills_bottom' | 'career';
-export type SkillCategory = 'beginner' | 'intermediate' | 'proficient' | 'expert';
+/** Which row of /skills: experience in the middle, skills above and below */
+export type SkillRow = 'top' | 'middle' | 'bottom';
+export type SkillLevel = 'beginner' | 'intermediate' | 'proficient' | 'expert';
 
-/** A skill/experience entry */
+/** content/skills/<slug>.md */
 export interface Skill {
-  id: number;
-  name: string;
+  slug: string;
+  title: string;
   description: string;
-  type: SkillType;
-  category?: SkillCategory;
+  row: SkillRow;
+  level?: SkillLevel;
   color: string;
   icon?: string;
   logo?: Media;
-  attachments: Array<{
-    id: number;
-    label: string;
-    file: Media;
-  }>;
-  order: number;
+  attachments: Array<{ label: string; file: Media }>;
 }
 
-/** A resume entry: downloads `file`, or opens `link` when there is no file */
+/** content/resumes/<slug>.md: downloads `file`, or opens `link` */
 export interface Resume {
-  id: number;
-  domain: string;
+  slug: string;
+  title: string;
   description: string;
-  /** The name the download is saved as */
-  filename?: string;
   color: string;
   icon: string;
-  order: number;
   file?: Media;
+  /** The name the download is saved as */
+  filename?: string;
   link?: string;
 }
 
-/** A DSA platform entry */
+/** content/dsa/platforms/<slug>.md */
 export interface DSAPlatform {
-  id: number;
-  name: string;
+  slug: string;
+  title: string;
   url: string;
   color: string;
   logo?: Media;
-  order: number;
 }
 
-/** A DSA concept (content/dsa-concepts.yaml) */
+/** One of content/dsa/concepts.md */
 export interface DSAConcept {
-  id: number;
   title: string;
   icon: string;
   description: string;
   color: string;
-  order: number;
 }
 
-/** A home page typewriter message */
-export interface HomeMessage {
-  id: number;
-  text: string;
-  link?: string;
-  order: number;
+/** A tile of the home menu (content/home.md) */
+export interface MenuItem {
+  title: string;
+  description: string;
+  href: string;
+  /** [row, column] in the home honeycomb */
+  cell: [number, number];
+  /** A built-in icon's name (lib/icons.ts), unless `logo` is set */
+  icon?: string;
+  logo?: Media;
+  color: string;
 }
 
-/** A notice in the Gleck widget, its Markdown rendered to inline HTML */
-export interface GleckNotice {
-  id: number;
-  html: string;
-  link?: string;
-  order: number;
+/** content/home.md */
+export interface Home {
+  menu: MenuItem[];
+  /** The typewriter lines */
+  messages: Array<{ text: string; link?: string }>;
 }
 
-/** The Gleck widget's "know more" link (content/settings/gleck.yaml) */
-export interface GleckSettings {
-  knowMoreLink: string;
-  knowMoreText: string;
+/** content/gleck.md */
+export interface Gleck {
+  moreText: string;
+  moreLink: string;
+  /** Each notice's Markdown rendered to inline HTML */
+  notices: Array<{ html: string; link?: string }>;
+}
+
+export type ThemePage = 'all' | 'home' | 'projects' | 'skills' | 'dsa' | 'resumes' | 'blog' | 'summary';
+
+/** content/background.md (null when not animated) */
+export interface Background {
+  speed: number;
+  /** 4 colours per page; `all` is always there */
+  palettes: Partial<Record<ThemePage, string[]>> & { all: string[] };
+}
+
+export interface PageText {
+  title: string;
+  description: string;
+  /** The hint under the carousel buttons */
+  hint?: string;
+}
+
+/** content/site.md */
+export interface Site {
+  title: string;
+  description: string;
+  pages: Record<'projects' | 'skills' | 'dsa' | 'resumes' | 'blog', PageText>;
+  /** The footer's lines as inline HTML; the first shows everywhere */
+  footer: string[];
 }
 
 /** A blog post's details, without its body (content/blog/<slug>.md) */
@@ -138,24 +160,4 @@ export interface Summary {
   links: { label: string; href: string }[];
   /** The body, rendered from Markdown */
   html: string;
-}
-
-export type ThemePage = 'all' | 'home' | 'projects' | 'skills' | 'dsa' | 'resumes' | 'blog' | 'summary';
-
-/** A background theme for the animated shader */
-export interface BackgroundTheme {
-  id: number;
-  name: string;
-  slug: string;
-  enabled: boolean;
-  isDefault: boolean;
-  order: number;
-  animationType: 'static' | 'shader-mesh' | 'shader-wave' | 'css-gradient';
-  animationSpeed: number;
-  grainIntensity: number;
-  colorPalettes: Array<{
-    id: number;
-    page: ThemePage;
-    colors: string[];
-  }>;
 }

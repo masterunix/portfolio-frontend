@@ -20,9 +20,12 @@ npm run lint
 ```
 
 The first visit to each page in `npm run dev` compiles it, so it's slower than the
-live site, where every page is built ahead of time. If a change to `app/globals.css`
-doesn't show up after restarting the dev server (it can miss edits made while it was
-stopped, or during an install), delete `.next/dev` and start it again.
+live site, where every page is built ahead of time. If a style change doesn't show up,
+stop the dev server, delete `.next/dev` and start it again.
+
+**Working with an AI agent?** [`AGENTS.md`](AGENTS.md) says what to update where and
+how to test it. Queue changes in [`future.md`](future.md); finished ones are logged in
+[`completed.md`](completed.md).
 
 ## How it's put together
 
@@ -31,12 +34,14 @@ turns it into **tiles** (`lib/tiles.tsx`) and hands them to a layout:
 
 ```
 app/
-  page.tsx                 Home: the menu (lib/navigation.tsx) in a honeycomb
+  page.tsx                 Home: the menu (content/home.md) in a honeycomb
   projects/, skills/       Carousels: main tiles in the middle row, skills above and below
-  dsa/, resumes/, blog/    Honeycombs with tiles in chosen cells
-  blog/[slug]/, summary/   Text pages in a glass panel (GlassArticle)
-  layout.tsx               Background, Gleck, fonts
-  globals.css              All shared styles, by section
+  dsa/, resumes/           Honeycombs with tiles in chosen cells
+  blog/, blog/[slug]/, summary/
+                           Text pages in a glass panel (GlassArticle)
+  layout.tsx               Background, Gleck, fonts, footer text
+  site.css                 All the site's styles, by section
+  globals.css              Tailwind's setup only (keep styles out: see the file)
 components/
   HexPage.tsx              Page frame: mobile list or hex layout, header, footer, outro
   Honeycomb.tsx            A fixed honeycomb of hexagons
@@ -49,12 +54,13 @@ components/
   GlassArticle.tsx, Gleck.tsx, ShaderBackground.tsx, Typewriter.tsx, Footer.tsx, ItemIcon.tsx
 lib/
   content.ts               Reads and checks content/
+  markdown.ts              Markdown → HTML, with the layout blocks
   tiles.tsx                Content → tiles
   hexLayout.ts             Honeycomb geometry
   hexTransition.ts         Intro/outro timing
+  icons.ts, metadata.ts, format.ts
 content/                   The site's content (below)
 public/media/              Logos, resumes and attachments the content points to
-scripts/export-strapi.mjs  One-time export from the old Strapi CMS
 ```
 
 **Tiles.** A tile is an icon, a title, a few lines of text, and either one link
@@ -73,38 +79,38 @@ sites, files and email work like normal links.
 
 ## Content
 
-Everything the site shows is in `content/`, one YAML file per collection. Edit a file and
-it shows on reload in dev, and on the next deploy in production. There is no CMS or
-database to run.
+Everything the site shows is in `content/`, as Markdown files. Edit one and it shows on
+reload in dev, and on the next deploy in production. There is no CMS or database.
 
 | File | Shows on |
 |---|---|
-| `content/projects.yaml` | /projects (middle row, mobile cards) |
-| `content/skills.yaml` | /skills; also the outer rows of /projects |
-| `content/resumes.yaml` | /resumes |
-| `content/dsa-platforms.yaml` | /dsa (middle row) |
-| `content/dsa-concepts.yaml` | /dsa (top and bottom rows) |
-| `content/home-messages.yaml` | the typewriter on the home page |
-| `content/gleck-notices.yaml` | Gleck's widget, bottom left |
-| `content/settings/gleck.yaml` | Gleck's "know more" link |
-| `content/background-themes.yaml` | the animated background |
-| `content/blog/<slug>.md` | /blog and /blog/&lt;slug&gt; (Markdown, see `how-to-write-a-post.md`) |
-| `content/summary.md` | /summary (Markdown) |
+| `content/site.md` | the footer, page headings, carousel hints, search descriptions |
+| `content/home.md` | the home menu (tile text, links, icons, positions) and the typewriter lines |
+| `content/summary.md` | /summary |
+| `content/projects/<name>.md` | /projects, one file per project |
+| `content/skills/<name>.md` | /skills (and the outer rows of /projects), one per skill or role |
+| `content/resumes/<name>.md` | /resumes, one per resume; PDFs in `public/media/resumes/` |
+| `content/dsa/platforms/<name>.md` | /dsa middle row, one per platform |
+| `content/dsa/concepts.md` | /dsa top and bottom rows |
+| `content/blog/<name>.md` | /blog; the file name is the post's URL |
+| `content/gleck.md` | Gleck's notices and link, bottom left |
+| `content/background.md` | the animated background's colours |
 
-The comments at the top of each file list its fields. Logos, PDFs and other files go in
-`public/media/` and are referenced by their site path (`logo: /media/logos/leetcode.png`).
+An entry file has its settings between two `---` lines at the top and its description
+below them. Each folder's `_template.md` lists every field (files starting with `_` are
+skipped); the single files explain theirs in comments at the top. Entries sort by
+`order` (lowest first); `draft: true` hides one. Pictures, PDFs and other files go in
+`public/media/` and are referenced by site path (`logo: /media/logos/leetcode.png`); a
+tile's `logo:` replaces the letters in its icon square.
 
-`lib/content.ts` checks every entry when it loads: required fields, allowed values,
-number ranges, colours, links, and that each media path exists and is the right kind of
-file. A mistake shows as an error naming the file, entry and field (in the dev overlay,
-or as a failed build), so a broken logo or link can't reach the live site.
-
-Entries sort by `order` (lowest first); `draft: true` hides one.
+`lib/content.ts` checks every file when it loads: required fields, allowed values,
+number ranges, colours, links, and that each picture and file exists. A mistake shows as
+an error naming the file and field (in the dev overlay, or as a failed build), so a
+broken logo or link can't reach the live site.
 
 ### Markdown pages
 
-Blog posts and the summary are Markdown with their details between two `---` lines at
-the top. Besides normal Markdown (and HTML), they can use layout blocks, each ended by a
+The bodies of blog posts and the summary are full Markdown (and HTML), plus layout blocks, each ended by a
 line containing just `:::`:
 
 ```markdown
@@ -130,18 +136,6 @@ right
 ```
 
 An unknown block, an unclosed one or a missing image fails like any other content mistake.
-
-### Importing from Strapi
-
-The content was exported from the old Strapi CMS with:
-
-```bash
-node scripts/export-strapi.mjs https://your-strapi.example.com   # default: http://localhost:1337
-```
-
-It overwrites `content/*.yaml` (not `settings/`) and downloads the media into
-`public/media/`, printing every cleanup it makes (links without https://, placeholder
-text in link fields, hashed file names).
 
 ## Deploying
 

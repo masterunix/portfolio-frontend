@@ -105,7 +105,7 @@ export default function Carousel({ main, supporting, label, hint }: CarouselProp
         ))}
       </div>
 
-      <nav className="carousel-bar glass page-fade" aria-label={label}>
+      <nav className="carousel-bar page-fade" aria-label={label}>
         {main.map((tile, i) => (
           <button
             key={tile.key}
@@ -116,7 +116,7 @@ export default function Carousel({ main, supporting, label, hint }: CarouselProp
             style={{ '--color': tile.color } as CSSProperties}
           >
             {tile.icon}
-            <span className="carousel-tooltip glass" role="tooltip">
+            <span className="carousel-tooltip" role="tooltip">
               <strong>{tile.title}</strong>
               {(tile.meta ?? tile.description) && <span>{tile.meta ?? tile.description}</span>}
             </span>

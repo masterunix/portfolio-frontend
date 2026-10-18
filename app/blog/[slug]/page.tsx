@@ -15,7 +15,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const post = getPost((await params).slug);
   if (!post) return {};
   return {
-    title: `${post.title} | Vatsal Goyal`,
+    title: post.title,
     description: post.description,
     openGraph: {
       title: post.title,

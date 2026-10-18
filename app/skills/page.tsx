@@ -1,40 +1,34 @@
-import type { Metadata } from 'next';
-
 import Carousel from '@/components/Carousel';
 import HexPage from '@/components/HexPage';
 import MobileList from '@/components/MobileList';
-import { getSkills } from '@/lib/content';
+import { getSite, getSkills } from '@/lib/content';
+import { pageMetadata } from '@/lib/metadata';
 import { skillTile } from '@/lib/tiles';
 
-export const metadata: Metadata = {
-  title: 'Experience & Skills | Vatsal Goyal',
-  description: 'My tech stack, career experience, and professional skills — from React and Node.js to AI/ML.',
-};
+export const generateMetadata = () => pageMetadata('skills');
 
 export default function SkillsPage() {
+  const { title, hint } = getSite().pages.skills;
   const skills = getSkills();
-  const career = skills.filter((s) => s.type === 'career').map((s) => skillTile(s));
+  const experience = skills.filter((s) => s.row === 'middle').map((s) => skillTile(s));
   // Top-row skills first, then bottom-row ones
-  const tech = [
-    ...skills.filter((s) => s.type === 'skills_top'),
-    ...skills.filter((s) => s.type === 'skills_bottom'),
-  ];
+  const tech = [...skills.filter((s) => s.row === 'top'), ...skills.filter((s) => s.row === 'bottom')];
 
   return (
     <HexPage
-      title="Experience & Skills"
+      title={title}
       mobile={
         <MobileList sections={[
-          { label: 'Experience', tiles: career },
+          { label: 'Experience', tiles: experience },
           { label: 'Skills', tiles: tech.map((s) => skillTile(s)) },
         ].filter((section) => section.tiles.length > 0)} />
       }
     >
       <Carousel
-        main={career}
+        main={experience}
         supporting={tech.map((s) => skillTile(s, 'sm'))}
         label="Experience"
-        hint="Use arrow keys to navigate experiences"
+        hint={hint ?? ''}
       />
     </HexPage>
   );

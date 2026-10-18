@@ -1,24 +1,32 @@
 /**
- * Footer.tsx — Copyright, and (on wide layouts) who runs the site.
+ * Footer.tsx — The footer's lines from content/site.md: the first shows everywhere,
+ * the rest only on wide layouts. The root layout provides the lines (SiteProvider), so
+ * any page or frame can place a Footer.
  */
+'use client';
+
+import { createContext, useContext, type ReactNode } from 'react';
+
+const FooterLines = createContext<string[]>([]);
+
+export function SiteProvider({ footer, children }: { footer: string[]; children: ReactNode }) {
+  return <FooterLines value={footer}>{children}</FooterLines>;
+}
 
 interface FooterProps {
-  /** Leave out the Gleck line (mobile lists) */
+  /** Only the first line (mobile lists) */
   short?: boolean;
   className?: string;
 }
 
 export default function Footer({ short = false, className = '' }: FooterProps) {
+  const lines = useContext(FooterLines);
   return (
     <footer className={`site-footer ${className}`}>
-      <p>© 2025 – {new Date().getFullYear()} Vatsal Goyal. All rights reserved.</p>
-      {!short && (
-        <p className="site-footer-small">
-          This website is managed by{' '}
-          <a href="https://github.com/masterunix/gleck" target="_blank" rel="noopener noreferrer">Gleck</a>
-          , my Personal AI Agent.
-        </p>
-      )}
+      {(short ? lines.slice(0, 1) : lines).map((html, i) => (
+        // Rendered from content/site.md's Markdown at build time
+        <p key={i} className={i > 0 ? 'site-footer-small' : undefined} dangerouslySetInnerHTML={{ __html: html }} />
+      ))}
     </footer>
   );
 }

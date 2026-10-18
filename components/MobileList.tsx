@@ -20,19 +20,15 @@ interface MobileListProps {
   /** Where ← Back goes; null for no back link */
   back?: string | null;
   sections: Array<{ label?: string; tiles: Tile[] }>;
-  /** Text when there are no tiles */
-  empty?: { title: string; description: string };
-  /** Centre the list in a column, for wide screens */
-  wide?: boolean;
 }
 
-export default function MobileList({ title, header, back = '/', sections, empty, wide = false }: MobileListProps) {
+export default function MobileList({ title, header, back = '/', sections }: MobileListProps) {
   const [active, setActive] = useState(0);
   const tiles = sections[active]?.tiles ?? [];
   const tabbed = sections.length > 1;
 
   return (
-    <main className={`mobile-page ${wide ? 'mobile-page-wide' : ''}`}>
+    <main className="mobile-page">
       <div className="mobile-header">
         {back !== null && <Link href={back} className="mobile-back">← Back</Link>}
         {header ?? <h1 className="mobile-title">{tabbed ? sections[active].label : title}</h1>}
@@ -48,14 +44,6 @@ export default function MobileList({ title, header, back = '/', sections, empty,
       </div>
 
       <ul className="mobile-list">
-        {tiles.length === 0 && empty && (
-          <li className="mobile-card">
-            <div className="mobile-card-text">
-              <div className="mobile-card-title">{empty.title}</div>
-              <div className="mobile-card-desc">{empty.description}</div>
-            </div>
-          </li>
-        )}
         {tiles.map((tile, i) => <MobileCard key={tile.key} tile={tile} index={i} />)}
       </ul>
 
@@ -76,8 +64,7 @@ function MobileCard({ tile, index }: { tile: Tile; index: number }) {
           {tile.meta && <div className="mobile-card-meta">{tile.meta}</div>}
           {tile.badge && <div className="mobile-card-meta capitalize">{tile.badge.label}</div>}
           {tile.link && description}
-          {tile.draft && <div className="tile-draft">Draft</div>}
-        </div>
+            </div>
         {tile.link && <span className="mobile-card-arrow" aria-hidden="true">{tile.link.download ? '↓' : '›'}</span>}
       </div>
       {!tile.link && description}

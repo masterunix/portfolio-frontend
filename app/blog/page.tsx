@@ -1,48 +1,62 @@
-import type { Metadata } from 'next';
-
-import HexPage from '@/components/HexPage';
-import Honeycomb from '@/components/Honeycomb';
-import MobileList from '@/components/MobileList';
-import { getPosts } from '@/lib/content';
-import { WIDE_GRID } from '@/lib/hexLayout';
-import { postTile, type Tile } from '@/lib/tiles';
-
-export const metadata: Metadata = {
-  title: 'Blog | Vatsal Goyal',
-  description: 'Notes on what I build and learn: web development, AI/ML and problem solving.',
-};
-
 /**
- * Where posts go, newest first, filling outward from the centre: [1, 3] is dead
- * centre (odd rows sit half a hex right), the pair under it is centred too, and each
- * later pair widens the block evenly.
+ * /blog — Every post, newest first, as readable cards in the same glass panel as the
+ * posts themselves. A server component: the list is in the page's HTML.
  */
-const SLOTS = [
-  [1, 3],
-  [2, 3], [2, 4],
-  [1, 2], [1, 4],
-  [2, 2], [2, 5],
-  [1, 1], [1, 5],
-  [3, 2], [3, 3], [3, 4],
-] as const;
+import Image from 'next/image';
+import Link from 'next/link';
 
-const EMPTY = { title: 'No posts yet', description: 'The first one is on its way.' };
+import GlassArticle from '@/components/GlassArticle';
+import { getPosts, getSite } from '@/lib/content';
+import { formatDate } from '@/lib/format';
+import { pageMetadata } from '@/lib/metadata';
+
+export const generateMetadata = () => pageMetadata('blog');
 
 export default function BlogPage() {
-  const posts = getPosts().map(postTile);
-  const list = (wide: boolean) => <MobileList title="Blog" sections={[{ tiles: posts }]} empty={EMPTY} wide={wide} />;
-
-  // More posts than the honeycomb holds: the list on every screen, so none is left out
-  if (posts.length > SLOTS.length) return list(true);
-
-  const emptyTile: Tile = { key: 'empty', ...EMPTY };
-  const cells = posts.length
-    ? posts.map((tile, i) => ({ cell: SLOTS[i], tile }))
-    : [{ cell: SLOTS[0], tile: emptyTile }];
+  const { title, description } = getSite().pages.blog;
+  const posts = getPosts();
 
   return (
-    <HexPage title="Blog" mobile={list(false)}>
-      <Honeycomb grid={WIDE_GRID} cells={cells} />
-    </HexPage>
+    <GlassArticle back={{ href: '/', label: 'Home' }}>
+      <h1 className="article-title">{title}</h1>
+      <p className="article-lead">{description}</p>
+
+      {posts.length === 0 ? (
+        <p className="post-empty">No posts yet. The first one is on its way.</p>
+      ) : (
+        <ul className="post-list">
+          {posts.map((post) => (
+            <li key={post.slug}>
+              <Link href={`/blog/${post.slug}`} className="post-card">
+                {post.cover && (
+                  <Image
+                    src={post.cover.url}
+                    alt=""
+                    width={1280}
+                    height={720}
+                    className="post-cover"
+                    unoptimized={post.cover.url.toLowerCase().endsWith('.svg')}
+                  />
+                )}
+                <div className="article-meta">
+                  <time dateTime={post.date}>{formatDate(post.date)}</time>
+                  <span>·</span>
+                  <span>{post.readMins} min read</span>
+                  {post.draft && <><span>·</span><span className="blog-draft">Draft</span></>}
+                </div>
+                <h2>{post.title}</h2>
+                <p>{post.description}</p>
+                {post.tags.length > 0 && (
+                  <ul className="article-tags" aria-label="Tags">
+                    {post.tags.map((tag) => <li key={tag}>{tag}</li>)}
+                  </ul>
+                )}
+                <span className="post-read" aria-hidden="true">Read <span>→</span></span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
+    </GlassArticle>
   );
 }

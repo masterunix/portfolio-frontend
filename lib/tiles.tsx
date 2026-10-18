@@ -6,8 +6,8 @@
 import type { ReactNode } from 'react';
 
 import ItemIcon from '@/components/ItemIcon';
-import { formatDate } from '@/lib/format';
-import type { BlogPostSummary, DSAConcept, DSAPlatform, Project, Resume, Skill, SkillCategory } from '@/types';
+import { MENU_ICONS } from '@/lib/icons';
+import type { DSAConcept, DSAPlatform, MenuItem, Project, Resume, Skill, SkillLevel } from '@/types';
 
 export interface TileLink {
   label: string;
@@ -34,16 +34,30 @@ export interface Tile {
   actions?: TileLink[];
   /** Hex size: lg for the home menu, sm for the outer carousel rows */
   size?: 'lg' | 'md' | 'sm';
-  draft?: boolean;
 }
 
 const icon = (logo: Project['logo'], fallback: string, alt: string) => (
   <ItemIcon logo={logo} fallback={fallback} alt={alt} />
 );
 
+/** A home menu tile (content/home.md) */
+export function menuTile(item: MenuItem): Tile {
+  return {
+    key: item.href,
+    title: item.title,
+    description: item.description,
+    color: item.color,
+    icon: item.logo ? icon(item.logo, item.title.charAt(0), item.title) : (
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d={MENU_ICONS[item.icon!]} /></svg>
+    ),
+    link: { label: item.title, href: item.href },
+    size: 'lg',
+  };
+}
+
 export function projectTile(project: Project, size?: Tile['size']): Tile {
   return {
-    key: `project-${project.id}`,
+    key: `project-${project.slug}`,
     title: project.title,
     color: project.color,
     icon: icon(project.logo, project.icon ?? '📦', project.title),
@@ -57,7 +71,7 @@ export function projectTile(project: Project, size?: Tile['size']): Tile {
   };
 }
 
-const LEVEL_COLORS: Record<SkillCategory, string> = {
+const LEVEL_COLORS: Record<SkillLevel, string> = {
   beginner: '#fbbf24',
   intermediate: '#60a5fa',
   proficient: '#34d399',
@@ -66,12 +80,12 @@ const LEVEL_COLORS: Record<SkillCategory, string> = {
 
 export function skillTile(skill: Skill, size?: Tile['size']): Tile {
   return {
-    key: `skill-${skill.id}`,
-    title: skill.name,
+    key: `skill-${skill.slug}`,
+    title: skill.title,
     color: skill.color,
-    icon: icon(skill.logo, skill.icon ?? (skill.type === 'career' ? '📦' : '⚡'), skill.name),
+    icon: icon(skill.logo, skill.icon ?? (skill.row === 'middle' ? '📦' : '⚡'), skill.title),
     description: skill.description,
-    badge: skill.category && { label: skill.category, color: LEVEL_COLORS[skill.category] },
+    badge: skill.level && { label: skill.level, color: LEVEL_COLORS[skill.level] },
     // Small tiles (the outer carousel rows) have no room for buttons
     actions: size === 'sm' ? [] : skill.attachments.map((a) => ({ label: a.label, href: a.file.url, newTab: true })),
     size,
@@ -80,17 +94,17 @@ export function skillTile(skill: Skill, size?: Tile['size']): Tile {
 
 export function platformTile(platform: DSAPlatform): Tile {
   return {
-    key: `platform-${platform.id}`,
-    title: platform.name,
+    key: `platform-${platform.slug}`,
+    title: platform.title,
     color: platform.color,
-    icon: icon(platform.logo, platform.name.charAt(0), platform.name),
+    icon: icon(platform.logo, platform.title.charAt(0), platform.title),
     link: { label: 'View Profile', href: platform.url },
   };
 }
 
 export function conceptTile(concept: DSAConcept): Tile {
   return {
-    key: `concept-${concept.id}`,
+    key: `concept-${concept.title}`,
     title: concept.title,
     color: concept.color,
     icon: concept.icon,
@@ -101,24 +115,13 @@ export function conceptTile(concept: DSAConcept): Tile {
 
 export function resumeTile(resume: Resume): Tile {
   return {
-    key: `resume-${resume.id}`,
-    title: resume.domain,
+    key: `resume-${resume.slug}`,
+    title: resume.title,
     color: resume.color,
     icon: resume.icon,
     description: resume.description,
     link: resume.file ? { label: 'Download', href: resume.file.url, download: resume.filename }
       : resume.link ? { label: 'Open', href: resume.link }
         : undefined,
-  };
-}
-
-export function postTile(post: BlogPostSummary): Tile {
-  return {
-    key: `post-${post.slug}`,
-    title: post.title,
-    meta: `${formatDate(post.date)} · ${post.readMins} min read`,
-    description: post.description,
-    link: { label: 'Read', href: `/blog/${post.slug}` },
-    draft: post.draft,
   };
 }

@@ -2,7 +2,7 @@
  * Gleck.tsx — Gleck, my AI agent, in the bottom-left corner of every page.
  *
  * Wide screens: a glass widget with eyes that follow the cursor and Gleck's notices
- * (content/gleck-notices.yaml), cycling every 5s. It expands 3s after collapsing and
+ * (content/gleck.md), cycling every 5s. It expands 3s after collapsing and
  * collapses after 10s, until you close it yourself; ↑ shows every notice.
  * Narrow screens: just the eyes, linking to Gleck's repository.
  */
@@ -13,31 +13,29 @@ import { useEffect, useRef, useState } from 'react';
 import { useEyeTracking } from '@/hooks/useEyeTracking';
 import { useIsDesktop } from '@/hooks/useIsDesktop';
 import { useNoticeCarousel } from '@/hooks/useNoticeCarousel';
-import type { GleckNotice, GleckSettings } from '@/types';
+import type { Gleck as GleckContent } from '@/types';
+
+type Notice = GleckContent['notices'][number];
 
 const EXPAND_AFTER_MS = 3000;
 const COLLAPSE_AFTER_MS = 10000;
 const BLINK_MS = 350;
 
-interface GleckProps {
-  notices: GleckNotice[];
-  settings: GleckSettings;
-}
-
-export default function Gleck({ notices, settings }: GleckProps) {
+export default function Gleck({ gleck }: { gleck: GleckContent }) {
   const isDesktop = useIsDesktop();
   return (
     <>
-      <a href={settings.knowMoreLink} target="_blank" rel="noopener noreferrer" className="gleck gleck-mini mobile-only"
+      <a href={gleck.moreLink} target="_blank" rel="noopener noreferrer" className="gleck gleck-mini mobile-only"
         aria-label="Gleck, my AI agent">
         <Eyes size={12} />
       </a>
-      {isDesktop && <GleckWidget notices={notices} settings={settings} />}
+      {isDesktop && <GleckWidget gleck={gleck} />}
     </>
   );
 }
 
-function GleckWidget({ notices, settings }: GleckProps) {
+function GleckWidget({ gleck }: { gleck: GleckContent }) {
+  const { notices } = gleck;
   const ref = useRef<HTMLDivElement>(null);
   const [expanded, setExpanded] = useState(true);
   const [enlarged, setEnlarged] = useState(false);
@@ -94,7 +92,7 @@ function GleckWidget({ notices, settings }: GleckProps) {
           <div className="gleck-all">
             <h3>All Updates</h3>
             {notices.map((n, i) => (
-              <div key={n.id} className={`gleck-notice-item ${i === index ? 'active' : ''}`}>
+              <div key={i} className={`gleck-notice-item ${i === index ? 'active' : ''}`}>
                 <button onClick={() => setIndex(i)} aria-label={`Show notice ${i + 1}`} className="gleck-notice-pick" />
                 <Notice notice={n} />
               </div>
@@ -105,15 +103,15 @@ function GleckWidget({ notices, settings }: GleckProps) {
         {!expanded && <button className="gleck-expand" onClick={open} aria-label="Open">+</button>}
       </div>
 
-      <a href={settings.knowMoreLink} target="_blank" rel="noopener noreferrer" className="gleck-know-more">
-        {settings.knowMoreText}
+      <a href={gleck.moreLink} target="_blank" rel="noopener noreferrer" className="gleck-know-more">
+        {gleck.moreText}
       </a>
     </div>
   );
 }
 
 /** A notice's text (HTML rendered from Markdown at build time), linked when it has a link */
-function Notice({ notice }: { notice: GleckNotice }) {
+function Notice({ notice }: { notice: Notice }) {
   const html = { __html: notice.html };
   return notice.link
     ? <a href={notice.link} target="_blank" rel="noopener noreferrer" className="gleck-notice" dangerouslySetInnerHTML={html} />

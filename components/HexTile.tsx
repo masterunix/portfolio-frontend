@@ -20,7 +20,6 @@ export default function HexTile({ tile }: { tile: Tile }) {
       {tile.badge && (
         <div className="tile-badge" style={{ '--badge': tile.badge.color } as CSSProperties}>{tile.badge.label}</div>
       )}
-      {tile.draft && <div className="tile-draft">Draft</div>}
       {tile.link && size !== 'lg' && <div className="hex-button">{tile.link.label}</div>}
       {!!tile.actions?.length && (
         <div className="tile-actions">

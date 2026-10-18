@@ -5,9 +5,9 @@
 'use client';
 
 import { useTypewriter } from '@/hooks/useTypewriter';
-import type { HomeMessage } from '@/types';
+import type { Home } from '@/types';
 
-export default function Typewriter({ messages, className = '' }: { messages: HomeMessage[]; className?: string }) {
+export default function Typewriter({ messages, className = '' }: { messages: Home['messages']; className?: string }) {
   const { text, message } = useTypewriter(messages);
   return (
     <h1 className={`typewriter ${className}`}>
