@@ -52,7 +52,7 @@ export function carouselLastStep(viewportWidth: number, hexSpacing: number, rows
   return visibleCols - 1 + rows - 1;
 }
 
-/** The largest row + col among some grid items */
-export function lastStepOf(items: Array<{ row: number; col: number }>): number {
-  return items.reduce((max, item) => Math.max(max, item.row + item.col), 0);
+/** The largest row + col among some [row, col] cells */
+export function lastStepOf(cells: ReadonlyArray<readonly [number, number]>): number {
+  return cells.reduce((max, [row, col]) => Math.max(max, row + col), 0);
 }

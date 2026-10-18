@@ -1,75 +1,30 @@
 /**
- * useTypewriter.ts — Typewriter animation effect for cycling messages.
- *
- * Implements a state machine with two phases:
- * 1. Typing:   Characters are added one-by-one at `typingSpeed` ms
- * 2. Deleting: Characters are removed at half speed, then advances to next message
- *
- * After fully typing a message, pauses for `pauseTime` ms before deleting.
- * Loops infinitely through all messages.
- *
- * Used on the home page header to cycle through CMS-managed messages.
+ * useTypewriter.ts — Types each message a character at a time, pauses, deletes it at
+ * twice the speed, then moves to the next, looping forever.
  */
+import { useEffect, useState } from 'react';
 
-import { useState, useEffect } from 'react';
+const TYPE_MS = 50;
+const PAUSE_MS = 2000;
 
-// ─── Types ───────────────────────────────────────────────────────────────────
-
-interface TypewriterMessage {
-  text: string;
-  link?: string;
-}
-
-// ─── Hook ────────────────────────────────────────────────────────────────────
-
-export function useTypewriter(messages: TypewriterMessage[], typingSpeed = 50, pauseTime = 2000) {
-  const [displayText, setDisplayText] = useState('');
-  const [messageIndex, setMessageIndex] = useState(0);
-  const [isDeleting, setIsDeleting] = useState(false);
+export function useTypewriter<T extends { text: string }>(messages: T[]) {
+  const [index, setIndex] = useState(0);
+  const [length, setLength] = useState(0);
+  const [deleting, setDeleting] = useState(false);
+  const message = messages[index % Math.max(messages.length, 1)] as T | undefined;
 
   useEffect(() => {
-    if (!messages || messages.length === 0) return;
+    if (!message) return;
+    const full = message.text.length;
+    const timer = !deleting
+      ? length < full
+        ? setTimeout(() => setLength(length + 1), TYPE_MS)
+        : setTimeout(() => setDeleting(true), PAUSE_MS)
+      : length > 0
+        ? setTimeout(() => setLength(length - 1), TYPE_MS / 2)
+        : setTimeout(() => { setDeleting(false); setIndex((i) => (i + 1) % messages.length); }, TYPE_MS);
+    return () => clearTimeout(timer);
+  }, [message, length, deleting, messages.length]);
 
-    const currentText = messages[messageIndex].text;
-    
-    let timeout: NodeJS.Timeout;
-
-    if (!isDeleting) {
-      // Phase 1: Typing — add one character per tick
-      if (displayText.length < currentText.length) {
-        timeout = setTimeout(() => {
-          setDisplayText(currentText.substring(0, displayText.length + 1));
-        }, typingSpeed);
-      } else {
-        // Fully typed — pause before starting to delete
-        timeout = setTimeout(() => {
-          setIsDeleting(true);
-        }, pauseTime);
-      }
-    } else {
-      // Phase 2: Deleting — remove one character per tick (2x speed)
-      if (displayText.length > 0) {
-        timeout = setTimeout(() => {
-          setDisplayText(currentText.substring(0, displayText.length - 1));
-        }, typingSpeed / 2);
-      } else {
-        // Fully deleted — advance to next message (wraps around)
-        timeout = setTimeout(() => {
-          setIsDeleting(false);
-          setMessageIndex((prev) => (prev + 1) % messages.length);
-        }, 50); // small delay to prevent synchronous cascading renders
-      }
-    }
-
-    return () => clearTimeout(timeout);
-  }, [displayText, isDeleting, messageIndex, messages, typingSpeed, pauseTime]);
-
-  return {
-    /** The currently visible text (partial during typing/deleting) */
-    text: displayText,
-    /** The full message object currently being typed */
-    currentMessage: messages[messageIndex],
-    /** True while characters are being added (not during pause or delete) */
-    isTyping: !isDeleting && displayText.length < (messages[messageIndex]?.text.length || 0)
-  };
+  return { text: message?.text.slice(0, length) ?? '', message };
 }

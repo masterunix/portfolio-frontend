@@ -1,72 +1,70 @@
-# Portfolio Frontend - Next.js with Glassmorphism
+# Vatsal Goyal — Portfolio
 
-This is a modern portfolio website built with Next.js 15, featuring glassmorphism design and Apple's liquid glass UI aesthetic.
+A portfolio site of glass hexagons over an animated background: a honeycomb menu,
+scrolling carousels of projects and skills, resumes, coding profiles, a blog and a
+summary page. On phones, every page is a list of glass cards instead.
 
-## 🚀 Getting Started
+Built with Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS 4, Framer
+Motion and three.js. All content lives in `content/` as YAML and Markdown files,
+checked when the site builds; there is no CMS or database.
 
-### Prerequisites
-- Node.js 20+
-- npm or yarn
-
-### Installation
+## Running it
 
 ```bash
-# Install dependencies
 npm install
-
-# Run development server
-npm run dev
+npm run dev     # http://localhost:3000
+npm run build   # production build; fails on any content mistake
+npm run lint
 ```
 
-Open [http://localhost:3000](http://localhost:3000) to view the website.
+## How it's put together
 
-## 📁 Project Structure
+Every page is a server component in `app/` that reads its content (`lib/content.ts`),
+turns it into **tiles** (`lib/tiles.tsx`) and hands them to a layout:
 
 ```
-portfolio-frontend/
-├── app/
-│   ├── page.tsx              # Home page with navigation hexagons
-│   ├── projects/             # Projects carousel page
-│   ├── dsa/                  # DSA stats page
-│   ├── skills/               # Skills & journey page (TODO)
-│   ├── resumes/              # Resumes page (TODO)
-│   ├── layout.tsx            # Root layout
-│   └── globals.css           # Global styles with glassmorphism
-├── components/
-│   ├── Hexagon.tsx           # Reusable hexagon component
-│   ├── NavHexagon.tsx        # Navigation hexagon with icon
-│   └── HoneycombGrid.tsx     # Grid layout component
-├── content/                  # The site's content (YAML), see "Content" below
-├── lib/
-│   └── content.ts            # Reads and checks content/
-├── public/
-│   └── media/                # Logos, resumes and attachments the content points to
-└── scripts/
-    └── export-strapi.mjs     # One-time export from the old Strapi CMS
+app/
+  page.tsx                 Home: the menu (lib/navigation.tsx) in a honeycomb
+  projects/, skills/       Carousels: main tiles in the middle row, skills above and below
+  dsa/, resumes/, blog/    Honeycombs with tiles in chosen cells
+  blog/[slug]/, summary/   Text pages in a glass panel (GlassArticle)
+  layout.tsx               Background, Gleck, fonts
+  globals.css              All shared styles, by section
+components/
+  HexPage.tsx              Page frame: mobile list or hex layout, header, footer, outro
+  Honeycomb.tsx            A fixed honeycomb of hexagons
+  Carousel.tsx             The endless three-row carousel (+ useCarousel)
+  Hexagon.tsx, CarouselHex.tsx, HexShell.tsx
+                           A glass hexagon and its intro/outro animation
+  HexTile.tsx              A tile inside a hexagon
+  MobileList.tsx           A tile list for narrow screens (server-rendered)
+  transition.tsx           The outro context and SmartLink, the one link component
+  GlassArticle.tsx, Gleck.tsx, ShaderBackground.tsx, Typewriter.tsx, Footer.tsx, ItemIcon.tsx
+lib/
+  content.ts               Reads and checks content/
+  tiles.tsx                Content → tiles
+  hexLayout.ts             Honeycomb geometry
+  hexTransition.ts         Intro/outro timing
+content/                   The site's content (below)
+public/media/              Logos, resumes and attachments the content points to
+scripts/export-strapi.mjs  One-time export from the old Strapi CMS
 ```
 
-## 🎨 Features
+**Tiles.** A tile is an icon, a title, a few lines of text, and either one link
+(the whole tile) or some buttons. The same tile renders as a hexagon (`HexTile`) or
+a card (`MobileList`), so every page looks and behaves alike.
 
-### Glassmorphism Design
-- Frosted glass effect with backdrop blur
-- Subtle borders and shadows
-- Smooth hover transitions
-- Apple-inspired liquid glass aesthetic
+**Mobile and desktop.** `HexPage` renders the mobile list on the server, so the
+content is in the page's HTML, and CSS hides it on screens 768px and wider. There,
+the hex layout mounts in the browser, since it's sized from the window.
 
-### Honeycomb Layout
-- SVG-based hexagons
-- Responsive grid system
-- Smooth animations with Framer Motion
-- Hover effects with scale and glow
+**Transitions.** Hexagons wave in from the top-left. Following a link to another page
+plays the outro, the same wave fading out, then navigates. Hexes fade in through a
+CSS variable rather than opacity, so the glass blur fades in with the outline
+(details in `components/HexShell.tsx` and `lib/hexTransition.ts`). Links to other
+sites, files and email work like normal links.
 
-### Pages Implemented
-- ✅ **Home** - Navigation hexagons
-- ✅ **Projects** - Horizontal carousel with 14 projects
-- ✅ **DSA** - Coding platforms and concepts
-- ⏳ **Skills** - Technical skills with ratings (TODO)
-- ⏳ **Resumes** - Different resumes for domains (TODO)
-
-## 📝 Content
+## Content
 
 Everything the site shows is in `content/`, one YAML file per collection. Edit a file and
 it shows on reload in dev, and on the next deploy in production. There is no CMS or
@@ -78,6 +76,7 @@ database to run.
 | `content/skills.yaml` | /skills; also the outer rows of /projects |
 | `content/resumes.yaml` | /resumes |
 | `content/dsa-platforms.yaml` | /dsa (middle row) |
+| `content/dsa-concepts.yaml` | /dsa (top and bottom rows) |
 | `content/home-messages.yaml` | the typewriter on the home page |
 | `content/gleck-notices.yaml` | Gleck's widget, bottom left |
 | `content/settings/gleck.yaml` | Gleck's "know more" link |
@@ -137,67 +136,11 @@ It overwrites `content/*.yaml` (not `settings/`) and downloads the media into
 `public/media/`, printing every cleanup it makes (links without https://, placeholder
 text in link fields, hashed file names).
 
-## 🎯 TODO - Complete Implementation
+## Deploying
 
-### Skills Page (`app/skills/page.tsx`)
-Create a honeycomb grid showing:
-- Technical skills with star ratings
-- Work experiences (Digisphere, Xebia)
-- Certifications (Google, Oracle)
-- Video editing skills (Premiere Pro, After Effects)
+`npm run build` renders every page ahead of time. Deploy on Vercel or any Node host;
+`next.config.ts` ships `content/` with the server in case a page renders on demand.
 
-### Resumes Page (`app/resumes/page.tsx`)
-Create a honeycomb grid with:
-- Different resume types (Full Stack, SDE, ML Engineer, etc.)
-- Download buttons for each resume
-- Star ratings for specialization level
-- Feedback hexagon with email link
+## License
 
-### Mobile Responsiveness
-- Add mobile navigation menu
-- Stack hexagons vertically on mobile
-- Touch-friendly interactions
-- Responsive text sizes
-
-## 🛠️ Technologies
-
-- **Next.js 15** - React framework with App Router
-- **TypeScript** - Type safety
-- **Tailwind CSS** - Utility-first CSS
-- **Framer Motion** - Smooth animations
-- **YAML content files** - checked at build time by `lib/content.ts`
-
-## 🎨 Design System
-
-### Colors
-- Background: `#000000` (Pure black)
-- Glass: `rgba(255, 255, 255, 0.05-0.15)`
-- Text: `#ffffff` with opacity variants
-- Accent colors: Project-specific gradients
-
-### Typography
-- Font: Inter (Google Fonts)
-- Headings: Bold, 32-36px
-- Body: Regular, 14-16px
-- Small text: 10-12px
-
-### Animations
-- Fade in up: 0.4s ease-out
-- Hover scale: 1.05 with 0.3s transition
-- Carousel: 0.39px per frame
-
-## 🚀 Deployment
-
-```bash
-# Build for production
-npm run build
-
-# Start production server
-npm start
-```
-
-Deploy to Vercel, Netlify, or any Node.js hosting platform.
-
-## 📄 License
-
-© 2026 Vatsal Goyal. All rights reserved.
+© 2025 – 2026 Vatsal Goyal. All rights reserved.

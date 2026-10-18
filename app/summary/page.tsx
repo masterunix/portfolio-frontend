@@ -8,7 +8,7 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 
 import GlassArticle from '@/components/GlassArticle';
-import { formatPostDate } from '@/lib/blogFormat';
+import { formatDate } from '@/lib/format';
 import { getSummary } from '@/lib/content';
 
 export function generateMetadata(): Metadata {
@@ -45,7 +45,7 @@ export default function SummaryPage() {
               {summary.location && <span>{summary.location}</span>}
               {summary.location && summary.updated && <span>·</span>}
               {summary.updated && (
-                <span>Updated <time dateTime={summary.updated}>{formatPostDate(summary.updated)}</time></span>
+                <span>Updated <time dateTime={summary.updated}>{formatDate(summary.updated)}</time></span>
               )}
             </div>
           )}

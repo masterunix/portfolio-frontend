@@ -5,6 +5,7 @@
  *   content/skills.yaml            content/gleck-notices.yaml
  *   content/resumes.yaml           content/background-themes.yaml
  *   content/dsa-platforms.yaml     content/settings/gleck.yaml
+ *   content/dsa-concepts.yaml
  *   content/blog/<slug>.md         (blog posts: front matter + Markdown)
  *   content/summary.md             (the summary page: front matter + Markdown)
  *
@@ -29,7 +30,7 @@ import yaml from 'js-yaml';
 import { Marked, type Token, type Tokens } from 'marked';
 
 import type {
-  BackgroundTheme, BlogPost, BlogPostSummary, DSAPlatform, GleckNotice, GleckSettings,
+  BackgroundTheme, BlogPost, BlogPostSummary, DSAConcept, DSAPlatform, GleckNotice, GleckSettings,
   HomeMessage, Media, Project, Resume, Skill, SkillCategory, SkillType, Summary, ThemePage,
 } from '@/types';
 
@@ -238,8 +239,8 @@ export function getProjects(): Project[] {
     icon: e.optText('icon'),
     logo: e.optMedia('logo', 'image'),
     color: e.color('color'),
-    github: e.optLink('github') ?? null,
-    visit: e.optLink('visit') ?? null,
+    github: e.optLink('github'),
+    visit: e.optLink('visit'),
     order: e.num('order', 0, { integer: true }),
   }));
 }
@@ -301,6 +302,18 @@ export function getDSAPlatforms(): DSAPlatform[] {
   }));
 }
 
+/** DSA concepts, by order */
+export function getDSAConcepts(): DSAConcept[] {
+  return loadList('dsa-concepts.yaml', (r) => r.title, (e, id) => ({
+    id,
+    title: e.text('title'),
+    icon: e.text('icon'),
+    description: e.text('description'),
+    color: e.color('color'),
+    order: e.num('order', 0, { integer: true }),
+  }));
+}
+
 /** Home page typewriter messages, by order */
 export function getHomeMessages(): HomeMessage[] {
   return loadList('home-messages.yaml', (r) => r.text, (e, id) => ({
@@ -311,18 +324,18 @@ export function getHomeMessages(): HomeMessage[] {
   }));
 }
 
-/** Gleck's active notices, by order */
+/** Gleck's active notices, by order, with their Markdown rendered to inline HTML */
 export function getGleckNotices(): GleckNotice[] {
   const notices = loadList('gleck-notices.yaml', (r) => r.text, (e, id) => ({
     id,
-    text: e.text('text'),
+    html: markdown.parseInline(e.text('text')) as string,
     link: e.optLink('link'),
     active: e.bool('active', true),
     order: e.num('order', 0, { integer: true }),
   }));
   return notices
     .filter((n) => n.active)
-    .map(({ id, text, link, order }) => ({ id, text, link, order }));
+    .map(({ id, html, link, order }) => ({ id, html, link, order }));
 }
 
 /** The Gleck widget's "know more" link */

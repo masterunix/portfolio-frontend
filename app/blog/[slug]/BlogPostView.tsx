@@ -8,7 +8,7 @@
 import Image from 'next/image';
 
 import GlassArticle from '@/components/GlassArticle';
-import { formatPostDate } from '@/lib/blogFormat';
+import { formatDate } from '@/lib/format';
 import type { BlogPost } from '@/types';
 
 export default function BlogPostView({ post }: { post: BlogPost }) {
@@ -27,13 +27,13 @@ export default function BlogPostView({ post }: { post: BlogPost }) {
       )}
 
       <div className="article-meta">
-        <time dateTime={post.date}>{formatPostDate(post.date)}</time>
+        <time dateTime={post.date}>{formatDate(post.date)}</time>
         <span>·</span>
         <span>{post.readMins} min read</span>
         {post.updated && (
           <>
             <span>·</span>
-            <span>Updated <time dateTime={post.updated}>{formatPostDate(post.updated)}</time></span>
+            <span>Updated <time dateTime={post.updated}>{formatDate(post.updated)}</time></span>
           </>
         )}
         {post.draft && (

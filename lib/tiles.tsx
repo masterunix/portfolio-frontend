@@ -1,0 +1,124 @@
+/**
+ * tiles.tsx — Every hexagon and mobile card shows a Tile: an icon, a title, a few
+ * lines of text and some links. Pages turn their content into tiles here, on the
+ * server, and HexTile / MobileCard draw them the same way everywhere.
+ */
+import type { ReactNode } from 'react';
+
+import ItemIcon from '@/components/ItemIcon';
+import { formatDate } from '@/lib/format';
+import type { BlogPostSummary, DSAConcept, DSAPlatform, Project, Resume, Skill, SkillCategory } from '@/types';
+
+export interface TileLink {
+  label: string;
+  href: string;
+  /** Save the file under this name instead of opening it */
+  download?: string;
+  /** Open in a new tab even though it's on this site (files) */
+  newTab?: boolean;
+}
+
+export interface Tile {
+  key: string;
+  title: string;
+  /** The icon square's colour */
+  color?: string;
+  icon?: ReactNode;
+  /** A short line under the title: tech stack, date, … */
+  meta?: string;
+  description?: string;
+  badge?: { label: string; color: string };
+  /** The whole tile is this link */
+  link?: TileLink;
+  /** Separate buttons, for tiles that aren't one link */
+  actions?: TileLink[];
+  /** Hex size: lg for the home menu, sm for the outer carousel rows */
+  size?: 'lg' | 'md' | 'sm';
+  draft?: boolean;
+}
+
+const icon = (logo: Project['logo'], fallback: string, alt: string) => (
+  <ItemIcon logo={logo} fallback={fallback} alt={alt} />
+);
+
+export function projectTile(project: Project, size?: Tile['size']): Tile {
+  return {
+    key: `project-${project.id}`,
+    title: project.title,
+    color: project.color,
+    icon: icon(project.logo, project.icon ?? '📦', project.title),
+    meta: project.tech,
+    description: project.description,
+    actions: [
+      ...(project.github ? [{ label: 'GitHub', href: project.github }] : []),
+      ...(project.visit ? [{ label: 'Visit', href: project.visit }] : []),
+    ],
+    size,
+  };
+}
+
+const LEVEL_COLORS: Record<SkillCategory, string> = {
+  beginner: '#fbbf24',
+  intermediate: '#60a5fa',
+  proficient: '#34d399',
+  expert: '#c084fc',
+};
+
+export function skillTile(skill: Skill, size?: Tile['size']): Tile {
+  return {
+    key: `skill-${skill.id}`,
+    title: skill.name,
+    color: skill.color,
+    icon: icon(skill.logo, skill.icon ?? (skill.type === 'career' ? '📦' : '⚡'), skill.name),
+    description: skill.description,
+    badge: skill.category && { label: skill.category, color: LEVEL_COLORS[skill.category] },
+    // Small tiles (the outer carousel rows) have no room for buttons
+    actions: size === 'sm' ? [] : skill.attachments.map((a) => ({ label: a.label, href: a.file.url, newTab: true })),
+    size,
+  };
+}
+
+export function platformTile(platform: DSAPlatform): Tile {
+  return {
+    key: `platform-${platform.id}`,
+    title: platform.name,
+    color: platform.color,
+    icon: icon(platform.logo, platform.name.charAt(0), platform.name),
+    link: { label: 'View Profile', href: platform.url },
+  };
+}
+
+export function conceptTile(concept: DSAConcept): Tile {
+  return {
+    key: `concept-${concept.id}`,
+    title: concept.title,
+    color: concept.color,
+    icon: concept.icon,
+    description: concept.description,
+    size: 'sm',
+  };
+}
+
+export function resumeTile(resume: Resume): Tile {
+  return {
+    key: `resume-${resume.id}`,
+    title: resume.domain,
+    color: resume.color,
+    icon: resume.icon,
+    description: resume.description,
+    link: resume.file ? { label: 'Download', href: resume.file.url, download: resume.filename }
+      : resume.link ? { label: 'Open', href: resume.link }
+        : undefined,
+  };
+}
+
+export function postTile(post: BlogPostSummary): Tile {
+  return {
+    key: `post-${post.slug}`,
+    title: post.title,
+    meta: `${formatDate(post.date)} · ${post.readMins} min read`,
+    description: post.description,
+    link: { label: 'Read', href: `/blog/${post.slug}` },
+    draft: post.draft,
+  };
+}

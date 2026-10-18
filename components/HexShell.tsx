@@ -1,67 +1,33 @@
 /**
- * HexShell.tsx — Pure visual hexagonal glass shell (no animation).
+ * HexShell.tsx — The glass hexagon: a frosted blur layer, the outline, and a slot for
+ * the tile's content. Hexagon and CarouselHex wrap it with position and animation.
  *
- * Renders the frosted glass blur layer and SVG outline that create the
- * "liquid glass" hexagonal appearance. Used by:
- * - <Hexagon> (which adds entrance/exit animation on top)
- * - Carousel page call sites (where <CarouselHex> handles animation)
- *
- * Children are rendered inside the shell for content.
- *
- * An ancestor with opacity < 1 switches off the glass blur until the fade ends.
- * So a hex fades in by animating `--hex-fade` (0–1) on a wrapper, which the blur,
- * outline and .hex-content each read (globals.css): the glass fades in with the
- * outline. It fades out with real `opacity` on purpose: the blur drops off the
- * moment it starts leaving, which makes the exit sweep. Timing: lib/hexTransition.ts.
+ * An ancestor with opacity < 1 switches off the glass blur until the fade ends. So a
+ * hex fades in by animating `--hex-fade` (0–1) on a wrapper, which the blur, outline
+ * and .hex-content each read (globals.css): the glass fades in with the outline. It
+ * fades out with real `opacity` on purpose: the blur drops off the moment it starts
+ * leaving, which makes the exit sweep. Timing: lib/hexTransition.ts.
  */
 'use client';
 
-import React from 'react';
-import { HEX_SVG_PATH } from '@/lib/constants';
+import type { ReactNode } from 'react';
 
-// ─── Props ───────────────────────────────────────────────────────────────────
+import { useIsExiting } from '@/components/transition';
 
-interface HexShellProps {
-  children?: React.ReactNode;
-  className?: string;
-  onClick?: () => void;
-  /** When true, disables pointer events and hover transitions */
-  isExiting?: boolean;
-}
+/** The rounded hexagon, in a 190 × 212 viewBox; the blur's clip-path traces it (globals.css) */
+const HEX_PATH =
+  'M85.5 3.63965C91.3786 0.245625 98.6214 0.245625 104.5 3.63965L178.896 46.5928C184.775 49.9868 188.396 56.2589 188.396 63.0469V148.953C188.396 155.741 184.775 162.013 178.896 165.407L104.5 208.36C98.805 211.648 91.8296 211.751 86.0547 208.669L85.5 208.36L11.1035 165.407C5.22494 162.013 1.60356 155.741 1.60352 148.953V63.0469C1.60356 56.2589 5.22493 49.9868 11.1035 46.5928L85.5 3.63965Z';
 
-// ─── Component ───────────────────────────────────────────────────────────────
+export default function HexShell({ children }: { children?: ReactNode }) {
+  // While the outro plays, nothing in the hex can be clicked or focused
+  const inert = useIsExiting();
 
-export default function HexShell({
-  children,
-  className = '',
-  onClick,
-  isExiting = false
-}: HexShellProps) {
   return (
-    <div
-      className={`w-full h-full group ${className} ${onClick ? 'cursor-pointer' : ''}`}
-      onClick={onClick}
-      style={{ pointerEvents: isExiting ? 'none' : 'auto' }}
-    >
-      {/* Frosted glass blur layer — clipped to hex shape via CSS clip-path */}
+    <div className="hex-shell group" inert={inert}>
       <div className="hex-glass-blur" />
-
-      {/* Hexagonal SVG outline — renders the visible white stroke border */}
-      <svg
-        viewBox="0 0 190 212"
-        className="hex-outline absolute inset-0 w-full h-full pointer-events-none"
-        preserveAspectRatio="none"
-      >
-        <path
-          d={HEX_SVG_PATH}
-          fill="rgba(255,255,255,0.05)"
-          stroke="rgba(255,255,255,0.1)"
-          strokeWidth="1"
-          className={isExiting ? '' : 'transition-all duration-[400ms] ease-[cubic-bezier(0.25,0.46,0.45,0.94)] group-hover:fill-[rgba(255,255,255,0.1)] group-hover:stroke-[rgba(255,255,255,0.2)]'}
-        />
+      <svg viewBox="0 0 190 212" preserveAspectRatio="none" className="hex-outline" aria-hidden="true">
+        <path d={HEX_PATH} />
       </svg>
-
-      {/* Children slot — consumers own their own layout */}
       {children}
     </div>
   );

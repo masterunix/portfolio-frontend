@@ -38,7 +38,7 @@ export default function GlassArticle({ back, children }: GlassArticleProps) {
         <Link href={back.href} onClick={handleBack} className="article-back">← {back.label}</Link>
         {children}
       </article>
-      <Footer variant="full" className="article-footer" />
+      <Footer className="article-footer" />
     </main>
   );
 }

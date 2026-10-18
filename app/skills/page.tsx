@@ -1,6 +1,10 @@
 import type { Metadata } from 'next';
-import SkillsClient from './SkillsClient';
+
+import Carousel from '@/components/Carousel';
+import HexPage from '@/components/HexPage';
+import MobileList from '@/components/MobileList';
 import { getSkills } from '@/lib/content';
+import { skillTile } from '@/lib/tiles';
 
 export const metadata: Metadata = {
   title: 'Experience & Skills | Vatsal Goyal',
@@ -8,5 +12,30 @@ export const metadata: Metadata = {
 };
 
 export default function SkillsPage() {
-  return <SkillsClient skills={getSkills()} />;
+  const skills = getSkills();
+  const career = skills.filter((s) => s.type === 'career').map((s) => skillTile(s));
+  // Top-row skills first, then bottom-row ones
+  const tech = [
+    ...skills.filter((s) => s.type === 'skills_top'),
+    ...skills.filter((s) => s.type === 'skills_bottom'),
+  ];
+
+  return (
+    <HexPage
+      title="Experience & Skills"
+      mobile={
+        <MobileList sections={[
+          { label: 'Experience', tiles: career },
+          { label: 'Skills', tiles: tech.map((s) => skillTile(s)) },
+        ].filter((section) => section.tiles.length > 0)} />
+      }
+    >
+      <Carousel
+        main={career}
+        supporting={tech.map((s) => skillTile(s, 'sm'))}
+        label="Experience"
+        hint="Use arrow keys to navigate experiences"
+      />
+    </HexPage>
+  );
 }

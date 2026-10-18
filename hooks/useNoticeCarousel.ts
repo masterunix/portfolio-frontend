@@ -1,53 +1,20 @@
 /**
- * useNoticeCarousel.ts — Auto-cycles through Gleck notices.
- *
- * When the widget is expanded and there are multiple notices,
- * automatically advances to the next notice every 5 seconds.
- * Pauses when collapsed or when only one notice exists.
- *
- * Resets the index if the notice count changes (e.g., CMS update).
+ * useNoticeCarousel.ts — Moves to the next Gleck notice every 5 seconds while the
+ * widget is expanded and has more than one.
  */
+import { useState, useEffect } from 'react';
 
-import { useState, useEffect, useRef } from 'react';
+const INTERVAL_MS = 5000;
 
-// ─── Constants ───────────────────────────────────────────────────────────────
-
-/** Time between automatic notice transitions (milliseconds) */
-const CAROUSEL_INTERVAL = 5000;
-
-// ─── Hook ────────────────────────────────────────────────────────────────────
-
-export function useNoticeCarousel(noticeCount: number, isExpanded: boolean) {
-  const [rawIndex, setRawIndex] = useState(0);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
-
-  // Clamp during render: if the notice count shrinks below the stored index
-  // (e.g. CMS update), show the first notice instead of an out-of-range one
-  const currentIndex = noticeCount > 0 && rawIndex >= noticeCount ? 0 : rawIndex;
+export function useNoticeCarousel(count: number, running: boolean) {
+  const [index, setIndex] = useState(0);
 
   useEffect(() => {
-    // Only auto-cycle when expanded and there are multiple notices
-    if (!isExpanded || noticeCount <= 1) {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-        intervalRef.current = null;
-      }
-      return;
-    }
+    if (!running || count <= 1) return;
+    const timer = setInterval(() => setIndex((i) => (i + 1) % count), INTERVAL_MS);
+    return () => clearInterval(timer);
+  }, [running, count]);
 
-    // Start carousel — wraps around using modular arithmetic
-    intervalRef.current = setInterval(() => {
-      setRawIndex((prev) => (prev + 1) % noticeCount);
-    }, CAROUSEL_INTERVAL);
-
-    // Cleanup interval on dependency change or unmount
-    return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-        intervalRef.current = null;
-      }
-    };
-  }, [isExpanded, noticeCount]);
-
-  return { currentIndex, setCurrentIndex: setRawIndex };
+  // If notices were removed, show the first instead of one that's gone
+  return { index: index < count ? index : 0, setIndex };
 }

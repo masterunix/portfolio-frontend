@@ -1,5 +1,5 @@
 # Gleck's notices (the widget at the bottom left).
-# text: required; may use <b> <i> <em> <strong> <a> <br> <p> <span>
+# text: required; Markdown for **bold**, *italic* and [links](https://…)
 # link: makes the notice clickable. active: false hides it (default true).
 #
 # Entries show in `order` (lowest first, default 0); equal orders keep the order of this file.

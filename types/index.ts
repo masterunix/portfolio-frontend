@@ -1,11 +1,6 @@
 /**
- * types/index.ts — Canonical type definitions for the portfolio application.
- *
- * All shared interfaces live here. Components import from '@/types'
- * instead of re-declaring their own copies..
+ * types/index.ts — The site's content, as lib/content.ts loads it from content/.
  */
-
-// ─── Content Types (content/*.yaml, loaded by lib/content.ts) ───────────────
 
 /** A file in public/, checked to exist when the content loads */
 export interface Media {
@@ -24,8 +19,8 @@ export interface Project {
   icon?: string;
   logo?: Media;
   color: string;
-  github?: string | null;
-  visit?: string | null;
+  github?: string;
+  visit?: string;
   order: number;
 }
 
@@ -48,16 +43,6 @@ export interface Skill {
     file: Media;
   }>;
   order: number;
-}
-
-/** A lightweight tech skill (used in top/bottom carousel rows) */
-export interface TechSkill {
-  name: string;
-  description: string;
-  icon?: string;
-  color: string;
-  logo?: Media;
-  category?: string;
 }
 
 /** A resume entry: downloads `file`, or opens `link` when there is no file */
@@ -84,12 +69,14 @@ export interface DSAPlatform {
   order: number;
 }
 
-/** A DSA concept (static data) */
+/** A DSA concept (content/dsa-concepts.yaml) */
 export interface DSAConcept {
+  id: number;
   title: string;
   icon: string;
   description: string;
   color: string;
+  order: number;
 }
 
 /** A home page typewriter message */
@@ -100,10 +87,10 @@ export interface HomeMessage {
   order: number;
 }
 
-/** A notice in the Gleck widget; `text` is HTML, sanitized before rendering */
+/** A notice in the Gleck widget, its Markdown rendered to inline HTML */
 export interface GleckNotice {
   id: number;
-  text: string;
+  html: string;
   link?: string;
   order: number;
 }
@@ -171,28 +158,4 @@ export interface BackgroundTheme {
     page: ThemePage;
     colors: string[];
   }>;
-}
-
-/** Feedback tile data on the resumes page */
-export interface FeedbackData {
-  domain: string;
-  description: string;
-  email: string;
-  color: string;
-  icon: string;
-}
-
-/** Placeholder strings that indicate a link is not yet available */
-export const PLACEHOLDER_VALUES = [
-  'Coming Soon',
-  'In Development',
-  'Private',
-  'Available on request',
-  'Will be deployed soon'
-] as const;
-
-/** Checks if a link value is a placeholder or missing */
-export function isPlaceholderLink(value: string | null | undefined): boolean {
-  if (!value) return true;
-  return (PLACEHOLDER_VALUES as readonly string[]).includes(value);
 }

@@ -1,137 +1,139 @@
 /**
- * globals.css — Master stylesheet for the portfolio application.
+ * globals.css — The site's styles.
  *
- * Organized into sections:
- * 1. Tailwind directives
- * 2. Base / reset styles
- * 3. Back button glassmorphism
- * 4. Hex action button
- * 5. Gleck notification widget
- * 6. Hex glass blur (31-point polygon workaround)
- * 7. Hex content layout
- * 8. Scrollbar customization
- * 9. Keyframe animations
+ *   Base · Glass · Hexagons · Tiles · Hex pages · Carousel · Mobile · Footer
+ *   · Gleck · Articles · Animations
+ *
+ * Small one-off layout uses Tailwind utilities in the markup; everything shared
+ * lives here.
  */
 
-/* Tailwind v4: the theme (colours, spacing, font sizes, shadows, breakpoints) and the
-   utilities. The v3 directives this replaced (@tailwind base/components) don't load the
-   theme in v4, so every utility that needs it (text-white/70, mt-2, font-bold, md:…)
-   was silently missing. Preflight (Tailwind's reset) is left out on purpose: the reset
-   below is the site's own. Utilities stay unlayered, where they always were. */
+/* Tailwind v4's theme (colours, spacing, sizes) and utilities. Its reset (preflight)
+   is left out: the base styles below are the site's own. */
 @import "tailwindcss/theme.css" layer(theme);
 @tailwind utilities;
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   1. BASE / RESET
-   ═══════════════════════════════════════════════════════════════════════════ */
+/* ═══ Base ═════════════════════════════════════════════════════════════════ */
 
 :root {
-  --background: #000000;
-  --foreground: #ffffff;
+  --glass-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+  --glass-border: 1px solid rgba(255, 255, 255, 0.18);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.37), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  --ease-out: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 html {
-  background-color: #000000;
+  background: #000;
   scroll-behavior: smooth;
 }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
 body {
-  background-color: #000000;
-  color: var(--foreground);
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  min-height: 100vh;
+  background: #000;
+  color: #fff;
+  font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   2. BACK BUTTON GLASSMORPHISM
-   Standard frosted-glass pill button used on all sub-pages for navigation.
-   Uses a ::before pseudo-element to reinforce blur on Chrome.
-   ═══════════════════════════════════════════════════════════════════════════ */
-
-.back-button-glass {
-  position: relative;
-  display: inline-block;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: 25px;
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37), inset 0 1px 0 0 rgba(255, 255, 255, 0.1), 0 0 20px rgba(255, 255, 255, 0.1);
-  transition: all 0.3s ease;
-  will-change: transform, background, border-color, box-shadow;
-  isolation: isolate;
-  -webkit-backdrop-filter: blur(15px) saturate(180%);
-  -moz-backdrop-filter: blur(15px) saturate(180%);
-  backdrop-filter: blur(15px) saturate(180%);
+a {
+  color: inherit;
+  text-decoration: none;
 }
 
-/* Reinforcement layer — ensures blur renders in Chrome even with z-index stacking */
-.back-button-glass::before {
-  content: '';
-  position: absolute;
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+ul {
+  list-style: none;
+}
+
+/* Page content sits above the animated background */
+.page {
+  position: relative;
+  z-index: 10;
+}
+
+.background {
+  position: fixed;
   inset: 0;
+  z-index: 0;
+  opacity: 0.95;
+  pointer-events: none;
+}
+
+/* The mobile layout; wide screens get the hex layout instead */
+@media (min-width: 768px) {
+  .mobile-only {
+    display: none !important;
+  }
+}
+
+/* ═══ Glass ════════════════════════════════════════════════════════════════ */
+
+.glass {
+  background: var(--glass-bg);
+  border: var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(20px) saturate(180%);
+}
+
+/* The ← Back to Home pill on hex pages */
+.back-button-glass {
+  display: inline-block;
+  padding: 10px 20px;
   border-radius: 25px;
+  background: var(--glass-bg);
+  border: var(--glass-border);
+  box-shadow: var(--glass-shadow), 0 0 20px rgba(255, 255, 255, 0.1);
   -webkit-backdrop-filter: blur(15px) saturate(180%);
-  -moz-backdrop-filter: blur(15px) saturate(180%);
   backdrop-filter: blur(15px) saturate(180%);
-  z-index: -1;
+  font-size: 14px;
+  font-weight: 500;
+  transition: transform 0.3s ease, background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .back-button-glass:hover {
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.08) 100%);
   border-color: rgba(255, 255, 255, 0.3);
   transform: translateY(-2px);
-  box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.5), inset 0 1px 0 0 rgba(255, 255, 255, 0.2), 0 0 40px rgba(255, 255, 255, 0.2);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 0 40px rgba(255, 255, 255, 0.2);
 }
 
-/* Anchor inside the button — override all link state colors */
-.back-button-glass a,
-.back-button-glass a:link,
-.back-button-glass a:visited,
-.back-button-glass a:hover,
-.back-button-glass a:active {
-  position: relative;
-  z-index: 1;
-  color: white !important;
-  padding: 10px 20px;
-  cursor: pointer;
-  font-family: 'Inter', sans-serif;
-  font-size: 14px;
-  font-weight: 500;
-  text-decoration: none !important;
-  display: block;
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   3. HEX ACTION BUTTON
-   Small white pill button used inside hex tiles for GitHub/Visit/Download.
-   ═══════════════════════════════════════════════════════════════════════════ */
-
+/* The small white button in tiles and cards (GitHub, Visit, Download…) */
 .hex-button {
-  background: rgba(255, 255, 255, 0.9);
-  color: #000;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 6px;
-  padding: 4px 12px;
-  min-width: 60px;
-  width: auto;
-  font-size: 9px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  text-decoration: none;
+  min-width: 60px;
+  padding: 4px 12px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.9);
+  color: #000;
+  font-size: 9px;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
 }
 
-.hex-button:hover {
-  background: rgba(255, 255, 255, 1);
+.hex-button:hover,
+a.tile:hover .hex-button {
+  background: #fff;
   transform: scale(1.05);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
@@ -140,138 +142,28 @@ body {
   transform: scale(0.95);
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   4. GLECK NOTIFICATION WIDGET
-   Persistent AI assistant notice widget (bottom-left corner).
-   ═══════════════════════════════════════════════════════════════════════════ */
+/* ═══ Hexagons ═════════════════════════════════════════════════════════════
+   A glass hexagon (HexShell): a frosted blur layer clipped to the hex, the outline,
+   and the content on top.
 
-.gleck-widget {
-  box-sizing: border-box;
-  position: relative;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37), inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
-  border-radius: 16px;
-}
-
-/* Small square buttons inside the widget (collapse, expand, close) */
-.gleck-button {
-  width: 28px;
-  height: 28px;
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  background: rgba(255, 255, 255, 0.1);
-  color: white;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  transition: all 0.2s ease;
-  padding: 0;
-}
-
-.gleck-button:hover {
-  background: rgba(255, 255, 255, 0.2);
-  border-color: rgba(255, 255, 255, 0.3);
-  transform: translateY(-1px);
-}
-
-/* Red-tinted hover for the close/dismiss button */
-.gleck-button-danger:hover {
-  background: rgba(239, 68, 68, 0.25);
-  border-color: rgba(239, 68, 68, 0.5);
-}
-
-/* Individual notice card in the enlarged view */
-.gleck-notice-item {
-  padding: 10px;
-  margin-bottom: 8px;
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(255, 255, 255, 0.05);
-  transition: all 0.3s ease;
-  cursor: pointer;
-  box-sizing: border-box;
-}
-
-.gleck-notice-item:hover {
-  background: rgba(255, 255, 255, 0.15);
-  border-color: rgba(255, 255, 255, 0.25);
-}
-
-.gleck-notice-item.active {
-  border-color: rgba(255, 255, 255, 0.2);
-  background: rgba(255, 255, 255, 0.1);
-}
-
-/* Links and text inside the widget */
-.gleck-link {
-  color: white;
-  text-decoration: none;
-  transition: all 0.2s ease;
-}
-
-.gleck-link:hover {
-  color: rgba(255, 255, 255, 0.8);
-}
-
-.gleck-notice-content {
-  color: white;
-}
-
-/* Make links inside Gleck notices visible and clickable */
-.gleck-notice-content a,
-.gleck-notice-content a:link,
-.gleck-notice-content a:visited {
-  color: rgba(255, 255, 255, 0.9);
-  text-decoration: underline;
-  text-underline-offset: 2px;
-  text-decoration-color: rgba(255, 255, 255, 0.4);
-  transition: all 0.2s ease;
-}
-
-.gleck-notice-content a:hover {
-  color: #fff;
-  text-decoration-color: #fff;
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   5. HEX GLASS BLUR — 31-Point Polygon Workaround
-   
-   Bypasses all three known Chromium mask-image + backdrop-filter bugs:
-   - Bug #40854528: Ancestor mask breaks child backdrop-filter
-   - Bug #41465359: Same-element mask causes blur to bleed into rectangle
-   - Bug #331753416: clip-path + overflow:hidden deletes blur
-   
-   Solution: Uses a 31-point CSS polygon() that traces the SVG bezier
-   curves with enough resolution to appear perfectly smooth.
-   The blur radius is kept to 8px (single-pass) to prevent Chrome's
-   compositor from causing sub-pixel phase jitter during animations.
-   ═══════════════════════════════════════════════════════════════════════════ */
-
-/* ─── Hex fade ───────────────────────────────────────────────────────────────
    Hexagons fade in by animating --hex-fade on their wrapper, not `opacity`. An
-   ancestor with opacity < 1 stops a backdrop-filter from seeing what's behind it
-   (it becomes the "backdrop root"), so fading the wrapper made each hex's glass pop
-   in only after its outline had finished fading: a second wave. Each layer applies
-   the fade to itself instead, which keeps the blur working.
-
-   They fade out with the wrapper's real opacity on purpose: each hex's blur drops
-   off the moment it starts leaving, so a sharp edge sweeps across the grid. Timing
-   for both is in lib/hexTransition.ts.
-   @property types the variable and defaults it to 1 for hexes outside a wrapper. */
+   ancestor with opacity < 1 stops a backdrop-filter from seeing what's behind it (it
+   becomes the "backdrop root"), so fading the wrapper made each hex's glass pop in
+   only after its outline had finished: a second wave. Each layer applies the fade
+   itself instead. They fade out with real opacity on purpose: each hex's blur drops
+   off the moment it starts leaving, so a sharp edge sweeps across the grid. Timing:
+   lib/hexTransition.ts. */
 
 @property --hex-fade {
   syntax: '<number>';
   inherits: true;
   initial-value: 1;
+}
+
+.hex-shell {
+  position: relative;
+  width: 100%;
+  height: 100%;
 }
 
 .hex-glass-blur,
@@ -280,17 +172,17 @@ body {
   opacity: var(--hex-fade);
 }
 
+/* The blur is clipped with a 31-point polygon tracing the outline's curves. Masks
+   and SVG clip paths trip Chromium bugs with backdrop-filter (40854528, 41465359,
+   331753416), and 8px is the largest blur Chrome renders in one pass, which keeps
+   it from shimmering while hexes move. */
 .hex-glass-blur {
   position: absolute;
   inset: 0;
-  width: 100%;
-  height: 100%;
   pointer-events: none;
   background: rgba(0, 0, 0, 0.25);
   -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
-  
-  /* 31 points tracing the exact SVG bezier curves */
   clip-path: polygon(
     45.00% 1.72%, 47.1% 0.66%, 50.0% 0.30%, 52.9% 0.66%, 55.00% 1.72%,
     94.16% 21.98%, 96.2% 23.4%, 97.8% 25.3%, 98.7% 27.4%, 99.16% 29.74%,
@@ -299,230 +191,694 @@ body {
     5.84% 78.02%, 3.8% 76.6%, 2.2% 74.7%, 1.3% 72.6%, 0.84% 70.26%,
     0.84% 29.74%, 1.3% 27.4%, 2.2% 25.3%, 3.8% 23.4%, 5.84% 21.98%
   );
-  -webkit-clip-path: polygon(
-    45.00% 1.72%, 47.1% 0.66%, 50.0% 0.30%, 52.9% 0.66%, 55.00% 1.72%,
-    94.16% 21.98%, 96.2% 23.4%, 97.8% 25.3%, 98.7% 27.4%, 99.16% 29.74%,
-    99.16% 70.26%, 98.7% 72.6%, 97.8% 74.7%, 96.2% 76.6%, 94.16% 78.02%,
-    55.00% 98.28%, 52.9% 99.3%, 50.0% 99.7%, 47.1% 99.3%, 45.29% 98.43%, 45.00% 98.28%,
-    5.84% 78.02%, 3.8% 76.6%, 2.2% 74.7%, 1.3% 72.6%, 0.84% 70.26%,
-    0.84% 29.74%, 1.3% 27.4%, 2.2% 25.3%, 3.8% 23.4%, 5.84% 21.98%
-  );
-  
-  z-index: 0;
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   6. HEX CONTENT LAYOUT
-   Centering layer for icon, title, description, and buttons inside a hex.
-   ═══════════════════════════════════════════════════════════════════════════ */
+.hex-outline {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.hex-outline path {
+  fill: rgba(255, 255, 255, 0.05);
+  stroke: rgba(255, 255, 255, 0.1);
+  stroke-width: 1;
+  transition: fill 0.4s var(--ease-out), stroke 0.4s var(--ease-out);
+}
+
+.group:hover .hex-outline path {
+  fill: rgba(255, 255, 255, 0.1);
+  stroke: rgba(255, 255, 255, 0.2);
+}
+
+/* ═══ Tiles (HexTile, and the icon in mobile cards) ════════════════════════ */
 
 .hex-content {
   position: absolute;
   inset: 0;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 8px;
   padding: 16px;
-  z-index: 10;
+  text-align: center;
 }
 
-/* Allow child elements (buttons, links) to receive pointer events */
-.hex-content>* {
-  pointer-events: auto;
+.tile-icon {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
+  font-size: 24px;
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  transition: transform 0.3s ease;
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   7. SCROLLBAR CUSTOMIZATION
-   Dark-themed scrollbar matching the overall aesthetic.
-   ═══════════════════════════════════════════════════════════════════════════ */
-
-::-webkit-scrollbar {
-  width: 8px;
+.tile-icon img,
+.tile-icon svg {
+  width: 60%;
+  height: 60%;
+  object-fit: contain;
 }
 
-::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.05);
+.group:hover .tile-icon {
+  transform: scale(1.1);
 }
 
-::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 4px;
+.tile-title {
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.2;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.3);
+.tile-meta {
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   8. KEYFRAME ANIMATIONS
-   Used for page entrance/exit transitions and the typewriter cursor.
-   ═══════════════════════════════════════════════════════════════════════════ */
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.tile-desc {
+  max-width: 150px;
+  font-size: 10px;
+  line-height: 1.35;
+  color: rgba(255, 255, 255, 0.7);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+/* The home menu */
+.tile-lg .tile-icon { width: 62px; height: 62px; }
+.tile-lg .tile-desc { max-width: 140px; color: rgba(255, 255, 255, 0.8); }
+
+/* The outer carousel rows and DSA concepts */
+.tile-sm .tile-icon { width: 45px; height: 45px; font-size: 20px; }
+.tile-sm .tile-title { font-size: 12px; }
+.tile-sm .tile-meta { font-size: 10px; }
+.tile-sm .tile-desc { max-width: 140px; font-size: 9px; line-height: 1.2; color: rgba(255, 255, 255, 0.6); }
+
+/* Skill level (beginner…expert) in its own colour */
+.tile-badge {
+  padding: 5px 14px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--badge) 19%, transparent);
+  background: color-mix(in srgb, var(--badge) 15%, transparent);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--badge) 30%, transparent);
+  color: var(--badge);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
-@keyframes fadeOut {
-  from { opacity: 1; }
-  to { opacity: 0; }
+.tile-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
 }
 
-@keyframes fadeOutDown {
-  from {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  to {
-    opacity: 0;
-    transform: translateY(20px);
-  }
+.tile > .hex-button {
+  margin-top: 8px;
 }
 
-/* Blinking cursor for the typewriter effect on the home page */
-@keyframes blink-cursor {
-  from, to { border-color: transparent; }
-  50% { border-color: white; }
+/* "Draft" on unpublished blog posts (only shown while running locally) */
+.tile-draft,
+.blog-draft {
+  color: #fcd34d;
+  font-weight: 700;
+  letter-spacing: 0.06em;
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   9. MOBILE LAYOUT (< 768px)
-   Replaces absolute-positioned hex grids with a vertically scrollable
-   card-based layout. Maintains the glass aesthetic.
-   ═══════════════════════════════════════════════════════════════════════════ */
+.tile-draft {
+  font-size: 9px;
+  text-transform: uppercase;
+}
 
-/* Glass card — mobile replacement for hexagonal tiles */
-.mobile-glass-card {
+/* ═══ Hex pages (HexPage) ══════════════════════════════════════════════════ */
+
+.hex-page {
   position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.hex-page-header {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  z-index: 100;
+  transform: translateX(-50%);
+  text-align: center;
+}
+
+.hex-page-title {
+  margin-bottom: 12px;
+  font-size: 36px;
+  font-weight: 700;
+  letter-spacing: 0.025em;
+  white-space: nowrap;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.7));
+}
+
+.hex-page-footer {
+  position: fixed;
+  bottom: 10px;
+  left: 50%;
+  z-index: 50;
+  transform: translateX(-50%);
+  --fade-delay: 1000ms;
+}
+
+/* The header, footer and carousel controls fade in after the hexes start, and out
+   when the page's outro starts */
+.page-fade {
+  animation: fadeIn 0.5s ease-out var(--fade-delay, 200ms) backwards;
+  transition: opacity 0.5s ease-out;
+}
+
+.hex-page[data-exiting] .page-fade {
+  opacity: 0;
+}
+
+/* The home page heading */
+.typewriter {
+  font-size: 36px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.7);
+  border-right: 3px solid #fff;
+  animation: blink-cursor 0.75s step-end infinite;
+}
+
+.typewriter a:hover {
+  opacity: 0.8;
+}
+
+/* ═══ Carousel ═════════════════════════════════════════════════════════════ */
+
+.carousel-bar {
+  position: fixed;
+  bottom: 125px;
+  left: 50%;
+  z-index: 1000;
+  display: flex;
+  gap: 8px;
+  padding: 12px 24px;
+  border-radius: 25px;
+  transform: translateX(-50%);
+  box-shadow: var(--glass-shadow), 0 0 20px rgba(255, 255, 255, 0.1);
+  --fade-delay: 600ms;
+}
+
+.carousel-button {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  background: var(--color);
+  font-size: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.carousel-button[aria-current='true'] {
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: scale(1.15);
+  box-shadow:
+    0 0 20px color-mix(in srgb, var(--color) 50%, transparent),
+    0 0 40px color-mix(in srgb, var(--color) 25%, transparent),
+    0 4px 12px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.carousel-button img {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+
+.carousel-tooltip {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 140px;
+  max-width: 200px;
+  margin-bottom: 12px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border-top: 2px solid var(--color);
+  text-align: center;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-50%);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.carousel-button:hover .carousel-tooltip,
+.carousel-button:focus-visible .carousel-tooltip {
+  opacity: 1;
+  transform: translate(-50%, -4px);
+}
+
+.carousel-tooltip strong {
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.carousel-tooltip span {
+  font-size: 9px;
+  line-height: 1.25;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.carousel-hint {
+  position: fixed;
+  bottom: 80px;
+  left: 50%;
+  z-index: 1001;
+  padding: 4px 12px;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.5);
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 12px;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  transform: translateX(-50%);
+  --fade-delay: 800ms;
+}
+
+/* ═══ Mobile (MobileList) ══════════════════════════════════════════════════ */
+
+.mobile-page {
+  position: relative;
+  min-height: 100vh;
+}
+
+.mobile-header {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 100;
+  padding: 20px 16px 16px;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), transparent);
+}
+
+.mobile-title {
+  margin-top: 12px;
+  font-size: 20px;
+  font-weight: 700;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.7);
+}
+
+.mobile-title.typewriter {
+  margin-top: 0;
+  overflow: hidden;
+  border-right-width: 2px;
+  letter-spacing: normal;
+}
+
+.mobile-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.08);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  font-size: 14px;
+  font-weight: 500;
+  transition: transform 0.2s ease;
+}
+
+.mobile-back:active {
+  transform: scale(0.96);
+}
+
+.mobile-tabs {
+  display: flex;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.mobile-tabs button {
+  flex: 1;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.mobile-tabs button[aria-selected='true'] {
+  background: #fff;
+  color: #000;
+}
+
+.mobile-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 100vh;
+  padding: 100px 16px 80px;
+}
+
+.mobile-header:has(.mobile-tabs) + .mobile-list {
+  padding-top: 160px;
+}
+
+.mobile-page-wide .mobile-list {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.mobile-list > li {
+  animation: fadeInUp 0.4s ease-out calc(var(--i, 0) * 60ms) backwards;
+}
+
+.mobile-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px;
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.12);
   background: rgba(255, 255, 255, 0.06);
   -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
-  padding: 20px;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  transition: all 0.3s ease;
-  overflow: hidden;
+  transition: transform 0.3s ease, background 0.3s ease;
 }
 
-.mobile-glass-card:active {
+a.mobile-card:active {
   transform: scale(0.98);
   background: rgba(255, 255, 255, 0.1);
 }
 
-/* Scrollable mobile container — uses natural page scroll, not nested overflow */
-.mobile-scroll {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding: 16px;
-  padding-top: 100px;
-  padding-bottom: 80px;
-  min-height: 100vh;
-  -webkit-overflow-scrolling: touch;
-}
-
-/* Mobile page header */
-.mobile-header {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 100;
-  padding: 16px;
-  padding-top: 20px;
-  background: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, transparent 100%);
-}
-
-/* Mobile icon box — smaller gradient square */
-.mobile-icon {
-  width: 48px;
-  height: 48px;
-  min-width: 48px;
-  border-radius: 12px;
+.mobile-card-row {
   display: flex;
   align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  gap: 16px;
 }
 
-/* Mobile card text container */
+.mobile-card .tile-icon {
+  width: 48px;
+  height: 48px;
+  font-size: 20px;
+}
+
 .mobile-card-text {
   flex: 1;
   min-width: 0;
 }
 
 .mobile-card-title {
+  margin-bottom: 2px;
   font-size: 15px;
   font-weight: 700;
-  color: white;
-  margin-bottom: 2px;
+}
+
+.mobile-card-meta {
+  margin-bottom: 4px;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.5);
 }
 
 .mobile-card-desc {
   font-size: 12px;
-  color: rgba(255, 255, 255, 0.7);
   line-height: 1.4;
+  color: rgba(255, 255, 255, 0.7);
 }
 
-.mobile-card-meta {
-  font-size: 11px;
-  color: rgba(255, 255, 255, 0.5);
-  margin-top: 4px;
+.mobile-card-arrow {
+  flex-shrink: 0;
+  font-size: 22px;
+  opacity: 0.4;
 }
 
-/* Mobile action buttons row */
 .mobile-card-actions {
   display: flex;
   gap: 8px;
-  margin-top: 8px;
 }
 
 .mobile-card-actions .hex-button {
-  font-size: 11px;
   padding: 6px 14px;
+  font-size: 11px;
 }
 
-/* Mobile back button */
-.mobile-back {
-  display: inline-flex;
+/* ═══ Footer ═══════════════════════════════════════════════════════════════ */
+
+.site-footer {
+  text-align: center;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.site-footer p + p {
+  margin-top: 4px;
+}
+
+.site-footer-small {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.site-footer a {
+  text-decoration: underline;
+  transition: color 0.2s ease;
+}
+
+.site-footer a:hover {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.mobile-footer {
+  padding: 24px 0;
+  margin-top: 16px;
+  opacity: 0.7;
+}
+
+/* ═══ Gleck ════════════════════════════════════════════════════════════════ */
+
+.gleck {
+  position: fixed;
+  bottom: 16px;
+  left: 16px;
+  z-index: 9999;
+}
+
+.gleck-mini {
+  display: flex;
   align-items: center;
-  gap: 6px;
-  color: white;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  background: var(--glass-bg);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: var(--glass-shadow);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+}
+
+.gleck-widget {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 300px;
+  max-width: 600px;
+  min-height: 60px;
+  padding: 12px 16px;
+  border-radius: 16px;
+  border-color: rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.gleck-widget.is-collapsed {
+  justify-content: center;
+  width: 60px;
+  min-width: 60px;
+  height: 60px;
+  padding: 0;
+}
+
+.gleck-widget.is-enlarged {
+  width: 33.333vw;
+  max-width: 33.333vw;
+  height: 33.333vh;
+  padding: 12px;
+}
+
+.gleck-row {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 12px;
+  min-height: 36px;
+}
+
+.is-collapsed .gleck-row {
+  justify-content: center;
+}
+
+.gleck-eyes,
+.gleck-eye-pair {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+}
+
+.gleck-text {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
   font-size: 14px;
-  font-weight: 500;
-  text-decoration: none;
-  padding: 8px 16px;
-  border-radius: 20px;
-  background: rgba(255, 255, 255, 0.08);
+  line-height: 1.4;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.is-enlarged .gleck-text {
+  white-space: normal;
+}
+
+.gleck-hello {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* Links inside notices */
+.gleck-notice a {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-color: rgba(255, 255, 255, 0.4);
+}
+
+a.gleck-notice:hover,
+.gleck-notice a:hover {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* Small square buttons (show all, close) */
+.gleck-button {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
   border: 1px solid rgba(255, 255, 255, 0.15);
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.1);
   transition: all 0.2s ease;
 }
 
-.mobile-back:active {
-  transform: scale(0.96);
-  background: rgba(255, 255, 255, 0.15);
+.gleck-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
 }
+
+.gleck-button-danger:hover {
+  background: rgba(239, 68, 68, 0.25);
+  border-color: rgba(239, 68, 68, 0.5);
+}
+
+.gleck-expand {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  font-size: 12px;
+}
+
+/* Every notice, when enlarged */
+.gleck-all {
+  flex: 1;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  overflow: hidden auto;
+}
+
+.gleck-all h3 {
+  margin-bottom: 12px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.gleck-notice-item {
+  position: relative;
+  margin-bottom: 8px;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+  font-size: 13px;
+  line-height: 1.6;
+  overflow-wrap: break-word;
+  transition: all 0.3s ease;
+}
+
+.gleck-notice-item:hover,
+.gleck-notice-item.active {
+  border-color: rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* The whole card picks the notice; its own link (if any) sits above */
+.gleck-notice-pick {
+  position: absolute;
+  inset: 0;
+}
+
+.gleck-notice-item .gleck-notice {
+  position: relative;
+  pointer-events: none;
+}
+
+.gleck-notice-item a.gleck-notice,
+.gleck-notice-item .gleck-notice a {
+  pointer-events: auto;
+}
+
+.gleck-know-more {
+  display: block;
+  margin-top: 8px;
+  padding-left: 8px;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.6);
+  transition: color 0.2s ease;
+}
+
+.gleck-know-more:hover {
+  color: rgba(255, 255, 255, 0.8);
+}
+
 /* ═══════════════════════════════════════════════════════════════════════════
-   BLOG POSTS
-   A readable glass panel over the animated background (app/blog/[slug]).
+   ARTICLES (blog posts, the summary): a readable glass panel (GlassArticle).
    The panel fades its own opacity, which keeps its backdrop blur working.
    ═══════════════════════════════════════════════════════════════════════════ */
 
@@ -772,13 +1128,6 @@ body {
   opacity: 0.8;
 }
 
-/* The "Draft" label on unpublished posts (shown only while running locally) */
-.blog-draft {
-  color: #fcd34d;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-}
-
 /* ─── Summary page header (app/summary) ──────────────────────────────────── */
 
 .summary-header {
@@ -933,3 +1282,39 @@ body {
 .prose .md-card > :last-child,
 .prose .md-timeline li > :last-child,
 .prose .md-columns > div > :last-child { margin-bottom: 0; }
+
+/* ═══ Animations ═══════════════════════════════════════════════════════════ */
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+}
+
+/* The typewriter's cursor */
+@keyframes blink-cursor {
+  50% { border-color: transparent; }
+}
+
+/* Dark scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
