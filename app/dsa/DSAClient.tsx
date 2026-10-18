@@ -7,14 +7,12 @@
  */
 'use client';
 
-import { useEffect, useState } from 'react';
 import { useIsMobile } from '@/hooks/useIsMobile';
+import { useMounted } from '@/hooks/useMounted';
 import DSAMobile from './DSAMobile';
 import DSADesktop from './DSADesktop';
 
 // ─── Constants ───────────────────────────────────────────────────────────────
-
-export const GRID_CONFIG = { rows: 3, gap: 20 };
 
 export const DSA_CONCEPTS = [
   { title: 'Arrays', icon: '📊', description: 'Linear data structures', color: '#3498db' },
@@ -34,10 +32,8 @@ import type { DSAPlatform } from '@/types';
 // ─── Component ───────────────────────────────────────────────────────────────
 
 export default function DSAClient({ platforms }: { platforms: DSAPlatform[] }) {
-  const [mounted, setMounted] = useState(false);
+  const mounted = useMounted();
   const isMobile = useIsMobile();
-
-  useEffect(() => { setMounted(true); }, []);
 
   if (!mounted) return null;
 

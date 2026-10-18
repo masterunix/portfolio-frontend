@@ -1,11 +1,13 @@
 'use client';
 
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import NavHexagon from '@/components/NavHexagon';
 import Hexagon from '@/components/Hexagon';
 import Footer from '@/components/Footer';
 import { useTypewriter } from '@/hooks/useTypewriter';
+import { useViewportSize } from '@/hooks/useViewportSize';
+import { useMounted } from '@/hooks/useMounted';
 import { navigationContent, skipList, NavigationItem } from '@/lib/constants';
 import type { HomeMessage } from '@/types';
 
@@ -22,23 +24,19 @@ interface GridItem {
 }
 
 export default function HomeDesktop({ messages }: { messages: HomeMessage[] }) {
-  const [mounted, setMounted] = useState(false);
-  const [gridItems, setGridItems] = useState<GridItem[]>([]);
+  const mounted = useMounted();
   const [isExiting, setIsExiting] = useState(false);
-  
+
   const router = useRouter();
+  const viewport = useViewportSize();
   const { text, currentMessage } = useTypewriter(messages || []);
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  // Calculate desktop hex grid positions (recomputes on debounced resize)
+  const gridItems = useMemo((): GridItem[] => {
+    if (!viewport) return [];
 
-  // Calculate desktop hex grid positions
-  useEffect(() => {
-    if (!mounted) return;
-
-    const viewportWidth = window.innerWidth;
-    const viewportHeight = window.innerHeight;
+    const viewportWidth = viewport.width;
+    const viewportHeight = viewport.height;
 
     const baseHexWidth = Math.floor(viewportWidth / 5.69);
     const baseHexHeight = Math.floor(baseHexWidth * 1.1547);
@@ -80,8 +78,8 @@ export default function HomeDesktop({ messages }: { messages: HomeMessage[] }) {
       }
     }
 
-    setGridItems(newGridItems);
-  }, [mounted]);
+    return newGridItems;
+  }, [viewport]);
 
   const handleNavigate = useCallback((e: React.MouseEvent, href: string, external: boolean) => {
     e.preventDefault();

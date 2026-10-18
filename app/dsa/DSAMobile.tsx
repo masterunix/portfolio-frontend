@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 import Footer from '@/components/Footer';
-import { STRAPI_URL } from '@/lib/api';
+import { getStrapiMedia } from '@/lib/api';
 import type { DSAPlatform } from '@/types';
 
 interface DSAMobileProps {
@@ -32,8 +32,8 @@ export default function DSAMobile({ platforms }: DSAMobileProps) {
       <div className="mobile-scroll" style={{ gap: '16px' }}>
         {/* Platforms */}
         {platforms.map((platform, index) => {
-          const logoUrl = platform.logo?.url 
-            ? `${STRAPI_URL}${platform.logo.url}`
+          const logoUrl = platform.logo?.url
+            ? getStrapiMedia(platform.logo.url)
             : `/${platform.logoPath}`;
 
           return (
@@ -53,9 +53,9 @@ export default function DSAMobile({ platforms }: DSAMobileProps) {
                   className="w-[32px] h-[32px] object-contain brightness-110"
                   onError={(e) => {
                     // Fallback to text if image fails
-                    (e.currentTarget as any).style.display = 'none';
-                    const fallback = e.currentTarget.parentElement?.querySelector('.fallback-text');
-                    if (fallback) (fallback as any).style.display = 'block';
+                    e.currentTarget.style.display = 'none';
+                    const fallback = e.currentTarget.parentElement?.querySelector<HTMLElement>('.fallback-text');
+                    if (fallback) fallback.style.display = 'block';
                   }}
                 />
                 <span className="fallback-text text-2xl font-bold text-white hidden">{platform.name.charAt(0)}</span>

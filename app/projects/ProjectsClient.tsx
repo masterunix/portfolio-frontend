@@ -7,9 +7,8 @@
  */
 'use client';
 
-import { useEffect, useState, useCallback, useMemo } from 'react';
-import { useRouter } from 'next/navigation';
 import { useIsMobile } from '@/hooks/useIsMobile';
+import { useMounted } from '@/hooks/useMounted';
 import ProjectsMobile from './ProjectsMobile';
 import ProjectsDesktop from './ProjectsDesktop';
 
@@ -23,10 +22,8 @@ interface ProjectsClientProps {
 // ─── Component ───────────────────────────────────────────────────────────────
 
 export default function ProjectsClient({ projects = [], skills = [] }: ProjectsClientProps) {
-  const [mounted, setMounted] = useState(false);
+  const mounted = useMounted();
   const isMobile = useIsMobile();
-
-  useEffect(() => { setMounted(true); }, []);
 
   if (!mounted) return null;
 

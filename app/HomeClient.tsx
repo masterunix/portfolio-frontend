@@ -9,9 +9,10 @@
  */
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useIsMobile } from '@/hooks/useIsMobile';
+import { useMounted } from '@/hooks/useMounted';
 import { navigationContent } from '@/lib/constants';
 import HomeMobile from './HomeMobile';
 import HomeDesktop from './HomeDesktop';
@@ -20,13 +21,11 @@ import type { HomeMessage } from '@/types';
 // ─── Component ──────────────────────────────────────────────────────────────
 
 export default function HomeClient({ messages }: { messages: HomeMessage[] }) {
-  const [mounted, setMounted] = useState(false);
+  const mounted = useMounted();
   const isMobile = useIsMobile();
   const router = useRouter();
 
   useEffect(() => {
-    setMounted(true);
-
     // Prefetch internal routes to make navigation instantaneous
     Object.values(navigationContent).forEach((nav) => {
       if (!nav.external && nav.href.startsWith('/')) {

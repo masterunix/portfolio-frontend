@@ -1,11 +1,13 @@
 'use client';
 
-import React, { useEffect, useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 import { computeHexLayout, calculateHexX, calculateHexY } from '@/lib/layoutUtils';
 import { useCarousel } from '@/hooks/useCarousel';
+import { useViewportSize } from '@/hooks/useViewportSize';
+import { useMounted } from '@/hooks/useMounted';
 import CarouselHex from '@/components/CarouselHex';
 import HexShell from '@/components/HexShell';
 import CareerSkillHex from '@/components/CareerSkillHex';
@@ -34,14 +36,15 @@ interface SkillsDesktopProps {
 
 export default function SkillsDesktop({ careerSkills = [], techSkills = [] }: SkillsDesktopProps) {
   const router = useRouter();
-  const [mounted, setMounted] = useState(false);
+  const mounted = useMounted();
   const [activeIndex, setActiveIndex] = useState(0);
   const [isExiting, setIsExiting] = useState(false);
 
+  const viewport = useViewportSize();
   const layout = useMemo(() => {
-    if (typeof window === 'undefined') return null;
-    return computeHexLayout(window.innerWidth, window.innerHeight, GRID_CONFIG);
-  }, [mounted]);
+    if (!viewport) return null;
+    return computeHexLayout(viewport.width, viewport.height, GRID_CONFIG);
+  }, [viewport]);
 
   const { carouselOffset, navigateToItem } = useCarousel({
     itemCount: careerSkills.length || 1,
@@ -50,8 +53,6 @@ export default function SkillsDesktop({ careerSkills = [], techSkills = [] }: Sk
     autoScrollSpeed: 0.39,
     onIndexChange: setActiveIndex
   });
-
-  useEffect(() => { setMounted(true); }, []);
 
   const handleBack = useCallback((e: React.MouseEvent) => {
     e.preventDefault();

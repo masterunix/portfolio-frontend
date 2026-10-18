@@ -1,10 +1,13 @@
 'use client';
 
-import React, { useEffect, useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 import { useIsMobile } from '@/hooks/useIsMobile';
+import { useViewportSize } from '@/hooks/useViewportSize';
+import { useMounted } from '@/hooks/useMounted';
+import { getStrapiMedia } from '@/lib/api';
 import { computeHexLayout, calculateHexX, calculateHexY } from '@/lib/layoutUtils';
 import Hexagon from '@/components/Hexagon';
 import ResumeHex from '@/components/ResumeHex';
@@ -29,15 +32,14 @@ interface ResumesClientProps {
 export default function ResumesClient({ resumes = [] }: ResumesClientProps) {
   const router = useRouter();
   const isMobile = useIsMobile();
-  const [mounted, setMounted] = useState(false);
+  const mounted = useMounted();
   const [isExiting, setIsExiting] = useState(false);
 
+  const viewport = useViewportSize();
   const layout = useMemo(() => {
-    if (typeof window === 'undefined') return null;
-    return computeHexLayout(window.innerWidth, window.innerHeight, GRID_CONFIG);
-  }, [mounted]);
-
-  useEffect(() => { setMounted(true); }, []);
+    if (!viewport) return null;
+    return computeHexLayout(viewport.width, viewport.height, GRID_CONFIG);
+  }, [viewport]);
 
   const handleBack = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
@@ -89,19 +91,18 @@ export default function ResumesClient({ resumes = [] }: ResumesClientProps) {
     }
     
     // Centering logic: Match the original gridWidth calculation
-    const windowWidth = typeof window !== 'undefined' ? window.innerWidth : 1200;
+    const windowWidth = viewport?.width ?? 1200;
     const gridContentWidth = (GRID_CONFIG.cols - 1) * hexSpacingX + hexWidth;
     const shiftX = (windowWidth - gridContentWidth) / 2;
-    
+
     items.forEach(item => { item.x += shiftX; });
 
     return items;
-  }, [layout, resumes, shouldSkip, resumePositions]);
+  }, [layout, resumes, shouldSkip, resumePositions, viewport]);
 
   const downloadResume = (resume: Resume) => {
     if (!resume.file?.url) return;
-    const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_URL || 'http://localhost:1337';
-    fetch(`${STRAPI_URL}${resume.file.url}`)
+    fetch(getStrapiMedia(resume.file.url))
       .then(response => response.blob())
       .then(blob => {
         const url = window.URL.createObjectURL(blob);

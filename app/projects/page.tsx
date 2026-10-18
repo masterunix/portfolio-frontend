@@ -1,5 +1,11 @@
+import type { Metadata } from 'next';
 import ProjectsClient from './ProjectsClient';
 import { getProjects, getSkills } from '@/lib/api';
+
+export const metadata: Metadata = {
+  title: 'Projects | Vatsal Goyal',
+  description: 'Explore my portfolio of live projects — full-stack web apps, mobile apps, AI/ML work, and more.',
+};
 
 export default async function ProjectsPage() {
   let projects = [];

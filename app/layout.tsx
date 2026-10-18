@@ -15,7 +15,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import ShaderBackground from "@/components/ShaderBackground";
+import ShaderBackground, { type BackgroundTheme } from "@/components/ShaderBackground";
 import GleckNoticeWrapper from "@/components/GleckNoticeWrapper";
 import { getActiveBackgroundTheme } from "@/lib/api";
 
@@ -41,7 +41,6 @@ export const viewport: Viewport = {
   themeColor: "#000000",
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
 };
 
 // ─── Layout ──────────────────────────────────────────────────────────────────
@@ -51,11 +50,11 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  let theme = null;
+  let theme: BackgroundTheme | null = null;
   try {
-    const data = await getActiveBackgroundTheme();
+    const data: BackgroundTheme[] = await getActiveBackgroundTheme();
     if (data && data.length > 0) {
-      theme = data.find((t: any) =>
+      theme = data.find((t) =>
         t.animationType !== 'static' &&
         t.slug !== 'default' &&
         t.slug !== 'background-theme'

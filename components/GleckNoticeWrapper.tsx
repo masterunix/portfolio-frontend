@@ -19,6 +19,7 @@ import { useGleckData } from '@/hooks/useGleckData';
 import { useEyeTracking } from '@/hooks/useEyeTracking';
 import { useNoticeCarousel } from '@/hooks/useNoticeCarousel';
 import { useIsMobile } from '@/hooks/useIsMobile';
+import { useMounted } from '@/hooks/useMounted';
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
@@ -92,7 +93,7 @@ function sanitizeHTML(html: string): string {
 // ─── Main Component ──────────────────────────────────────────────────────────
 
 export default function GleckNoticeWrapper() {
-  const [mounted, setMounted] = useState(false);
+  const mounted = useMounted();
   const [isExpanded, setIsExpanded] = useState(true);
   const [isEnlarged, setIsEnlarged] = useState(false);
   const [blink, setBlink] = useState(false);
@@ -105,8 +106,6 @@ export default function GleckNoticeWrapper() {
   const { notices } = useGleckData();
   const eyePos = useEyeTracking(widgetRef);
   const { currentIndex, setCurrentIndex } = useNoticeCarousel(notices.length, isExpanded);
-
-  useEffect(() => { setMounted(true); }, []);
 
   // Auto-collapse after 10s (desktop only)
   useEffect(() => {

@@ -15,6 +15,17 @@
 
 export const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_URL || 'http://localhost:1337';
 
+/**
+ * Resolves a Strapi media URL to an absolute URL.
+ *
+ * Handles both storage providers:
+ * - Cloudinary (production): returns absolute `https://res.cloudinary.com/...` URLs as-is
+ * - Local uploads (dev): prefixes relative `/uploads/...` paths with STRAPI_URL
+ */
+export function getStrapiMedia(url: string): string {
+  return url.startsWith('http') ? url : `${STRAPI_URL}${url}`;
+}
+
 // ─── Core Fetch ──────────────────────────────────────────────────────────────
 
 /**

@@ -14,7 +14,7 @@
 
 import React from 'react';
 
-import { STRAPI_URL } from '@/lib/api';
+import { getStrapiMedia } from '@/lib/api';
 import type { DSAPlatform } from '@/types';
 
 // ─── Props ───────────────────────────────────────────────────────────────────
@@ -32,8 +32,8 @@ interface DSAPlatformHexProps {
 
 export default function DSAPlatformHex({ platform, onVisit }: DSAPlatformHexProps) {
   /** Resolve logo URL — prefer Strapi-hosted, fall back to local public/ */
-  const logoUrl = platform.logo?.url 
-    ? `${STRAPI_URL}${platform.logo.url}`
+  const logoUrl = platform.logo?.url
+    ? getStrapiMedia(platform.logo.url)
     : `/${platform.logoPath}`;
 
   return (

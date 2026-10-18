@@ -1,10 +1,12 @@
 'use client';
 
-import React, { useEffect, useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 import { computeHexLayout, calculateHexX, calculateHexY } from '@/lib/layoutUtils';
+import { useViewportSize } from '@/hooks/useViewportSize';
+import { useMounted } from '@/hooks/useMounted';
 import Hexagon from '@/components/Hexagon';
 import DSAPlatformHex from '@/components/DSAPlatformHex';
 import DSAConceptHex from '@/components/DSAConceptHex';
@@ -30,15 +32,14 @@ interface DSADesktopProps {
 
 export default function DSADesktop({ platforms = [] }: DSADesktopProps) {
   const router = useRouter();
-  const [mounted, setMounted] = useState(false);
+  const mounted = useMounted();
   const [isExiting, setIsExiting] = useState(false);
 
+  const viewport = useViewportSize();
   const layout = useMemo(() => {
-    if (typeof window === 'undefined') return null;
-    return computeHexLayout(window.innerWidth, window.innerHeight, GRID_CONFIG);
-  }, [mounted]);
-
-  useEffect(() => { setMounted(true); }, []);
+    if (!viewport) return null;
+    return computeHexLayout(viewport.width, viewport.height, GRID_CONFIG);
+  }, [viewport]);
 
   const handleBack = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
@@ -89,14 +90,14 @@ export default function DSADesktop({ platforms = [] }: DSADesktopProps) {
     }
     
     // Centering logic: Match the original gridWidth calculation
-    const windowWidth = typeof window !== 'undefined' ? window.innerWidth : 1200;
+    const windowWidth = viewport?.width ?? 1200;
     const gridContentWidth = (GRID_CONFIG.cols - 1) * hexSpacingX + hexWidth;
     const shiftX = (windowWidth - gridContentWidth) / 2;
-    
+
     items.forEach(item => { item.x += shiftX; });
 
     return items;
-  }, [layout, platforms]);
+  }, [layout, platforms, viewport]);
 
   if (!mounted || !layout) return null;
 

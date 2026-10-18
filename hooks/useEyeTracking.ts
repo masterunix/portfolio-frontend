@@ -26,27 +26,41 @@ export function useEyeTracking(widgetRef: RefObject<HTMLElement | null>): EyePos
   const [eyePos, setEyePos] = useState<EyePosition>({ x: 0, y: 0 });
 
   useEffect(() => {
+    let frameId: number | null = null;
+
+    // Throttle to one state update per animation frame — mousemove can fire
+    // far more often than 60Hz, and every update re-renders the whole widget
     const handleMouseMove = (e: MouseEvent) => {
-      if (!widgetRef.current) return;
+      if (frameId !== null) return;
 
-      const rect = widgetRef.current.getBoundingClientRect();
-      const centerX = rect.left + rect.width / 2;
-      const centerY = rect.top + rect.height / 2;
+      frameId = requestAnimationFrame(() => {
+        frameId = null;
+        if (!widgetRef.current) return;
 
-      // Calculate delta from widget center
-      const deltaX = e.clientX - centerX;
-      const deltaY = e.clientY - centerY;
+        const rect = widgetRef.current.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
 
-      // Normalize to -1..1 range with 200px max tracking radius
-      const maxDistance = 200;
-      const normalizedX = Math.max(-1, Math.min(1, deltaX / maxDistance));
-      const normalizedY = Math.max(-1, Math.min(1, deltaY / maxDistance));
+        // Calculate delta from widget center
+        const deltaX = e.clientX - centerX;
+        const deltaY = e.clientY - centerY;
 
-      setEyePos({ x: normalizedX, y: normalizedY });
+        // Normalize to -1..1 range with 200px max tracking radius
+        const maxDistance = 200;
+        const normalizedX = Math.max(-1, Math.min(1, deltaX / maxDistance));
+        const normalizedY = Math.max(-1, Math.min(1, deltaY / maxDistance));
+
+        setEyePos((prev) =>
+          prev.x === normalizedX && prev.y === normalizedY ? prev : { x: normalizedX, y: normalizedY }
+        );
+      });
     };
 
     window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      if (frameId !== null) cancelAnimationFrame(frameId);
+    };
   }, [widgetRef]);
 
   return eyePos;

@@ -1,5 +1,11 @@
+import type { Metadata } from 'next';
 import ResumesClient from './ResumesClient';
 import { getResumes } from '@/lib/api';
+
+export const metadata: Metadata = {
+  title: 'Resumes | Vatsal Goyal',
+  description: 'Download domain-specific resumes — full-stack, software engineering, ML, mobile, embedded, and more.',
+};
 
 export default async function ResumesPage() {
   let resumes = [];

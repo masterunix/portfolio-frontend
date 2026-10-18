@@ -14,7 +14,7 @@
 
 import React from 'react';
 
-import { STRAPI_URL } from '@/lib/api';
+import { getStrapiMedia } from '@/lib/api';
 import type { Skill } from '@/types';
 
 // ─── Component ───────────────────────────────────────────────────────────────
@@ -32,7 +32,7 @@ export default function CareerSkillHex({ skill }: { skill: Skill }) {
       >
         {skill.logo?.url ? (
           <img
-            src={`${STRAPI_URL}${skill.logo.url}`}
+            src={getStrapiMedia(skill.logo.url)}
             alt={skill.name}
             className="w-[30px] h-[30px] object-contain"
           />
@@ -68,7 +68,7 @@ export default function CareerSkillHex({ skill }: { skill: Skill }) {
                 key={attachment.id}
                 onClick={(e) => {
                   e.stopPropagation();
-                  window.open(`${STRAPI_URL}${attachment.file.url}`, '_blank');
+                  window.open(getStrapiMedia(attachment.file.url), '_blank');
                 }}
                 className="hex-button max-w-[100px] truncate"
                 aria-label={`View ${attachment.label}`}

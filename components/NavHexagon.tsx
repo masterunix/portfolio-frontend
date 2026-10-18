@@ -64,8 +64,8 @@ export default function NavHexagon({
         >
           {/* Clone icon element to force full-size rendering */}
           <div className="w-[38px] h-[38px] flex items-center justify-center" style={{ width: '38px', height: '38px' }}>
-            {React.isValidElement(icon) 
-              ? React.cloneElement(icon as React.ReactElement<any>, {
+            {React.isValidElement(icon)
+              ? React.cloneElement(icon as React.ReactElement<{ style?: React.CSSProperties }>, {
                   style: { width: '100%', height: '100%', display: 'block' }
                 })
               : icon

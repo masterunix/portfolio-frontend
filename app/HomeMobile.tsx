@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import { navigationContent, NavigationItem } from '@/lib/constants';
+import { navigationContent } from '@/lib/constants';
 
 import { useTypewriter } from '@/hooks/useTypewriter';
 

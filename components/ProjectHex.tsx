@@ -15,7 +15,7 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 
-import { STRAPI_URL } from '@/lib/api';
+import { getStrapiMedia } from '@/lib/api';
 import { isPlaceholderLink } from '@/types';
 import type { Project } from '@/types';
 
@@ -39,7 +39,7 @@ export default function ProjectHex({ project }: { project: Project }) {
       >
         {project.logo?.url ? (
           <img
-            src={`${STRAPI_URL}${project.logo.url}`}
+            src={getStrapiMedia(project.logo.url)}
             alt={project.title}
             className="w-[30px] h-[30px] object-contain"
           />

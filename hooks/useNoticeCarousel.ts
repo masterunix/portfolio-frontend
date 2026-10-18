@@ -18,8 +18,12 @@ const CAROUSEL_INTERVAL = 5000;
 // ─── Hook ────────────────────────────────────────────────────────────────────
 
 export function useNoticeCarousel(noticeCount: number, isExpanded: boolean) {
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [rawIndex, setRawIndex] = useState(0);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Clamp during render: if the notice count shrinks below the stored index
+  // (e.g. CMS update), show the first notice instead of an out-of-range one
+  const currentIndex = noticeCount > 0 && rawIndex >= noticeCount ? 0 : rawIndex;
 
   useEffect(() => {
     // Only auto-cycle when expanded and there are multiple notices
@@ -33,7 +37,7 @@ export function useNoticeCarousel(noticeCount: number, isExpanded: boolean) {
 
     // Start carousel — wraps around using modular arithmetic
     intervalRef.current = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % noticeCount);
+      setRawIndex((prev) => (prev + 1) % noticeCount);
     }, CAROUSEL_INTERVAL);
 
     // Cleanup interval on dependency change or unmount
@@ -45,12 +49,5 @@ export function useNoticeCarousel(noticeCount: number, isExpanded: boolean) {
     };
   }, [isExpanded, noticeCount]);
 
-  // Guard: Reset index if notice count shrinks below current position
-  useEffect(() => {
-    if (currentIndex >= noticeCount && noticeCount > 0) {
-      setTimeout(() => setCurrentIndex(0), 0);
-    }
-  }, [noticeCount, currentIndex]);
-
-  return { currentIndex, setCurrentIndex };
+  return { currentIndex, setCurrentIndex: setRawIndex };
 }

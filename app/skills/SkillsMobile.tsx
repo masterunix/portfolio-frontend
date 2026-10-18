@@ -5,9 +5,8 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 import Footer from '@/components/Footer';
-import { STRAPI_URL } from '@/lib/api';
+import { getStrapiMedia } from '@/lib/api';
 import type { Skill } from '@/types';
-import { DEFAULT_TOP_SKILLS, DEFAULT_BOTTOM_SKILLS } from './SkillsClient';
 
 interface SkillsMobileProps {
   careerSkills: Skill[];
@@ -60,7 +59,7 @@ export default function SkillsMobile({ careerSkills, topSkills, bottomSkills }: 
             .filter((att) => att.file?.url)
             .map((att) => (
               <button key={att.id} className="hex-button"
-                onClick={() => window.open(`${STRAPI_URL}${att.file.url}`, '_blank')}>
+                onClick={() => window.open(getStrapiMedia(att.file.url), '_blank')}>
                 {att.label}
               </button>
             ))}

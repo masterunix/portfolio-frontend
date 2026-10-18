@@ -11,7 +11,7 @@
 
 import React from 'react';
 
-import { STRAPI_URL } from '@/lib/api';
+import { getStrapiMedia } from '@/lib/api';
 import type { TechSkill } from '@/types';
 
 // ─── Proficiency Badge Config ────────────────────────────────────────────────
@@ -40,7 +40,7 @@ export default function SkillTechHex({ tech }: { tech: TechSkill }) {
       >
         {tech.logo?.url ? (
           <img
-            src={`${STRAPI_URL}${tech.logo.url}`}
+            src={getStrapiMedia(tech.logo.url)}
             alt={tech.name}
             className="w-[25px] h-[25px] object-contain"
           />
