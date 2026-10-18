@@ -13,8 +13,12 @@
  * 9. Keyframe animations
  */
 
-@tailwind base;
-@tailwind components;
+/* Tailwind v4: the theme (colours, spacing, font sizes, shadows, breakpoints) and the
+   utilities. The v3 directives this replaced (@tailwind base/components) don't load the
+   theme in v4, so every utility that needs it (text-white/70, mt-2, font-bold, md:…)
+   was silently missing. Preflight (Tailwind's reset) is left out on purpose: the reset
+   below is the site's own. Utilities stay unlayered, where they always were. */
+@import "tailwindcss/theme.css" layer(theme);
 @tailwind utilities;
 
 /* ═══════════════════════════════════════════════════════════════════════════
