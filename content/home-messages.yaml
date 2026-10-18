@@ -6,10 +6,38 @@
 # Links must start with https://, http://, mailto:, tel:, / or #.
 # Field rules: lib/content.ts.
 
-- text: Hey I am YOU
-  order: 0
-- text: See my website https://www.vatsalgoyal.me
+- text: Welcome to my Portfolio v2!
   link: https://www.vatsalgoyal.me
-  order: 0
-- text: Who are you? HUH>?
   order: 1
+- text: Hi! I am Vatsal. See what I'm working on.
+  link: https://www.vatsalgoyal.me
+  order: 2
+- text: Linus built git in 10 Days!
+  order: 3
+- text: This is a website.
+  order: 4
+- text: Computers are still magic.
+  order: 5
+- text: As seen on TV!
+  order: 6
+- text: Do you play minecraft?
+  order: 7
+- text: Check out my resume!
+  order: 8
+- text: Check out what I'm Listening! Click Here!
+  link: https://music.apple.com/profile/vatsalgoyal9999
+  order: 9
+- text: Wanna see portfolio v1? Click here!                       :)
+  link: https://portfolio-website-54obaoeuj-masterunixs-projects.vercel.app/
+  order: 10
+- text: Follow me on Instagram!
+  link: https://www.instagram.com/vatsalgoyall/
+  order: 11
+- text: "Random Splash! Random Splash! Random Splash! "
+  order: 12
+- text: "Help! ChatGPT! "
+  order: 13
+- text: 2014 will be my Year!
+  order: 14
+- text: Hi! I am Vatsal. Harder, Better, Faster, Stronger
+  order: 14

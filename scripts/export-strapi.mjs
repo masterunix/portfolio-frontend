@@ -56,7 +56,11 @@ async function media(file, folder) {
 
   const src = file.url.startsWith('http') ? file.url : `${BASE}${file.url}`;
   const res = await fetch(src);
-  if (!res.ok) throw new Error(`download ${src}: HTTP ${res.status}`);
+  if (!res.ok) {
+    // Leave it out and carry on; the summary at the end lists what's missing
+    note(`media/${folder}`, `couldn't download ${src} (HTTP ${res.status}); left out`);
+    return undefined;
+  }
   const bytes = Buffer.from(await res.arrayBuffer());
 
   const dir = path.join(PUBLIC, 'media', folder);
@@ -221,7 +225,7 @@ ${COMMON}`, messages.map(m => compact({
   const notices = await get('gleck-notices?sort=order:asc');
   write('gleck-notices.yaml', `
 Gleck's notices (the widget at the bottom left).
-text: required; may use <b> <i> <em> <strong> <a> <br> <p> <span>
+text: required; Markdown for **bold**, *italic* and [links](https://…)
 link: makes the notice clickable. active: false hides it (default true).
 ${COMMON}`, notices.map(n => compact({
     text: n.text,

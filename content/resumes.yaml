@@ -9,9 +9,18 @@
 # Links must start with https://, http://, mailto:, tel:, / or #.
 # Field rules: lib/content.ts.
 
+- domain: General
+  description: Journey Yet!
+  color: Blue
+  icon: R
+  order: 1
+- domain: More Coming Soon!
+  description: Einstein couldn't solve the problem of time, who am I?
+  color: Black
+  icon: ":)"
+  order: 3
 - domain: Feedback
-  description: Found a bug?
-  color: Orange
-  icon: Fo
-  link: mailto:vatsalgoyal9999@gmail.com
+  description: Found a Bug?
+  color: Yellow
+  icon: F
   order: 8

@@ -12,67 +12,90 @@
 # Links must start with https://, http://, mailto:, tel:, / or #.
 # Field rules: lib/content.ts.
 
-- name: Dxpress.JS
-  description: DNot Node
-  type: skills_bottom
-  category: intermediate
-  color: yellow
-  icon: e
-  order: 0
-- name: PREACT
-  description: EPPxpertedededed
-  type: skills_bottom
-  category: proficient
-  color: red
-  icon: x
-  order: 0
-- name: Lode.JS
-  description: Lxpertededededsdfasdf
-  type: skills_top
-  category: intermediate
-  color: pink
-  icon: x
-  order: 0
-- name: Losdfde.JS
-  description: Lxpertedededed
-  type: skills_top
-  category: intermediate
-  color: red
-  icon: x
-  order: 0
-- name: Pigispheresasdfasdfa
-  description: Punfd
+- name: Internship
+  description: Jan - July 2026
   type: career
-  color: White
-  logo: /media/logos/digisphere.jpeg
-  attachments:
-    - label: One
-      file: /media/attachments/10th.pdf
-    - label: Two
-      file: /media/attachments/6th-sem.pdf
+  color: Blue
+  icon: PS
   order: 0
-- name: Pigispheres
-  description: Punior Web Developer and Prof. Video Editor
-  type: career
-  color: White
-  icon: D
-  logo: /media/logos/digisphere.jpeg
-  attachments:
-    - label: One
-      file: /media/attachments/10th.pdf
-    - label: Two
-      file: /media/attachments/6th-sem.pdf
-  order: 0
-- name: LLXebia
-  description: "Created Job Nest "
+- name: Digispheres - Junior Web Developer
+  description: 2023 - 2024 Created websites, managed client.
   type: career
   color: Purple
+  icon: DS
+  order: 0
+- name: Xebia
+  description: Full Stack Intern (June - July 2025)
+  type: career
+  color: Yellow
   icon: X
-  attachments:
-    - label: View File
-      file: /media/attachments/10th.pdf
-    - label: View File
-      file: /media/attachments/codef.webp
-    - label: View File
-      file: /media/attachments/6th-sem.pdf
-  order: 1
+  order: 0
+- name: AWS Cloud Certification
+  description: 2026 - Upcoming
+  type: career
+  color: Red
+  icon: AWS
+  order: 0
+- name: PostgreSQL
+  description: Building databases, since 2024.
+  type: skills_top
+  category: beginner
+  color: White
+  icon: PG
+  order: 0
+- name: React.js
+  description: Using react since 2025.
+  type: skills_top
+  category: intermediate
+  color: Purple
+  icon: R.js
+  order: 0
+- name: Express.JS
+  description: Connected Postgres and Frontend.
+  type: skills_top
+  category: beginner
+  color: Green
+  icon: E.js
+  order: 0
+- name: Node.js
+  description: The heart of web.
+  type: skills_top
+  category: intermediate
+  color: White
+  icon: N.js
+  order: 0
+- name: Next.js
+  description: React + 1
+  type: skills_top
+  category: beginner
+  color: Black
+  icon: N.js
+  order: 0
+- name: PyTorch
+  description: Learning.
+  type: skills_bottom
+  category: beginner
+  color: Orange
+  icon: PyT
+  order: 0
+- name: LangGraoh
+  description: Learning this for Gleck Development. Along with LangChain
+  type: skills_bottom
+  category: beginner
+  color: Blue
+  icon: LG
+  order: 0
+- name: LangChain
+  description: Learning this for Gleck Development.
+  type: skills_bottom
+  category: beginner
+  color: Yellow
+  icon: LC
+  order: 0
+- name: MCP
+  description: Model-Context-Protocol, used in Gleck.
+  type: skills_bottom
+  category: beginner
+  color: Red
+  icon: MCP
+  order: 0
