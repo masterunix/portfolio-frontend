@@ -4,9 +4,11 @@ A portfolio site of glass hexagons over an animated background: a honeycomb menu
 scrolling carousels of projects and skills, resumes, coding profiles, a blog and a
 summary page. On phones, every page is a list of glass cards instead.
 
-Built with Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS 4, Framer
-Motion and three.js. All content lives in `content/` as YAML and Markdown files,
-checked when the site builds; there is no CMS or database.
+Built with Next.js 16 (App Router), React 19, TypeScript and Tailwind CSS 4, with no
+animation or 3D libraries: the hexagons animate with CSS, the carousel with one
+animation loop, and the background is a single WebGL shader. All content lives in
+`content/` as YAML and Markdown files, checked when the site builds; there is no CMS
+or database.
 
 ## Running it
 
@@ -16,6 +18,11 @@ npm run dev     # http://localhost:3000
 npm run build   # production build; fails on any content mistake
 npm run lint
 ```
+
+The first visit to each page in `npm run dev` compiles it, so it's slower than the
+live site, where every page is built ahead of time. If a change to `app/globals.css`
+doesn't show up after restarting the dev server (it can miss edits made while it was
+stopped, or during an install), delete `.next/dev` and start it again.
 
 ## How it's put together
 
@@ -34,8 +41,8 @@ components/
   HexPage.tsx              Page frame: mobile list or hex layout, header, footer, outro
   Honeycomb.tsx            A fixed honeycomb of hexagons
   Carousel.tsx             The endless three-row carousel (+ useCarousel)
-  Hexagon.tsx, CarouselHex.tsx, HexShell.tsx
-                           A glass hexagon and its intro/outro animation
+  Hexagon.tsx, HexShell.tsx
+                           A glass hexagon; its intro/outro is CSS (.hex)
   HexTile.tsx              A tile inside a hexagon
   MobileList.tsx           A tile list for narrow screens (server-rendered)
   transition.tsx           The outro context and SmartLink, the one link component

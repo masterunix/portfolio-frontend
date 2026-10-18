@@ -71,6 +71,9 @@ ul {
   position: fixed;
   inset: 0;
   z-index: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
   opacity: 0.95;
   pointer-events: none;
 }
@@ -158,6 +161,36 @@ a.tile:hover .hex-button {
   syntax: '<number>';
   inherits: true;
   initial-value: 1;
+}
+
+/* A positioned hexagon. It waves in (hex-in) after --in-delay, and out after
+   --out-delay when its page starts leaving; lib/hexTransition.ts sets the delays.
+   Both take 150ms (HEX_FADE_DURATION) and move 20px, the intro easing out and the
+   outro easing in. */
+.hex {
+  position: absolute;
+  top: 0;
+  left: 0;
+  animation: hex-in 0.15s var(--ease-out) var(--in-delay, 0s) backwards;
+  transition:
+    opacity 0.15s ease-in var(--out-delay, 0s),
+    translate 0.15s ease-in var(--out-delay, 0s);
+}
+
+.hex[data-no-intro] {
+  animation: none;
+}
+
+.hex-page[data-exiting] .hex {
+  opacity: 0;
+  translate: 0 20px;
+}
+
+@keyframes hex-in {
+  from {
+    --hex-fade: 0;
+    translate: 0 20px;
+  }
 }
 
 .hex-shell {

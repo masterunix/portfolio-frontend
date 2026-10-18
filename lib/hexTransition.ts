@@ -2,7 +2,8 @@
  * hexTransition.ts — Timing for the hexagon intro and outro, shared by every page.
  *
  * Both are a diagonal wave from the top-left: each hex starts (row + col) steps after
- * the first.
+ * the first. The animations themselves are CSS (globals.css, .hex); this file gives
+ * each hex its delays and tells the page when the outro is over.
  * - Intro: each hex fades in and slides up 20px. It fades via --hex-fade, so its
  *   glass blur fades in together with its outline (see HexShell).
  * - Outro: the wave carries on in the same direction, each hex fading out and sliding
@@ -10,17 +11,8 @@
  *   starts leaving: that's the sweep. A page navigates a beat after the last hex is gone.
  */
 
-/** How long one hex takes to fade in or out, in seconds */
+/** How long one hex takes to fade in or out, in seconds (the .hex animations in globals.css) */
 export const HEX_FADE_DURATION = 0.15;
-
-/** How far a hex slides while fading, in px */
-export const HEX_SLIDE = 20;
-
-/** The intro's easing (fast start, gentle landing) */
-export const ENTER_EASE = [0.25, 0.46, 0.45, 0.94] as const;
-
-/** The outro's easing: gentle lift-off, fast finish */
-export const EXIT_EASE = 'easeIn';
 
 /** Seconds between one diagonal of the wave and the next */
 export const HEX_STAGGER = 0.05;
@@ -45,7 +37,7 @@ export function exitDurationMs(lastStep: number): number {
 
 /**
  * The largest screen row + column on a carousel page. Carousel exits go by screen
- * column (CarouselHex): 0 is the column partly off the left edge.
+ * column (Carousel): 0 is the column partly off the left edge.
  */
 export function carouselLastStep(viewportWidth: number, hexSpacing: number, rows: number): number {
   const visibleCols = Math.ceil(viewportWidth / hexSpacing) + 1;

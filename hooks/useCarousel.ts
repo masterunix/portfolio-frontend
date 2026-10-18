@@ -1,43 +1,87 @@
 /**
  * useCarousel.ts — The carousel's scroll position: a steady drift, plus going to a
- * tile (buttons, or the ← → keys) by animating it to the middle of the window.
+ * tile (buttons, or the ← → keys) by easing it to the middle of the window.
  *
- * The offset is a MotionValue, so scrolling updates the hexes without re-rendering.
+ * One animation loop moves every hex by writing its transform directly, so scrolling
+ * never re-renders React. `offset` holds the current position for anything that needs
+ * it outside the loop (the exit wave).
  */
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { animate, useAnimationFrame, useMotionValue } from 'framer-motion';
+import { useCallback, useEffect, useRef, useState, type RefObject } from 'react';
 
 /** Drift speed, in px per 60fps frame */
 const DRIFT = 0.39;
+/** How long going to a tile takes, in ms */
+const GO_TO_MS = 600;
 
-interface Options {
-  /** How many main tiles the buttons and keys cycle through */
-  count: number;
-  /** Distance between neighbouring hexes, in px */
-  spacing: number;
-  /** Width of one copy of the grid, in px */
-  setWidth: number;
+/** CSS's ease-in-out, cubic-bezier(0.42, 0, 0.58, 1), solved for y at time t */
+function easeInOut(t: number): number {
+  // x(s) = 3(1-s)²s·0.42 + 3(1-s)s²·0.58 + s³; find s where x(s) = t, then y(s)
+  let s = t;
+  for (let i = 0; i < 8; i++) {
+    const x = 1.26 * (1 - s) ** 2 * s + 1.74 * (1 - s) * s ** 2 + s ** 3 - t;
+    const dx = 1.26 * (1 - s) * (1 - 3 * s) + 1.74 * s * (2 - 3 * s) + 3 * s ** 2;
+    if (Math.abs(x) < 1e-5 || dx === 0) break;
+    s -= x / dx;
+  }
+  return 3 * (1 - s) * s ** 2 + s ** 3;
 }
 
-export function useCarousel({ count, spacing, setWidth }: Options) {
-  const offset = useMotionValue(0);
-  const [activeIndex, setActiveIndex] = useState(0);
-  const moving = useRef(false);
-  const active = useRef(0);
+interface Options {
+  /** The hex elements, and where each sits before scrolling (its left edge) */
+  hexes: RefObject<Array<{ el: HTMLElement | null; baseX: number }>>;
+  /** Width of all copies of the grid together, where positions wrap */
+  loopWidth: number;
+  /** Distance between neighbouring hexes, in px */
+  spacing: number;
+  /** How many main tiles the buttons and keys cycle through */
+  count: number;
+  /** The scroll position that centres main tile `index` (any loop of it) */
+  centre: (index: number) => number;
+}
 
-  // Drift, at the same speed on any refresh rate; paused while going to a tile
-  useAnimationFrame((_, delta) => {
-    if (!moving.current) offset.set(offset.get() + DRIFT * (delta / 16));
-  });
+/** A hex's left edge on screen at scroll position `offset` */
+export function carouselX(baseX: number, offset: number, loopWidth: number, spacing: number): number {
+  return ((((baseX - offset) % loopWidth) + loopWidth) % loopWidth) - spacing;
+}
+
+export function useCarousel({ hexes, loopWidth, spacing, count, centre }: Options) {
+  const offset = useRef(0);
+  const tween = useRef<{ from: number; to: number; start: number } | null>(null);
+  const active = useRef(0);
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  useEffect(() => {
+    if (!loopWidth) return;
+    let frame = 0;
+    let last = performance.now();
+    const tick = (now: number) => {
+      const t = tween.current;
+      if (t) {
+        const p = Math.min(1, (now - t.start) / GO_TO_MS);
+        offset.current = t.from + (t.to - t.from) * easeInOut(p);
+        if (p === 1) tween.current = null;
+      } else {
+        // The same speed on any refresh rate
+        offset.current += DRIFT * ((now - last) / 16);
+      }
+      last = now;
+      for (const hex of hexes.current) {
+        if (hex.el) hex.el.style.transform = `translateX(${carouselX(hex.baseX, offset.current, loopWidth, spacing)}px)`;
+      }
+      frame = requestAnimationFrame(tick);
+    };
+    frame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame);
+  }, [hexes, loopWidth, spacing]);
 
   const goTo = useCallback((index: number) => {
     active.current = index;
     setActiveIndex(index);
-    moving.current = true;
-    // Tile `index` of the middle copy, centred in the window
-    const target = index * spacing + setWidth - window.innerWidth / 2 + spacing / 2;
-    animate(offset, target, { duration: 0.6, ease: 'easeInOut', onComplete: () => { moving.current = false; } });
-  }, [offset, spacing, setWidth]);
+    // Positions repeat every loopWidth, so go the short way round to that tile
+    const from = offset.current;
+    const to = centre(index) + Math.round((from - centre(index)) / loopWidth) * loopWidth;
+    tween.current = { from, to, start: performance.now() };
+  }, [centre, loopWidth]);
 
   useEffect(() => {
     if (count === 0) return;

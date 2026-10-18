@@ -2,20 +2,22 @@
  * ShaderBackground.tsx — The animated background: dithered colour blobs drifting
  * behind every page, in the active theme's colours for the current page
  * (content/background-themes.yaml). Colours ease over when you change page.
+ *
+ * One fragment shader on a full-screen triangle, in plain WebGL: no 3D library to
+ * download before the page can start.
  */
 'use client';
 
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
-import { Canvas, useFrame } from '@react-three/fiber';
-import * as THREE from 'three';
 
 import type { BackgroundTheme } from '@/types';
 
 /**
  * The blobs. Each drifts around (x, y) by `ax`/`ay`, at speeds `fx`/`fy`, along sin
  * or cos (`trig`: x then y); `r` is its radius, and `color` the palette colours it
- * mixes half-and-half (one index for a pure colour).
+ * mixes half-and-half (one index for a pure colour). Positions are in the shader's
+ * uv space, where the window shows roughly 0.2–0.8 across and 0.3–0.7 down.
  */
 const BLOBS = [
   { x: 0.2, ax: 0.25, fx: 0.5, y: 0.8, ay: 0.15, fy: 0.3, trig: 'sc', r: 0.08, color: [0] },
@@ -39,7 +41,23 @@ const fn = (t: string) => (t === 's' ? 'sin' : 'cos');
 const colorOf = (c: readonly number[]) =>
   c.length === 1 ? `u_colors[${c[0]}]` : `mix(u_colors[${c[0]}], u_colors[${c[1]}], 0.5)`;
 
+/**
+ * Maps the screen to uv the way the original three.js scene did: a 20 × 20 plane
+ * seen by a 75° camera 5 units away, so the window shows its middle part. Half the
+ * view's height is 5 · tan(37.5°) units; ÷ 20 gives it in uv.
+ */
+const VERTEX = /* glsl */ `
+  attribute vec2 a_position;
+  uniform float u_aspect;
+  varying vec2 vUv;
+  void main() {
+    vUv = 0.5 + a_position * vec2(u_aspect, 1.0) * ${(5 * Math.tan((37.5 * Math.PI) / 180)) / 20};
+    gl_Position = vec4(a_position, 0.0, 1.0);
+  }
+`;
+
 const FRAGMENT = /* glsl */ `
+  precision highp float;
   uniform float u_time;
   uniform float u_speed;
   uniform vec3 u_colors[4];
@@ -58,59 +76,105 @@ const FRAGMENT = /* glsl */ `
     color = max(color, ${colorOf(b.color)} * step(distance(vUv, vec2(
       ${b.x} + ${fn(b.trig[0])}(t * ${b.fx}) * ${b.ax},
       ${b.y} + ${fn(b.trig[1])}(t * ${b.fy}) * ${b.ay})), ${b.r} + dither));`).join('')}
+    // Off the plane's edge (very wide windows) was black
+    if (abs(vUv.x - 0.5) > 0.5 || abs(vUv.y - 0.5) > 0.5) color = vec3(0.0);
     gl_FragColor = vec4(color * 1.2, 1.0);
   }
 `;
 
-const VERTEX = /* glsl */ `
-  varying vec2 vUv;
-  void main() {
-    vUv = uv;
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-  }
-`;
-
-function Blobs({ colors, speed }: { colors: string[]; speed: number }) {
-  const material = useRef<THREE.ShaderMaterial>(null);
-  const target = useMemo(() => colors.map((c) => new THREE.Color(c)), [colors]);
-  // The starting values; after that the material's uniforms are updated in place
-  const [uniforms] = useState(() => ({
-    u_time: { value: 0 },
-    u_speed: { value: speed },
-    u_colors: { value: colors.map((c) => new THREE.Color(c)) },
-  }));
-
-  useFrame((state, delta) => {
-    const u = material.current?.uniforms;
-    if (!u) return;
-    u.u_time.value = state.clock.elapsedTime;
-    u.u_speed.value = speed;
-    // Ease toward the page's colours
-    (u.u_colors.value as THREE.Color[]).forEach((c, i) => c.lerp(target[i], delta * 0.5));
+/** Any CSS colour → linear-light RGB (0–1), which the original three.js version passed to its shader */
+function toLinear(color: string): number[] {
+  const ctx = document.createElement('canvas').getContext('2d')!;
+  ctx.fillStyle = color;
+  ctx.fillRect(0, 0, 1, 1);
+  return [...ctx.getImageData(0, 0, 1, 1).data.slice(0, 3)].map((v) => {
+    const c = v / 255;
+    return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
   });
+}
 
-  return (
-    <mesh scale={[2, 2, 1]}>
-      <planeGeometry args={[10, 10]} />
-      <shaderMaterial ref={material} uniforms={uniforms} vertexShader={VERTEX} fragmentShader={FRAGMENT} />
-    </mesh>
-  );
+function compile(gl: WebGLRenderingContext): WebGLProgram {
+  const program = gl.createProgram()!;
+  for (const [type, source] of [[gl.VERTEX_SHADER, VERTEX], [gl.FRAGMENT_SHADER, FRAGMENT]] as const) {
+    const shader = gl.createShader(type)!;
+    gl.shaderSource(shader, source);
+    gl.compileShader(shader);
+    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(shader) ?? 'shader');
+    gl.attachShader(program, shader);
+  }
+  gl.linkProgram(program);
+  return program;
 }
 
 export default function ShaderBackground({ theme }: { theme: BackgroundTheme | null }) {
   const pathname = usePathname();
-  if (!theme) return null;
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
   // "/" is home; "/blog/a-post" uses the blog's colours
   const page = pathname.split('/')[1] || 'home';
-  const palette = theme.colorPalettes.find((p) => p.page === page) ?? theme.colorPalettes.find((p) => p.page === 'all');
-  if (!palette) return null;
+  const palette = theme && (theme.colorPalettes.find((p) => p.page === page) ?? theme.colorPalettes.find((p) => p.page === 'all'));
+  const colors = palette?.colors.join(' ');
+  const speed = theme?.animationSpeed ?? 1;
 
-  return (
-    <div className="background" aria-hidden="true">
-      <Canvas camera={{ position: [0, 0, 5], fov: 75 }} gl={{ antialias: false, alpha: false, powerPreference: 'high-performance' }}>
-        <Blobs colors={palette.colors} speed={theme.animationSpeed} />
-      </Canvas>
-    </div>
-  );
+  // The render loop reads these, so changing page eases colours without restarting
+  const target = useRef<number[][]>([]);
+  const speedRef = useRef(speed);
+  useEffect(() => {
+    if (colors) target.current = colors.split(' ').map(toLinear);
+    speedRef.current = speed;
+  }, [colors, speed]);
+
+  const visible = Boolean(colors);
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const gl = canvas?.getContext('webgl', { antialias: false, alpha: false, powerPreference: 'high-performance' });
+    if (!canvas || !gl) return;
+
+    const program = compile(gl);
+    gl.useProgram(program);
+    gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+    // One triangle that covers the whole screen
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+    const position = gl.getAttribLocation(program, 'a_position');
+    gl.enableVertexAttribArray(position);
+    gl.vertexAttribPointer(position, 2, gl.FLOAT, false, 0, 0);
+    const u = (name: string) => gl.getUniformLocation(program, name);
+    const [uTime, uSpeed, uAspect, uColors] = [u('u_time'), u('u_speed'), u('u_aspect'), u('u_colors')];
+
+    const current = target.current.map((c) => [...c]);
+    const start = performance.now();
+    let last = start;
+    let frame = 0;
+
+    const draw = (now: number) => {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const width = Math.round(canvas.clientWidth * dpr);
+      const height = Math.round(canvas.clientHeight * dpr);
+      if (canvas.width !== width || canvas.height !== height) {
+        canvas.width = width;
+        canvas.height = height;
+        gl.viewport(0, 0, width, height);
+      }
+
+      // Ease toward the page's colours, a little each frame
+      const ease = Math.min(1, ((now - last) / 1000) * 0.5);
+      last = now;
+      target.current.forEach((to, i) => {
+        current[i] ??= [...to];
+        current[i] = current[i].map((v, k) => v + (to[k] - v) * ease);
+      });
+
+      gl.uniform1f(uTime, (now - start) / 1000);
+      gl.uniform1f(uSpeed, speedRef.current);
+      gl.uniform1f(uAspect, width / height);
+      gl.uniform3fv(uColors, current.flat());
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
+      frame = requestAnimationFrame(draw);
+    };
+    frame = requestAnimationFrame(draw);
+    return () => cancelAnimationFrame(frame);
+  }, [visible]);
+
+  if (!visible) return null;
+  return <canvas ref={canvasRef} className="background" aria-hidden="true" />;
 }

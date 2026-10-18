@@ -1,46 +1,47 @@
 /**
- * useViewportSize.ts — Tracks the viewport dimensions with debounced updates.
+ * useViewportSize.ts — The window's size, for the hex layouts. Null on the server.
  *
- * Returns `null` on the server and during the first client render (before
- * the mount effect runs), then the live window size. Updates are debounced
- * so a drag-resize doesn't recompute layouts on every intermediate frame.
- *
- * Used by the desktop hex-grid pages so the honeycomb re-centers itself
- * when the window is resized instead of staying at its mount-time layout.
+ * Read straight from the window when a component mounts in the browser (so a hex grid
+ * draws in its first render), then updated 150ms after resizing stops, so dragging the
+ * window doesn't re-lay-out on every frame.
  */
-
-import { useState, useEffect } from 'react';
-
-// ─── Types ───────────────────────────────────────────────────────────────────
+import { useSyncExternalStore } from 'react';
 
 interface ViewportSize {
   width: number;
   height: number;
 }
 
-// ─── Hook ────────────────────────────────────────────────────────────────────
+let size: ViewportSize | null = null;
+const listeners = new Set<() => void>();
+let timer: ReturnType<typeof setTimeout> | undefined;
 
-export function useViewportSize(debounceMs = 150): ViewportSize | null {
-  const [size, setSize] = useState<ViewportSize | null>(null);
+function measure() {
+  size = { width: window.innerWidth, height: window.innerHeight };
+}
 
-  useEffect(() => {
-    const update = () => setSize({ width: window.innerWidth, height: window.innerHeight });
+function onResize() {
+  clearTimeout(timer);
+  timer = setTimeout(() => {
+    measure();
+    listeners.forEach((listener) => listener());
+  }, 150);
+}
 
-    // Initial measurement on mount
-    update();
+function subscribe(listener: () => void) {
+  if (listeners.size === 0) window.addEventListener('resize', onResize);
+  listeners.add(listener);
+  return () => {
+    listeners.delete(listener);
+    if (listeners.size === 0) window.removeEventListener('resize', onResize);
+  };
+}
 
-    let timer: ReturnType<typeof setTimeout>;
-    const handleResize = () => {
-      clearTimeout(timer);
-      timer = setTimeout(update, debounceMs);
-    };
+function getSnapshot(): ViewportSize {
+  if (!size) measure();
+  return size!;
+}
 
-    window.addEventListener('resize', handleResize);
-    return () => {
-      clearTimeout(timer);
-      window.removeEventListener('resize', handleResize);
-    };
-  }, [debounceMs]);
-
-  return size;
+export function useViewportSize(): ViewportSize | null {
+  return useSyncExternalStore(subscribe, getSnapshot, () => null);
 }

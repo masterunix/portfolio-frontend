@@ -1,6 +1,6 @@
 /**
  * HexShell.tsx — The glass hexagon: a frosted blur layer, the outline, and a slot for
- * the tile's content. Hexagon and CarouselHex wrap it with position and animation.
+ * the tile's content. Hexagon and the carousel wrap it with position and animation.
  *
  * An ancestor with opacity < 1 switches off the glass blur until the fade ends. So a
  * hex fades in by animating `--hex-fade` (0–1) on a wrapper, which the blur, outline
