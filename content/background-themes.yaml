@@ -2,7 +2,7 @@
 # name, slug: required
 # animationType: static, shader-mesh (default), shader-wave or css-gradient
 # animationSpeed: 0.1–3 (default 1). grainIntensity: 0–0.2 (default 0.05)
-# colorPalettes: { page: all, home, projects, skills, dsa or resumes; colors: 4 colours }.
+# colorPalettes: { page: all, home, projects, skills, dsa, resumes, blog or summary; colors: 4 colours }.
 # A page without its own palette uses the "all" one.
 #
 # Entries show in `order` (lowest first, default 0); equal orders keep the order of this file.

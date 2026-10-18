@@ -82,6 +82,8 @@ database to run.
 | `content/gleck-notices.yaml` | Gleck's widget, bottom left |
 | `content/settings/gleck.yaml` | Gleck's "know more" link |
 | `content/background-themes.yaml` | the animated background |
+| `content/blog/<slug>.md` | /blog and /blog/&lt;slug&gt; (Markdown, see `how-to-write-a-post.md`) |
+| `content/summary.md` | /summary (Markdown) |
 
 The comments at the top of each file list its fields. Logos, PDFs and other files go in
 `public/media/` and are referenced by their site path (`logo: /media/logos/leetcode.png`).
@@ -92,6 +94,36 @@ file. A mistake shows as an error naming the file, entry and field (in the dev o
 or as a failed build), so a broken logo or link can't reach the live site.
 
 Entries sort by `order` (lowest first); `draft: true` hides one.
+
+### Markdown pages
+
+Blog posts and the summary are Markdown with their details between two `---` lines at
+the top. Besides normal Markdown (and HTML), they can use layout blocks, each ended by a
+line containing just `:::`:
+
+```markdown
+:::callout Right now            ← a highlighted box (the title is optional)
+Working on …
+:::
+
+:::cards                        ← a grid; each card starts with ### Title
+### Web
+…
+:::
+
+:::timeline                     ← ### When | What
+### 2024 – now | Engineer at Acme
+…
+:::
+
+:::columns                      ← side by side, split by +++
+left
++++
+right
+:::
+```
+
+An unknown block, an unclosed one or a missing image fails like any other content mistake.
 
 ### Importing from Strapi
 

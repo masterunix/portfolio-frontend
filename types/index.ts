@@ -137,7 +137,23 @@ export interface BlogPost extends BlogPostSummary {
   html: string;
 }
 
-export type ThemePage = 'all' | 'home' | 'projects' | 'skills' | 'dsa' | 'resumes' | 'blog';
+/** The summary page (content/summary.md) */
+export interface Summary {
+  title: string;
+  tagline?: string;
+  photo?: Media;
+  location?: string;
+  /** YYYY-MM-DD */
+  updated?: string;
+  /** Short highlights shown as chips, like { value: "5+ yrs", label: "experience" } */
+  facts: { value: string; label: string }[];
+  /** Buttons under the header */
+  links: { label: string; href: string }[];
+  /** The body, rendered from Markdown */
+  html: string;
+}
+
+export type ThemePage = 'all' | 'home' | 'projects' | 'skills' | 'dsa' | 'resumes' | 'blog' | 'summary';
 
 /** A background theme for the animated shader */
 export interface BackgroundTheme {

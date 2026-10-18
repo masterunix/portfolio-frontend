@@ -6,6 +6,7 @@
  *   content/resumes.yaml           content/background-themes.yaml
  *   content/dsa-platforms.yaml     content/settings/gleck.yaml
  *   content/blog/<slug>.md         (blog posts: front matter + Markdown)
+ *   content/summary.md             (the summary page: front matter + Markdown)
  *
  * Every entry is checked against the rules the Strapi schemas had (required fields,
  * enums, defaults, number ranges), plus a few Strapi never checked:
@@ -25,11 +26,11 @@ import 'server-only';
 import fs from 'node:fs';
 import path from 'node:path';
 import yaml from 'js-yaml';
-import { Marked, type Tokens } from 'marked';
+import { Marked, type Token, type Tokens } from 'marked';
 
 import type {
   BackgroundTheme, BlogPost, BlogPostSummary, DSAPlatform, GleckNotice, GleckSettings,
-  HomeMessage, Media, Project, Resume, Skill, SkillCategory, SkillType, ThemePage,
+  HomeMessage, Media, Project, Resume, Skill, SkillCategory, SkillType, Summary, ThemePage,
 } from '@/types';
 
 const CONTENT = path.join(process.cwd(), 'content');
@@ -333,7 +334,7 @@ export function getGleckSettings(): GleckSettings {
 }
 
 const ANIMATION_TYPES = ['static', 'shader-mesh', 'shader-wave', 'css-gradient'] as const;
-const THEME_PAGES = ['all', 'home', 'projects', 'skills', 'dsa', 'resumes', 'blog'] as const satisfies readonly ThemePage[];
+const THEME_PAGES = ['all', 'home', 'projects', 'skills', 'dsa', 'resumes', 'blog', 'summary'] as const satisfies readonly ThemePage[];
 
 function getBackgroundThemes(): BackgroundTheme[] {
   const themes = loadList('background-themes.yaml', (r) => r.name, (e, id) => {
@@ -381,22 +382,39 @@ export function getBackgroundTheme(): BackgroundTheme | null {
   ) ?? null;
 }
 
-// ─── Blog ────────────────────────────────────────────────────────────────────
+// ─── Markdown ────────────────────────────────────────────────────────────────
 //
-// One Markdown file per post in content/blog/; the file name is the URL
-// (my-first-post.md → /blog/my-first-post). Files starting with _ are skipped.
-// Front matter (between --- lines) is checked like every other entry. Drafts show
-// in dev with a Draft badge and are left out of production builds.
+// Blog posts and the summary are Markdown files with their details between two
+// --- lines at the top (front matter), checked like every other entry.
+//
+// Besides normal Markdown (and HTML, for anything else), they can use layout blocks:
+//
+//   :::callout Optional title      a highlighted box
+//   :::cards                       a grid of cards; each starts with ### Card title
+//   :::timeline                    entries down a line; ### 2021 – 2023 | Role at Company
+//   :::columns                     side by side; separate the columns with a +++ line
+//
+// Each block ends with a line containing just :::. Blocks don't nest.
 
-const BLOG = path.join(CONTENT, 'blog');
-const SLUG = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 const DATE = /^\d{4}-\d{2}-\d{2}$/;
+const BLOCK_KINDS = ['callout', 'cards', 'timeline', 'columns'] as const;
+type BlockKind = (typeof BLOCK_KINDS)[number];
 
 function escapeHtml(text: string): string {
   return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
-/** Markdown → HTML; links to other sites open in a new tab */
+interface BlockItem { title?: Token[]; when?: Token[]; tokens: Token[] }
+interface BlockToken extends Tokens.Generic {
+  type: 'block';
+  kind: BlockKind;
+  title?: Token[];
+  items: BlockItem[];
+  /** Every item's tokens, so marked's walkTokens reaches them (image checks) */
+  tokens: Token[];
+}
+
+/** Markdown → HTML: external links open in a new tab, plus the layout blocks above */
 const markdown = new Marked({
   gfm: true,
   renderer: {
@@ -406,26 +424,81 @@ const markdown = new Marked({
       return `<a href="${escapeHtml(href)}"${title ? ` title="${escapeHtml(title)}"` : ''}${external}>${text}</a>`;
     },
   },
+  extensions: [{
+    name: 'block',
+    level: 'block',
+    start: (src) => /^:::[a-z]/m.exec(src)?.index,
+    tokenizer(src) {
+      const match = /^:::([a-z]+)[ \t]*([^\n]*)\n([\s\S]*?)\n?^:::[ \t]*(?:\n+|$)/m.exec(src);
+      if (!match || match.index !== 0) return undefined;
+      const [raw, kind, title, body] = match;
+      if (!BLOCK_KINDS.includes(kind as BlockKind)) {
+        throw new Error(`unknown block ":::${kind}"; use ${BLOCK_KINDS.map((k) => `:::${k}`).join(', ')}`);
+      }
+      if (title && kind !== 'callout') throw new Error(`":::${kind}" doesn't take a title; it was given "${title}"`);
+
+      let items: BlockItem[];
+      if (kind === 'cards' || kind === 'timeline') {
+        // Each item starts at a "### " line
+        const parts = body.split(/^### +/m);
+        if (parts[0].trim()) throw new Error(`each entry in ":::${kind}" starts with a "### " line; found text before the first one`);
+        if (parts.length < 2) throw new Error(`":::${kind}" needs at least one "### " entry`);
+        items = parts.slice(1).map((part) => {
+          const [heading, ...rest] = part.split('\n');
+          // Timeline headings may start with when it happened: "2021 – 2023 | Role"
+          const [when, name] = kind === 'timeline' && heading.includes('|')
+            ? heading.split(/\s*\|\s*/, 2)
+            : [undefined, heading];
+          return {
+            title: this.lexer.inlineTokens(name.trim()),
+            when: when ? this.lexer.inlineTokens(when.trim()) : undefined,
+            tokens: this.lexer.blockTokens(rest.join('\n'), []),
+          };
+        });
+      } else if (kind === 'columns') {
+        items = body.split(/^\+\+\+[ \t]*$/m).map((part) => ({ tokens: this.lexer.blockTokens(part, []) }));
+        if (items.length < 2) throw new Error('":::columns" needs a +++ line between its columns');
+      } else {
+        items = [{ tokens: this.lexer.blockTokens(body, []) }];
+      }
+
+      const token: BlockToken = {
+        type: 'block', raw, kind: kind as BlockKind, items,
+        title: title ? this.lexer.inlineTokens(title) : undefined,
+        tokens: items.flatMap((item) => item.tokens),
+      };
+      return token;
+    },
+    renderer(token) {
+      const { kind, title, items } = token as BlockToken;
+      const inline = (tokens?: Token[]) => (tokens ? this.parser.parseInline(tokens) : '');
+      const inner = items.map((item) => {
+        const body = this.parser.parse(item.tokens);
+        if (kind === 'cards') return `<div class="md-card"><h3>${inline(item.title)}</h3>${body}</div>`;
+        if (kind === 'timeline') {
+          const when = item.when ? `<div class="md-when">${inline(item.when)}</div>` : '';
+          return `<li>${when}<h3>${inline(item.title)}</h3>${body}</li>`;
+        }
+        if (kind === 'columns') return `<div>${body}</div>`;
+        return body;
+      }).join('');
+      if (kind === 'timeline') return `<ol class="md-timeline">${inner}</ol>`;
+      if (kind === 'callout') {
+        return `<aside class="md-callout">${title ? `<p class="md-callout-title">${inline(title)}</p>` : ''}${inner}</aside>`;
+      }
+      return `<div class="md-${kind}">${inner}</div>`;
+    },
+  }],
 });
 
-function postDate(e: Entry, key: string, required: boolean): string | undefined {
-  const v = required ? e.text(key) : e.optText(key);
-  if (v === undefined) return undefined;
-  if (!DATE.test(v) || Number.isNaN(Date.parse(`${v}T00:00:00Z`))) e.fail(key, `must be a date like 2026-10-18; got "${v}"`);
-  return v;
-}
-
-function parsePost(file: string): BlogPost {
-  const where = `content/blog/${file}`;
-  const slug = file.slice(0, -'.md'.length);
-  if (!SLUG.test(slug)) {
-    throw new Error(`[content] ${where}: the file name is the post's URL, so it may only use lowercase letters, ` +
-      'digits and single dashes (e.g. my-first-post.md)');
-  }
-
-  const text = fs.readFileSync(path.join(BLOG, file), 'utf8');
+/** Reads a Markdown file: its front matter as an Entry, and its body */
+function readMarkdownFile(file: string): { e: Entry; body: string } {
+  const where = `content/${file}`;
+  const full = path.join(CONTENT, file);
+  if (!fs.existsSync(full)) throw new Error(`[content] ${where} is missing`);
+  const text = fs.readFileSync(full, 'utf8');
   const match = /^---\r?\n([\s\S]*?)\r?\n---\r?\n?([\s\S]*)$/.exec(text);
-  if (!match) throw new Error(`[content] ${where} must start with its details between two --- lines (see how-to-write-a-post.md)`);
+  if (!match) throw new Error(`[content] ${where} must start with its details between two --- lines`);
 
   let data: unknown;
   try {
@@ -435,10 +508,65 @@ function parsePost(file: string): BlogPost {
     throw new Error(`[content] ${where}: the details between the --- lines aren't valid YAML: ${(err as Error).message}`);
   }
   if (!data || typeof data !== 'object' || Array.isArray(data)) throw new Error(`[content] ${where}: the details must be a set of fields`);
+  return { e: new Entry(data as Raw, where), body: match[2] };
+}
 
-  const e = new Entry(data as Raw, where);
-  const date = postDate(e, 'date', true)!;
-  const updated = postDate(e, 'updated', false);
+/** Renders a Markdown body to HTML, checking its images and blocks */
+function renderMarkdown(where: string, body: string): { html: string; words: number } {
+  let tokens: Token[];
+  try {
+    tokens = markdown.lexer(body);
+  } catch (err) {
+    throw new Error(`[content] ${where}: ${(err as Error).message}`);
+  }
+
+  markdown.walkTokens(tokens, (token) => {
+    if (token.type === 'paragraph' && /^:::[a-z]/.test(token.raw)) {
+      throw new Error(`[content] ${where}: "${token.raw.split('\n')[0]}" isn't closed; end the block with a line containing just :::`);
+    }
+    if (token.type !== 'image') return;
+    // Images must exist, like every other media path
+    const src = (token as Tokens.Image).href;
+    if (/^[a-z]+:/i.test(src)) return; // https:, data:
+    if (!src.startsWith('/')) {
+      throw new Error(`[content] ${where}: image "${src}" must be a path in public/ starting with /, like /media/blog/diagram.png`);
+    }
+    const imageFile = path.join(PUBLIC, decodeURI(src.split(/[?#]/)[0]));
+    if (!imageFile.startsWith(PUBLIC + path.sep) || !fs.existsSync(imageFile)) {
+      throw new Error(`[content] ${where}: image "${src}" points to public${src}, which doesn't exist`);
+    }
+  });
+
+  const words = body.replace(/```[\s\S]*?```/g, ' ').split(/\s+/).filter((w) => /\w/.test(w)).length;
+  return { html: markdown.parser(tokens), words };
+}
+
+function readDate(e: Entry, key: string, required: boolean): string | undefined {
+  const v = required ? e.text(key) : e.optText(key);
+  if (v === undefined) return undefined;
+  if (!DATE.test(v) || Number.isNaN(Date.parse(`${v}T00:00:00Z`))) e.fail(key, `must be a date like 2026-10-18; got "${v}"`);
+  return v;
+}
+
+// ─── Blog ────────────────────────────────────────────────────────────────────
+//
+// One Markdown file per post in content/blog/; the file name is the URL
+// (my-first-post.md → /blog/my-first-post). Files starting with _ are skipped.
+// Drafts show in dev with a Draft badge and are left out of production builds.
+
+const BLOG = path.join(CONTENT, 'blog');
+const SLUG = /^[a-z0-9]+(-[a-z0-9]+)*$/;
+
+function parsePost(file: string): BlogPost {
+  const slug = file.slice(0, -'.md'.length);
+  if (!SLUG.test(slug)) {
+    throw new Error(`[content] content/blog/${file}: the file name is the post's URL, so it may only use lowercase letters, ` +
+      'digits and single dashes (e.g. my-first-post.md)');
+  }
+
+  const { e, body } = readMarkdownFile(`blog/${file}`);
+  const date = readDate(e, 'date', true)!;
+  const updated = readDate(e, 'updated', false);
   if (updated && updated < date) e.fail('updated', `is before \`date\` (${date})`);
   const tags = e.value('tags') ?? [];
   if (!Array.isArray(tags) || !tags.every((t) => typeof t === 'string' && t.trim())) e.fail('tags', 'must be a list of words, like [nextjs, design]');
@@ -455,24 +583,8 @@ function parsePost(file: string): BlogPost {
   };
   e.done();
 
-  // Images in the post must exist, like every other media path
-  const body = match[2];
-  const tokens = markdown.lexer(body);
-  markdown.walkTokens(tokens, (token) => {
-    if (token.type !== 'image') return;
-    const src = (token as Tokens.Image).href;
-    if (/^[a-z]+:/i.test(src)) return; // https:, data:
-    if (!src.startsWith('/')) {
-      throw new Error(`[content] ${where}: image "${src}" must be a path in public/ starting with /, like /media/blog/diagram.png`);
-    }
-    const imageFile = path.join(PUBLIC, decodeURI(src.split(/[?#]/)[0]));
-    if (!imageFile.startsWith(PUBLIC + path.sep) || !fs.existsSync(imageFile)) {
-      throw new Error(`[content] ${where}: image "${src}" points to public${src}, which doesn't exist`);
-    }
-  });
-
-  const words = body.replace(/```[\s\S]*?```/g, ' ').split(/\s+/).filter((w) => /\w/.test(w)).length;
-  return { ...post, readMins: Math.max(1, Math.ceil(words / 200)), html: markdown.parser(tokens) };
+  const { html, words } = renderMarkdown(e.where, body);
+  return { ...post, readMins: Math.max(1, Math.ceil(words / 200)), html };
 }
 
 function loadPosts(): BlogPost[] {
@@ -497,4 +609,36 @@ export function getPosts(): BlogPostSummary[] {
 /** One post with its body, or null when it doesn't exist (or is a draft in production) */
 export function getPost(slug: string): BlogPost | null {
   return loadPosts().find((p) => p.slug === slug) ?? null;
+}
+
+// ─── Summary ─────────────────────────────────────────────────────────────────
+//
+// content/summary.md: the /summary page. Only `title` is required; the comments at
+// the top of the file list the rest.
+
+/** The summary page */
+export function getSummary(): Summary {
+  if (!dev && cache.has('summary')) return cache.get('summary') as Summary;
+  const { e, body } = readMarkdownFile('summary.md');
+  const summary = {
+    title: e.text('title'),
+    tagline: e.optText('tagline'),
+    photo: e.optMedia('photo', 'image'),
+    location: e.optText('location'),
+    updated: readDate(e, 'updated', false),
+    facts: e.list('facts').map((f) => {
+      const fact = { value: f.text('value'), label: f.text('label') };
+      f.done();
+      return fact;
+    }),
+    links: e.list('links').map((l) => {
+      const link = { label: l.text('label'), href: l.link('href') };
+      l.done();
+      return link;
+    }),
+  };
+  e.done();
+  const result = { ...summary, html: renderMarkdown(e.where, body).html };
+  cache.set('summary', result);
+  return result;
 }

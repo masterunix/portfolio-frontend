@@ -53,6 +53,26 @@ export function greet(name: string) {
 |---|---|
 | too | ✓ |
 
+## Layout blocks
+
+For more than plain text, wrap parts of a post in a block. Each starts with `:::` and a
+name, and ends with a line containing just `:::`:
+
+:::callout Tip
+`:::callout` makes a highlighted box like this one. The title after it is optional.
+:::
+
+:::cards
+### Cards
+`:::cards` lays out a grid; each card starts with `### Title`.
+
+### Like this
+Cards wrap onto new rows on narrow screens.
+:::
+
+`:::timeline` lists entries down a line (`### 2021 – 2023 | Role`), and `:::columns` puts
+content side by side, with a `+++` line between columns.
+
 ## Publishing
 
 Remove `draft: true` (or set it to `false`) and deploy. Files starting with `_` are ignored,

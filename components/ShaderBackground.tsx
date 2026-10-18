@@ -223,6 +223,7 @@ export default function ShaderBackground({ theme }: { theme: BackgroundTheme | n
         : pathname.startsWith('/dsa') ? 'dsa'
           : pathname.startsWith('/resumes') ? 'resumes'
             : pathname.startsWith('/blog') ? 'blog'
+              : pathname.startsWith('/summary') ? 'summary'
               : 'all';
 
   // Don't render if no theme or theme is default/static
