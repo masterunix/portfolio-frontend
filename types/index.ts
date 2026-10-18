@@ -114,7 +114,30 @@ export interface GleckSettings {
   knowMoreText: string;
 }
 
-export type ThemePage = 'all' | 'home' | 'projects' | 'skills' | 'dsa' | 'resumes';
+/** A blog post's details, without its body (content/blog/<slug>.md) */
+export interface BlogPostSummary {
+  /** The URL name: the file name without .md */
+  slug: string;
+  title: string;
+  description: string;
+  /** YYYY-MM-DD */
+  date: string;
+  /** YYYY-MM-DD, when the post was last changed */
+  updated?: string;
+  tags: string[];
+  cover?: Media;
+  /** Words / 200, rounded up */
+  readMins: number;
+  /** Only ever true in dev: drafts are left out of production builds */
+  draft: boolean;
+}
+
+/** A blog post with its body rendered to HTML */
+export interface BlogPost extends BlogPostSummary {
+  html: string;
+}
+
+export type ThemePage = 'all' | 'home' | 'projects' | 'skills' | 'dsa' | 'resumes' | 'blog';
 
 /** A background theme for the animated shader */
 export interface BackgroundTheme {

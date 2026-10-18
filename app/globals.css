@@ -514,3 +514,261 @@ body {
   transform: scale(0.96);
   background: rgba(255, 255, 255, 0.15);
 }
+/* ═══════════════════════════════════════════════════════════════════════════
+   BLOG POSTS
+   A readable glass panel over the animated background (app/blog/[slug]).
+   The panel fades its own opacity, which keeps its backdrop blur working.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.blog-article {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 40px 48px 48px;
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(0, 0, 0, 0.45);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  animation: fadeInUp 0.4s ease-out backwards;
+  transition: opacity 0.25s ease-in, transform 0.25s ease-in;
+}
+
+.blog-article.is-exiting {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+@media (max-width: 640px) {
+  .blog-article {
+    padding: 24px 20px 32px;
+    border-radius: 18px;
+  }
+}
+
+.blog-back {
+  display: inline-flex;
+  align-items: center;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+  padding: 6px 14px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.blog-back:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+}
+
+.blog-cover {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: 14px;
+  margin-top: 24px;
+}
+
+.blog-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 28px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.blog-title {
+  margin: 10px 0 0;
+  font-size: clamp(28px, 5vw, 40px);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  color: #fff;
+}
+
+.blog-lead {
+  margin: 14px 0 0;
+  font-size: 18px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.blog-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 18px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.blog-tags li {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 999px;
+  color: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+/* ─── Post body (Markdown rendered to HTML) ──────────────────────────────── */
+
+.blog-prose {
+  margin-top: 32px;
+  padding-top: 28px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 16.5px;
+  line-height: 1.75;
+  color: rgba(255, 255, 255, 0.85);
+  overflow-wrap: break-word;
+}
+
+.blog-prose > :first-child { margin-top: 0; }
+
+.blog-prose h2,
+.blog-prose h3,
+.blog-prose h4 {
+  color: #fff;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.blog-prose h2 { font-size: 24px; margin: 2em 0 0.6em; }
+.blog-prose h3 { font-size: 19px; margin: 1.8em 0 0.5em; }
+.blog-prose h4 { font-size: 16.5px; margin: 1.6em 0 0.4em; }
+
+.blog-prose p { margin: 0 0 1.15em; }
+
+.blog-prose a {
+  color: #fff;
+  text-decoration: underline;
+  text-decoration-color: rgba(255, 255, 255, 0.4);
+  text-underline-offset: 3px;
+  transition: text-decoration-color 0.2s ease;
+}
+
+.blog-prose a:hover { text-decoration-color: #fff; }
+
+.blog-prose strong { color: #fff; font-weight: 700; }
+
+.blog-prose ul,
+.blog-prose ol {
+  margin: 0 0 1.15em;
+  padding-left: 1.4em;
+}
+
+.blog-prose ul { list-style: disc; }
+.blog-prose ol { list-style: decimal; }
+.blog-prose li { margin: 0.35em 0; }
+.blog-prose li::marker { color: rgba(255, 255, 255, 0.45); }
+
+.blog-prose blockquote {
+  margin: 1.5em 0;
+  padding: 2px 0 2px 18px;
+  border-left: 3px solid rgba(255, 255, 255, 0.35);
+  color: rgba(255, 255, 255, 0.7);
+  font-style: italic;
+}
+
+.blog-prose blockquote p:last-child { margin-bottom: 0; }
+
+.blog-prose code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.88em;
+  padding: 0.15em 0.4em;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.blog-prose pre {
+  margin: 1.5em 0;
+  padding: 16px 18px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.45);
+  overflow-x: auto;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.blog-prose pre code {
+  padding: 0;
+  background: none;
+  font-size: inherit;
+}
+
+.blog-prose img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 1.75em auto;
+  border-radius: 12px;
+}
+
+.blog-prose hr {
+  margin: 2.5em 0;
+  border: 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+/* Tables scroll sideways on narrow screens instead of overflowing the panel */
+.blog-prose table {
+  display: block;
+  width: max-content;
+  max-width: 100%;
+  overflow-x: auto;
+  margin: 1.5em 0;
+  border-collapse: collapse;
+  font-size: 15px;
+}
+
+.blog-prose th,
+.blog-prose td {
+  padding: 8px 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  text-align: left;
+}
+
+.blog-prose th {
+  color: #fff;
+  font-weight: 600;
+  border-bottom-color: rgba(255, 255, 255, 0.25);
+}
+
+.blog-page {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  padding: 64px 16px 96px;
+}
+
+@media (max-width: 640px) {
+  .blog-page {
+    padding: 24px 12px 96px;
+  }
+}
+
+.blog-footer {
+  width: 100%;
+  margin-top: 40px;
+  text-align: center;
+  opacity: 0.8;
+}
+
+/* The "Draft" label on unpublished posts (shown only while running locally) */
+.blog-draft {
+  color: #fcd34d;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}

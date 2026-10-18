@@ -120,6 +120,18 @@ export const navigationContent: Record<string, NavigationItem> = {
     href: '/dsa',
     external: false,
   },
+  '1-5': {
+    text: 'Blog',
+    description: 'Notes on what I build',
+    svg: (
+      <svg viewBox="0 0 24 24" fill="currentColor" width="28" height="28">
+        <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+      </svg>
+    ),
+    color: '#a29bfe',
+    href: '/blog',
+    external: false,
+  },
   '2-5': {
     text: 'Mail Me!',
     description: "Let's get in touch",

@@ -5,6 +5,7 @@
  *   content/skills.yaml            content/gleck-notices.yaml
  *   content/resumes.yaml           content/background-themes.yaml
  *   content/dsa-platforms.yaml     content/settings/gleck.yaml
+ *   content/blog/<slug>.md         (blog posts: front matter + Markdown)
  *
  * Every entry is checked against the rules the Strapi schemas had (required fields,
  * enums, defaults, number ranges), plus a few Strapi never checked:
@@ -24,10 +25,11 @@ import 'server-only';
 import fs from 'node:fs';
 import path from 'node:path';
 import yaml from 'js-yaml';
+import { Marked, type Tokens } from 'marked';
 
 import type {
-  BackgroundTheme, DSAPlatform, GleckNotice, GleckSettings, HomeMessage, Media,
-  Project, Resume, Skill, SkillCategory, SkillType, ThemePage,
+  BackgroundTheme, BlogPost, BlogPostSummary, DSAPlatform, GleckNotice, GleckSettings,
+  HomeMessage, Media, Project, Resume, Skill, SkillCategory, SkillType, ThemePage,
 } from '@/types';
 
 const CONTENT = path.join(process.cwd(), 'content');
@@ -331,7 +333,7 @@ export function getGleckSettings(): GleckSettings {
 }
 
 const ANIMATION_TYPES = ['static', 'shader-mesh', 'shader-wave', 'css-gradient'] as const;
-const THEME_PAGES = ['all', 'home', 'projects', 'skills', 'dsa', 'resumes'] as const satisfies readonly ThemePage[];
+const THEME_PAGES = ['all', 'home', 'projects', 'skills', 'dsa', 'resumes', 'blog'] as const satisfies readonly ThemePage[];
 
 function getBackgroundThemes(): BackgroundTheme[] {
   const themes = loadList('background-themes.yaml', (r) => r.name, (e, id) => {
@@ -377,4 +379,122 @@ export function getBackgroundTheme(): BackgroundTheme | null {
     t.slug !== 'default' &&
     t.slug !== 'background-theme'
   ) ?? null;
+}
+
+// ─── Blog ────────────────────────────────────────────────────────────────────
+//
+// One Markdown file per post in content/blog/; the file name is the URL
+// (my-first-post.md → /blog/my-first-post). Files starting with _ are skipped.
+// Front matter (between --- lines) is checked like every other entry. Drafts show
+// in dev with a Draft badge and are left out of production builds.
+
+const BLOG = path.join(CONTENT, 'blog');
+const SLUG = /^[a-z0-9]+(-[a-z0-9]+)*$/;
+const DATE = /^\d{4}-\d{2}-\d{2}$/;
+
+function escapeHtml(text: string): string {
+  return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+/** Markdown → HTML; links to other sites open in a new tab */
+const markdown = new Marked({
+  gfm: true,
+  renderer: {
+    link({ href, title, tokens }: Tokens.Link) {
+      const text = this.parser.parseInline(tokens);
+      const external = /^https?:\/\//i.test(href) ? ' target="_blank" rel="noopener noreferrer"' : '';
+      return `<a href="${escapeHtml(href)}"${title ? ` title="${escapeHtml(title)}"` : ''}${external}>${text}</a>`;
+    },
+  },
+});
+
+function postDate(e: Entry, key: string, required: boolean): string | undefined {
+  const v = required ? e.text(key) : e.optText(key);
+  if (v === undefined) return undefined;
+  if (!DATE.test(v) || Number.isNaN(Date.parse(`${v}T00:00:00Z`))) e.fail(key, `must be a date like 2026-10-18; got "${v}"`);
+  return v;
+}
+
+function parsePost(file: string): BlogPost {
+  const where = `content/blog/${file}`;
+  const slug = file.slice(0, -'.md'.length);
+  if (!SLUG.test(slug)) {
+    throw new Error(`[content] ${where}: the file name is the post's URL, so it may only use lowercase letters, ` +
+      'digits and single dashes (e.g. my-first-post.md)');
+  }
+
+  const text = fs.readFileSync(path.join(BLOG, file), 'utf8');
+  const match = /^---\r?\n([\s\S]*?)\r?\n---\r?\n?([\s\S]*)$/.exec(text);
+  if (!match) throw new Error(`[content] ${where} must start with its details between two --- lines (see how-to-write-a-post.md)`);
+
+  let data: unknown;
+  try {
+    // CORE_SCHEMA keeps `date: 2026-10-18` as text instead of turning it into a Date
+    data = yaml.load(match[1], { schema: yaml.CORE_SCHEMA });
+  } catch (err) {
+    throw new Error(`[content] ${where}: the details between the --- lines aren't valid YAML: ${(err as Error).message}`);
+  }
+  if (!data || typeof data !== 'object' || Array.isArray(data)) throw new Error(`[content] ${where}: the details must be a set of fields`);
+
+  const e = new Entry(data as Raw, where);
+  const date = postDate(e, 'date', true)!;
+  const updated = postDate(e, 'updated', false);
+  if (updated && updated < date) e.fail('updated', `is before \`date\` (${date})`);
+  const tags = e.value('tags') ?? [];
+  if (!Array.isArray(tags) || !tags.every((t) => typeof t === 'string' && t.trim())) e.fail('tags', 'must be a list of words, like [nextjs, design]');
+
+  const post = {
+    slug,
+    title: e.text('title'),
+    description: e.text('description'),
+    date,
+    updated,
+    tags: (tags as string[]).map((t) => t.trim()),
+    cover: e.optMedia('cover', 'image'),
+    draft: e.bool('draft', false),
+  };
+  e.done();
+
+  // Images in the post must exist, like every other media path
+  const body = match[2];
+  const tokens = markdown.lexer(body);
+  markdown.walkTokens(tokens, (token) => {
+    if (token.type !== 'image') return;
+    const src = (token as Tokens.Image).href;
+    if (/^[a-z]+:/i.test(src)) return; // https:, data:
+    if (!src.startsWith('/')) {
+      throw new Error(`[content] ${where}: image "${src}" must be a path in public/ starting with /, like /media/blog/diagram.png`);
+    }
+    const imageFile = path.join(PUBLIC, decodeURI(src.split(/[?#]/)[0]));
+    if (!imageFile.startsWith(PUBLIC + path.sep) || !fs.existsSync(imageFile)) {
+      throw new Error(`[content] ${where}: image "${src}" points to public${src}, which doesn't exist`);
+    }
+  });
+
+  const words = body.replace(/```[\s\S]*?```/g, ' ').split(/\s+/).filter((w) => /\w/.test(w)).length;
+  return { ...post, readMins: Math.max(1, Math.ceil(words / 200)), html: markdown.parser(tokens) };
+}
+
+function loadPosts(): BlogPost[] {
+  if (!dev && cache.has('blog')) return cache.get('blog') as BlogPost[];
+  const files = fs.existsSync(BLOG)
+    ? fs.readdirSync(BLOG).filter((f) => f.endsWith('.md') && !f.startsWith('_'))
+    : [];
+  const posts = files.map(parsePost)
+    .filter((p) => dev || !p.draft)
+    // Newest first
+    .sort((a, b) => b.date.localeCompare(a.date) || a.slug.localeCompare(b.slug));
+  cache.set('blog', posts);
+  return posts;
+}
+
+/** Every post readers can see, newest first, without bodies */
+export function getPosts(): BlogPostSummary[] {
+  return loadPosts().map(({ slug, title, description, date, updated, tags, cover, readMins, draft }) =>
+    ({ slug, title, description, date, updated, tags, cover, readMins, draft }));
+}
+
+/** One post with its body, or null when it doesn't exist (or is a draft in production) */
+export function getPost(slug: string): BlogPost | null {
+  return loadPosts().find((p) => p.slug === slug) ?? null;
 }

@@ -35,7 +35,7 @@ export default function Footer({ variant = 'full', className = '', style }: Foot
             href="https://github.com/masterunix/gleck"
             target="_blank"
             rel="noopener noreferrer"
-            className="underline hover:text-white/60 transition-colors"
+            className="text-inherit underline hover:text-white/60 transition-colors"
           >
             Gleck
           </a>
