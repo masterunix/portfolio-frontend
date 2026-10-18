@@ -46,18 +46,20 @@ export default function Hexagon({
   isExiting = false
 }: HexagonProps) {
   return (
-    // Fades via --hex-fade, not opacity, so the glass fades in with the outline (see HexShell)
+    // Fades via --hex-fade, not opacity, so the glass fades in with the outline. On exit
+    // the blur drops at once (--hex-blur), which makes the sweep (see HexShell)
     <motion.div
-      initial={{ '--hex-fade': 0, marginTop: animateY ? 20 : 0 }}
+      initial={{ '--hex-fade': 0, '--hex-blur': 1, marginTop: animateY ? 20 : 0 }}
       animate={
         isExiting
-          ? { '--hex-fade': 0, marginTop: 20 }
-          : { '--hex-fade': 1, marginTop: 0 }
+          ? { '--hex-fade': 0, '--hex-blur': 0, marginTop: 20 }
+          : { '--hex-fade': 1, '--hex-blur': 1, marginTop: 0 }
       }
       transition={{
         duration: 0.15,
         delay,
-        ease: isExiting ? 'easeIn' : [0.25, 0.46, 0.45, 0.94]
+        ease: isExiting ? 'easeIn' : [0.25, 0.46, 0.45, 0.94],
+        '--hex-blur': { duration: 0, delay }
       }}
       className="relative"
       style={style}

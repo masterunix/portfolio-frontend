@@ -77,19 +77,23 @@ export default function CarouselHex({
   });
 
   return (
-    // Fades via --hex-fade, not opacity, so the glass fades in with the outline (see HexShell)
+    // Fades via --hex-fade, not opacity, so the glass fades in with the outline. On exit
+    // the blur drops at once (--hex-blur), which makes the sweep (see HexShell)
     <motion.div
       className="absolute"
-      initial={setIndex === 0 ? { '--hex-fade': 0, marginTop: 20 } : { '--hex-fade': 1, marginTop: 0 }}
+      initial={setIndex === 0
+        ? { '--hex-fade': 0, '--hex-blur': 1, marginTop: 20 }
+        : { '--hex-fade': 1, '--hex-blur': 1, marginTop: 0 }}
       animate={
         isExiting
-          ? { '--hex-fade': 0, marginTop: 20 }
-          : { '--hex-fade': 1, marginTop: 0 }
+          ? { '--hex-fade': 0, '--hex-blur': 0, marginTop: 20 }
+          : { '--hex-fade': 1, '--hex-blur': 1, marginTop: 0 }
       }
       transition={{
         duration: 0.15,
         delay: isExiting ? exitDelay : (setIndex === 0 ? entranceDelay : 0),
-        ease: isExiting ? 'easeIn' : [0.25, 0.46, 0.45, 0.94]
+        ease: isExiting ? 'easeIn' : [0.25, 0.46, 0.45, 0.94],
+        '--hex-blur': { duration: 0, delay: isExiting ? exitDelay : 0 }
       }}
       style={{
         left: x,
