@@ -1,9 +1,21 @@
 # Completed changes
 
-**Current version: 2.02.01.** With every deployed change, bump `version:` in `content/site.md` and update this line in each `.md` file at the top of the project (AGENTS.md, CLAUDE.md, README.md, future.md, completed.md) to match; the build fails if they disagree.
+**Current version: 2.03.00.** With every deployed change, bump `version:` in `content/site.md` and update this line in each `.md` file at the top of the project (AGENTS.md, CLAUDE.md, README.md, future.md, completed.md) to match; the build fails if they disagree.
 
 Changes that have been made and tested, newest first. Agents move items here from
 [`future.md`](future.md) once they're done, with a note of what changed.
+
+## 2026-10-19 · v2.03.00
+
+- Logos instead of letters (all in `public/media/logos/`):
+  - Projects: AxeSuite and AshaKiran (their app icons), 450 House of Sourdough (its
+    favicon), Gleck (its eyes), movie.fy (Flutter), and this site.
+  - Skills: Node.js, React, Next.js, PostgreSQL, Express, PyTorch, LangChain, LangGraph
+    and MCP, from Simple Icons, on their brand colours.
+- New project: RCIS (`content/projects/rcis.md`), with its logo and a Visit link.
+- New `logoFill: true` option for logos that are whole app icons, so they fill the
+  icon square (`lib/content.ts`, `components/ItemIcon.tsx`, the templates, AGENTS.md).
+- Fixed "LangGraoh" → LangGraph, and the site's own tech line no longer lists Strapi.
 
 ## 2026-10-19 · v2.02.01
 

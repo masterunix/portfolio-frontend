@@ -9,6 +9,8 @@
 # icon      shown in the square when there's no logo: an emoji or a few letters (default 📦)
 # logo      a picture for the square instead, in public/ (e.g. /media/logos/gleck.png);
 #           if it can't load, the icon shows instead
+# logoFill  true when the logo is a whole app icon with its own background: it fills the
+#           square instead of sitting inside it (leave out for a plain logo or glyph)
 # github    a link; leave out to hide the GitHub button
 # visit     a link, or a page here like /dsa; leave out to hide the Visit button
 # order     sorts the projects, lowest first (then by file name)

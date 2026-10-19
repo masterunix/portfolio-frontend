@@ -8,6 +8,8 @@ export interface Media {
   url: string;
   /** The file's name, e.g. leetcode.png */
   name: string;
+  /** A logo that's a whole app icon, with its own background: it fills the icon square */
+  fill?: boolean;
 }
 
 /** content/projects/<slug>.md */

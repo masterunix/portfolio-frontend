@@ -3,6 +3,7 @@ title: movie.fy
 tech: Flutter, Dart
 color: White
 icon: M.fy
+logo: /media/logos/flutter.svg
 order: 90
 ---
 

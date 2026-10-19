@@ -322,6 +322,19 @@ a.tile:hover .hex-button {
   object-fit: contain;
 }
 
+/* A whole app icon (logoFill: true) fills the square, its own background and all */
+.tile-icon:has(> .item-icon-fill),
+.carousel-button:has(> .item-icon-fill) {
+  overflow: hidden;
+}
+
+.tile-icon > img.item-icon-fill,
+.carousel-button > img.item-icon-fill {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 /* Letters in place of a logo ("AS", "N.js"): monospace letters are wide, so longer
    ones shrink to fit the square */
 .item-icon-fallback {

@@ -9,7 +9,9 @@
 #              top or bottom: a skill in the rows above and below
 # level        beginner, intermediate, proficient or expert: the coloured badge
 # icon         shown in the square when there's no logo: an emoji or a few letters
-# logo         a picture for the square instead, in public/ (e.g. /media/logos/react.png)
+# logo         a picture for the square instead, in public/ (e.g. /media/logos/react.svg)
+# logoFill     true when the logo is a whole app icon with its own background: it fills
+#              the square instead of sitting inside it
 # attachments  buttons that open a file (middle row only):
 #                - { label: Certificate, file: /media/attachments/aws.pdf }
 # order        sorts within the row, lowest first (then by file name)

@@ -31,6 +31,7 @@ export default function ItemIcon({ logo, fallback, alt }: ItemIconProps) {
       alt={alt}
       width={64}
       height={64}
+      className={logo.fill ? 'item-icon-fill' : undefined}
       // The image optimizer doesn't take SVGs; they scale on their own
       unoptimized={logo.url.toLowerCase().endsWith('.svg')}
       onError={() => setFailedUrl(logo.url)}

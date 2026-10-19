@@ -2,8 +2,9 @@
 title: MCP
 row: bottom
 level: beginner
-color: Red
+color: "#111111"
 icon: MCP
+logo: /media/logos/mcp.svg
 order: 130
 ---
 

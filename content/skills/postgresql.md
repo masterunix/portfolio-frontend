@@ -2,8 +2,9 @@
 title: PostgreSQL
 row: top
 level: beginner
-color: White
+color: "#4169E1"
 icon: PG
+logo: /media/logos/postgresql.svg
 order: 50
 ---
 

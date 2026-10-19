@@ -8,6 +8,7 @@
 # color   required: the icon square's colour
 # logo    a picture in public/ (e.g. /media/logos/leetcode.png); without one, or if it
 #         can't load, the square shows the title's first letter
+# logoFill  true when the logo is a whole app icon with its own background (fills the square)
 # order   sorts the platforms, lowest first (then by file name)
 # draft   true hides it
 title: GeeksforGeeks

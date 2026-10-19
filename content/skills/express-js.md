@@ -2,8 +2,9 @@
 title: Express.JS
 row: top
 level: beginner
-color: Green
+color: "#262626"
 icon: E.js
+logo: /media/logos/express.svg
 order: 70
 ---
 

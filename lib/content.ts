@@ -136,6 +136,14 @@ class Entry {
     return this.checkMedia(key, v, kind);
   }
 
+  /** An entry's `logo`, and `logoFill: true` when it's a whole app icon that fills the square */
+  logo(): Media | undefined {
+    const logo = this.optMedia('logo', 'image');
+    const fill = this.bool('logoFill', false);
+    if (fill && !logo) this.fail('logoFill', 'only applies to a `logo`');
+    return logo && fill ? { ...logo, fill } : logo;
+  }
+
   media(key: string, kind: 'image' | 'file'): Media {
     return this.optMedia(key, kind) ?? this.fail(key, 'is required');
   }
@@ -422,7 +430,7 @@ export function getProjects(): Project[] {
     tech: e.text('tech'),
     description: description(e, body),
     icon: e.optText('icon'),
-    logo: e.optMedia('logo', 'image'),
+    logo: e.logo(),
     color: e.color('color'),
     github: e.optLink('github'),
     visit: e.optLink('visit'),
@@ -442,7 +450,7 @@ export function getSkills(): Skill[] {
     level: e.optOneOf('level', LEVELS),
     color: e.color('color'),
     icon: e.optText('icon'),
-    logo: e.optMedia('logo', 'image'),
+    logo: e.logo(),
     attachments: e.list('attachments').map((a) => {
       const attachment = { label: a.text('label', 'View File'), file: a.media('file', 'file') };
       a.done();
@@ -479,7 +487,7 @@ export function getDSAPlatforms(): DSAPlatform[] {
     title: e.text('title'),
     url: e.link('url'),
     color: e.color('color'),
-    logo: e.optMedia('logo', 'image'),
+    logo: e.logo(),
   }));
 }
 

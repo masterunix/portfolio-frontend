@@ -3,6 +3,7 @@ title: Gleck
 tech: LangGraph, LangChain, MCP, Python, PERN, ElasticSearch, ChromeDB
 color: "#7eadfc"
 icon: Gl
+logo: /media/logos/gleck.svg
 order: 10
 ---
 

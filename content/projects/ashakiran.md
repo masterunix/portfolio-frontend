@@ -1,8 +1,10 @@
 ---
 title: AshaKiran
 tech: "Postgres, React, Node "
-color: "#db7d86"
+color: "#7a3238"
 icon: AK
+logo: /media/logos/ashakiran.png
+logoFill: true
 order: 80
 ---
 

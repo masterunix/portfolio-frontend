@@ -1,8 +1,10 @@
 ---
 title: AxeSuite
 tech: Next.JS, PostgresSQL, Express, OAuth & more
-color: "#fcd47e"
+color: "#1b1b24"
 icon: AS
+logo: /media/logos/axesuite.png
+logoFill: true
 order: 20
 ---
 

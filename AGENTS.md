@@ -1,6 +1,6 @@
 # AGENTS.md
 
-**Current version: 2.02.01.** With every deployed change, bump `version:` in `content/site.md` and update this line in each `.md` file at the top of the project (AGENTS.md, CLAUDE.md, README.md, future.md, completed.md) to match; the build fails if they disagree.
+**Current version: 2.03.00.** With every deployed change, bump `version:` in `content/site.md` and update this line in each `.md` file at the top of the project (AGENTS.md, CLAUDE.md, README.md, future.md, completed.md) to match; the build fails if they disagree.
 
 Instructions for AI agents (and people) working on this site: Vatsal Goyal's portfolio,
 a Next.js site whose content lives in Markdown files in `content/`.
@@ -66,6 +66,13 @@ description goes below them. `order` sorts entries (lowest first); `draft: true`
 - The short text in a tile's icon square (AS, GI, PLM…) is `icon:`. To use a picture
   instead, add `logo:` with an image (square works best, at least 128 × 128 px; PNG, SVG
   or WebP). If the picture ever fails to load, the `icon:` text shows instead.
+- Two kinds of logo:
+  - **A glyph or plain logo** (transparent background): it sits inside the coloured
+    square, so pick a `color:` it stands out on. For a tech or brand logo, take the SVG
+    from [simpleicons.org](https://simpleicons.org) (free to use), set `fill="#ffffff"`
+    (or the brand colour) on its `<svg>`, and use the brand colour as `color:`.
+  - **A whole app icon** (with its own rounded background, like `axesuite.png`): add
+    `logoFill: true` so it fills the square.
 - A resume's download: `file: /media/resumes/name.pdf`, and `filename:` for the name it
   saves as.
 

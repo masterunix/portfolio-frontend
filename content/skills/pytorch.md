@@ -2,8 +2,9 @@
 title: PyTorch
 row: bottom
 level: beginner
-color: Orange
+color: "#EE4C2C"
 icon: PyT
+logo: /media/logos/pytorch.svg
 order: 100
 ---
 
