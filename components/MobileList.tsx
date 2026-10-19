@@ -9,6 +9,7 @@
 import { useState, type CSSProperties, type ReactNode } from 'react';
 import Link from 'next/link';
 
+import BackArrow from '@/components/BackArrow';
 import Footer from '@/components/Footer';
 import { SmartLink } from '@/components/transition';
 import type { Tile } from '@/lib/tiles';
@@ -30,7 +31,7 @@ export default function MobileList({ title, header, back = '/', sections }: Mobi
   return (
     <main className="mobile-page">
       <div className="mobile-header">
-        {back !== null && <Link href={back} className="mobile-back">← Back</Link>}
+        {back !== null && <Link href={back} className="mobile-back"><BackArrow />Back</Link>}
         {header ?? <h1 className="mobile-title">{tabbed ? sections[active].label : title}</h1>}
         {tabbed && (
           <div className="mobile-tabs" role="tablist">
@@ -58,7 +59,7 @@ function MobileCard({ tile, index }: { tile: Tile; index: number }) {
   const content = (
     <>
       <div className="mobile-card-row">
-        {tile.icon && <div className="tile-icon" style={{ '--bg': tile.color } as CSSProperties}>{tile.icon}</div>}
+        {tile.icon && <div className={tile.pulse ? 'tile-icon is-pulsing' : 'tile-icon'} style={{ '--bg': tile.color } as CSSProperties}>{tile.icon}</div>}
         <div className="mobile-card-text">
           <div className="mobile-card-title">{tile.title}</div>
           {tile.meta && <div className="mobile-card-meta">{tile.meta}</div>}

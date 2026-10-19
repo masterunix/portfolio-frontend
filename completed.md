@@ -1,9 +1,21 @@
 # Completed changes
 
-**Current version: 2.03.00.** With every deployed change, bump `version:` in `content/site.md` and update this line in each `.md` file at the top of the project (AGENTS.md, CLAUDE.md, README.md, future.md, completed.md) to match; the build fails if they disagree.
+**Current version: 2.04.00.** With every deployed change, bump `version:` in `content/site.md` and update this line in each `.md` file at the top of the project (AGENTS.md, CLAUDE.md, README.md, future.md, completed.md) to match; the build fails if they disagree.
 
 Changes that have been made and tested, newest first. Agents move items here from
 [`future.md`](future.md) once they're done, with a note of what changed.
+
+## 2026-10-19 · v2.04.00
+
+- Rewrote the Summary page (`content/summary.md`) as everything on one page, for
+  recruiters: headline, contact and resume buttons, experience, every project with links,
+  skills, certifications, education, coding profiles and contact. Written from the resume
+  and the site.
+- The home Summary tile now reads "The whole site, on one page" and its icon pulses
+  (new `pulse: true` option in `content/home.md`).
+- Back links (Back to Home, ← Home, ← Back) use a drawn arrow icon (`components/BackArrow.tsx`).
+- Logos load with the page instead of lazily, so carousel tiles never show a blank square.
+- GitHub buttons on the public projects: Gleck, PocketLM, JobNest, movie.fy and this site.
 
 ## 2026-10-19 · v2.03.00
 

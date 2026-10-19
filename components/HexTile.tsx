@@ -13,7 +13,7 @@ export default function HexTile({ tile }: { tile: Tile }) {
   const size = tile.size ?? 'md';
   const content = (
     <>
-      {tile.icon && <div className="tile-icon" style={{ '--bg': tile.color } as CSSProperties}>{tile.icon}</div>}
+      {tile.icon && <div className={tile.pulse ? 'tile-icon is-pulsing' : 'tile-icon'} style={{ '--bg': tile.color } as CSSProperties}>{tile.icon}</div>}
       <div className="tile-title">{tile.title}</div>
       {tile.meta && <div className="tile-meta">{tile.meta}</div>}
       {tile.description && <div className="tile-desc">{tile.description}</div>}

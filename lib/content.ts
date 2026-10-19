@@ -356,7 +356,7 @@ export function getHome(): Home {
       }
       const item = {
         title, description: m.text('description'), href: m.link('href'), cell: cell as [number, number],
-        icon: logo ? undefined : icon, logo, color: m.color('color'),
+        icon: logo ? undefined : icon, logo, color: m.color('color'), pulse: m.bool('pulse', false),
       };
       m.done();
       return item;

@@ -14,6 +14,7 @@
 import { useCallback, useMemo, useRef, useState, type ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
 
+import BackArrow from '@/components/BackArrow';
 import Footer from '@/components/Footer';
 import { PageTransitionContext, SmartLink } from '@/components/transition';
 import { useIsDesktop } from '@/hooks/useIsDesktop';
@@ -35,7 +36,7 @@ export default function HexPage({ title, heading, mobile, children }: HexPagePro
         <DesktopFrame heading={heading ?? (
           <>
             <h1 className="hex-page-title">{title}</h1>
-            <SmartLink href="/" className="back-button-glass">← Back to Home</SmartLink>
+            <SmartLink href="/" className="back-button-glass"><BackArrow />Back to Home</SmartLink>
           </>
         )}>
           {children}

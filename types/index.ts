@@ -83,6 +83,8 @@ export interface MenuItem {
   icon?: string;
   logo?: Media;
   color: string;
+  /** A glow pulses around the icon */
+  pulse: boolean;
 }
 
 /** content/home.md */

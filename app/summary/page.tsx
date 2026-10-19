@@ -1,5 +1,6 @@
 /**
- * /summary — Who I am, in short. Everything on it comes from content/summary.md.
+ * /summary — The whole site on one page, for anyone short on time. Everything on it
+ * comes from content/summary.md.
  *
  * A server component: the whole page is in the HTML. The body is HTML that
  * lib/content.ts rendered from the file's Markdown at build time.

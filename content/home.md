@@ -9,11 +9,12 @@
 #   icon                 a built-in icon (summary, github, projects, linkedin, resumes, skills,
 #                        dsa, blog, mail) or a picture in public/, like /media/logos/me.png
 #   color                the icon square's colour
+#   pulse                true makes a glow pulse around the icon, to draw the eye
 #
 # Below the second --- line: the typewriter lines at the top, in order, one per "- " line.
 # A line that is just [text](https://…) opens that link when clicked.
 menu:
-  - { title: Summary, description: "Who I am, in short", href: /summary, cell: [1, 1], icon: summary, color: "#fd79a8" }
+  - { title: Summary, description: "The whole site, on one page", href: /summary, cell: [1, 1], icon: summary, color: "#fd79a8", pulse: true }
   - { title: Github, description: View my code repositories, href: "https://github.com/masterunix", cell: [1, 2], icon: github, color: "#333333" }
   - { title: Live Projects, description: Explore my portfolio, href: /projects, cell: [1, 3], icon: projects, color: "#667eea" }
   - { title: LinkedIn, description: Connect professionally, href: "https://www.linkedin.com/in/vatsal-goyal-05a896165", cell: [1, 4], icon: linkedin, color: "#0077b5" }

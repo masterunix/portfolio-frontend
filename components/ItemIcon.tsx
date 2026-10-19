@@ -32,6 +32,8 @@ export default function ItemIcon({ logo, fallback, alt }: ItemIconProps) {
       width={64}
       height={64}
       className={logo.fill ? 'item-icon-fill' : undefined}
+      // Small, and often in a carousel hex that slides in later: load it with the page
+      loading="eager"
       // The image optimizer doesn't take SVGs; they scale on their own
       unoptimized={logo.url.toLowerCase().endsWith('.svg')}
       onError={() => setFailedUrl(logo.url)}

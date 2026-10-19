@@ -32,6 +32,8 @@ export interface Tile {
   link?: TileLink;
   /** Separate buttons, for tiles that aren't one link */
   actions?: TileLink[];
+  /** A glow pulsing around the icon, to draw the eye (home.md `pulse: true`) */
+  pulse?: boolean;
   /** Hex size: lg for the home menu, sm for the outer carousel rows */
   size?: 'lg' | 'md' | 'sm';
 }
@@ -51,6 +53,7 @@ export function menuTile(item: MenuItem): Tile {
       <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d={MENU_ICONS[item.icon!]} /></svg>
     ),
     link: { label: item.title, href: item.href },
+    pulse: item.pulse,
     size: 'lg',
   };
 }

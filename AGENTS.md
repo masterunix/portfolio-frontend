@@ -1,6 +1,6 @@
 # AGENTS.md
 
-**Current version: 2.03.00.** With every deployed change, bump `version:` in `content/site.md` and update this line in each `.md` file at the top of the project (AGENTS.md, CLAUDE.md, README.md, future.md, completed.md) to match; the build fails if they disagree.
+**Current version: 2.04.00.** With every deployed change, bump `version:` in `content/site.md` and update this line in each `.md` file at the top of the project (AGENTS.md, CLAUDE.md, README.md, future.md, completed.md) to match; the build fails if they disagree.
 
 Instructions for AI agents (and people) working on this site: Vatsal Goyal's portfolio,
 a Next.js site whose content lives in Markdown files in `content/`.
@@ -43,7 +43,7 @@ a Next.js site whose content lives in Markdown files in `content/`.
 | On the site | File |
 |---|---|
 | Footer lines (© … / "managed by Gleck"), page headings, carousel hints, search descriptions, the site's title | `content/site.md` |
-| Home menu tiles and their text ("Summary — Who I am, in short", …), the typewriter lines | `content/home.md` |
+| Home menu tiles and their text ("Summary — The whole site, on one page", …) and which one pulses, the typewriter lines | `content/home.md` |
 | Summary page | `content/summary.md` |
 | Live projects (/projects) | `content/projects/<name>.md`, one per project |
 | Experience and skills (/skills, and the outer rows of /projects) | `content/skills/<name>.md`, one each |

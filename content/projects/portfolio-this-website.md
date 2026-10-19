@@ -4,6 +4,7 @@ tech: Next.js, WebGL, Markdown content
 color: black
 icon: P
 logo: /media/logos/portfolio.svg
+github: https://github.com/masterunix/portfolio-frontend
 order: 50
 ---
 

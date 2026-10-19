@@ -4,6 +4,7 @@ tech: LangGraph, LangChain, MCP, Python, PERN, ElasticSearch, ChromeDB
 color: "#7eadfc"
 icon: Gl
 logo: /media/logos/gleck.svg
+github: https://github.com/masterunix/gleck
 order: 10
 ---
 

@@ -100,7 +100,9 @@ ul {
 
 /* The ← Back to Home pill on hex pages */
 .back-button-glass {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   padding: 10px 20px;
   border-radius: 25px;
   background: var(--glass-bg);
@@ -111,6 +113,18 @@ ul {
   font-size: 14px;
   font-weight: 500;
   transition: transform 0.3s ease, background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* The ← in back links (BackArrow): nudges left on hover */
+.back-arrow {
+  flex-shrink: 0;
+  width: 1.1em;
+  height: 1.1em;
+  transition: transform 0.2s ease;
+}
+
+a:hover > .back-arrow {
+  transform: translateX(-3px);
 }
 
 .back-button-glass:hover {
@@ -346,6 +360,27 @@ a.tile:hover .hex-button {
 
 .group:hover .tile-icon {
   transform: scale(1.1);
+}
+
+/* home.md `pulse: true`: a glow in the icon's own colour breathes around it */
+.tile-icon.is-pulsing {
+  animation: icon-pulse 2.4s ease-in-out infinite;
+}
+
+@keyframes icon-pulse {
+  0%, 100% {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), 0 0 0 0 color-mix(in srgb, var(--bg) 0%, transparent);
+  }
+  50% {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), 0 0 24px 6px color-mix(in srgb, var(--bg) 55%, transparent);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tile-icon.is-pulsing {
+    animation: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), 0 0 18px 4px color-mix(in srgb, var(--bg) 45%, transparent);
+  }
 }
 
 .tile-title {
@@ -1033,6 +1068,7 @@ a.gleck-notice:hover,
 .article-back {
   display: inline-flex;
   align-items: center;
+  gap: 6px;
   color: rgba(255, 255, 255, 0.85);
   font-size: 13px;
   font-weight: 500;
@@ -1337,7 +1373,7 @@ a.gleck-notice:hover,
 
 .prose .md-cards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 14px;
   margin: 1.25em 0 1.5em;
 }

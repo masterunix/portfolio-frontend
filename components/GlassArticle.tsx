@@ -12,6 +12,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
+import BackArrow from '@/components/BackArrow';
 import Footer from '@/components/Footer';
 
 /** Matches the panel's fade-out in globals.css (.glass-article.is-exiting) */
@@ -35,7 +36,7 @@ export default function GlassArticle({ back, children }: GlassArticleProps) {
   return (
     <main className="article-page">
       <article className={`glass-article ${isExiting ? 'is-exiting' : ''}`}>
-        <Link href={back.href} onClick={handleBack} className="article-back">← {back.label}</Link>
+        <Link href={back.href} onClick={handleBack} className="article-back"><BackArrow />{back.label}</Link>
         {children}
       </article>
       <Footer className="article-footer" />
