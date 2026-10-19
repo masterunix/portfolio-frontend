@@ -27,7 +27,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="en" className={inter.variable}>
       <body>
-        <SiteProvider footer={getSite().footer}>
+        <SiteProvider footer={getSite().footer} version={getSite().version}>
           <ShaderBackground background={getBackground()} />
           <Gleck gleck={getGleck()} />
           <div className="page">{children}</div>

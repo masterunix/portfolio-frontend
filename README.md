@@ -1,5 +1,7 @@
 # Vatsal Goyal — Portfolio
 
+**Current version: 2.01.02.** With every deployed change, bump `version:` in `content/site.md` and update this line in each `.md` file at the top of the project (AGENTS.md, CLAUDE.md, README.md, future.md, completed.md) to match; the build fails if they disagree.
+
 A portfolio site of glass hexagons over an animated background: a honeycomb menu,
 scrolling carousels of projects and skills, resumes, coding profiles, a blog and a
 summary page. On phones, every page is a list of glass cards instead.

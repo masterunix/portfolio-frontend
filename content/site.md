@@ -1,11 +1,15 @@
 ---
 # Text used around the site.
+#   version              the site's version, shown in the footer. Bump it with every deployed
+#                        change, and update the "Current version" line in each .md file at the
+#                        top of the project to match (the build checks they agree).
 #   title, description   the site's name and summary (browser tab, search results, link previews)
 #   pages                each page's heading, its search description, and the hint under
 #                        the carousel buttons (projects and skills)
 #
 # Below the second --- line: the footer, one line per paragraph. {year} becomes the current
 # year. The first line shows everywhere; the others only on wide screens.
+version: 2.01.02
 title: Vatsal Goyal - Portfolio
 description: Full-stack developer, AI/ML enthusiast, and problem solver. Explore my projects, skills, and journey.
 pages:

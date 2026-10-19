@@ -1,9 +1,15 @@
 # Completed changes
 
+**Current version: 2.01.02.** With every deployed change, bump `version:` in `content/site.md` and update this line in each `.md` file at the top of the project (AGENTS.md, CLAUDE.md, README.md, future.md, completed.md) to match; the build fails if they disagree.
+
 Changes that have been made and tested, newest first. Agents move items here from
 [`future.md`](future.md) once they're done, with a note of what changed.
 
-## 2026-10-19
+## 2026-10-19 · v2.01.02
+
+- Added the site version (2.01.02) to the footer and a "Current version" line to each
+  `.md` file here; the build checks they match `version:` in `content/site.md`.
+- Made the footer text easier to read, and gave callout boxes an even border all round.
 
 - Moved all content to Markdown in `content/`: projects, skills, resumes, DSA platforms
   and concepts, the home menu and typewriter, Gleck's notices, the footer and page text

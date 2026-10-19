@@ -1,5 +1,7 @@
 # AGENTS.md
 
+**Current version: 2.01.02.** With every deployed change, bump `version:` in `content/site.md` and update this line in each `.md` file at the top of the project (AGENTS.md, CLAUDE.md, README.md, future.md, completed.md) to match; the build fails if they disagree.
+
 Instructions for AI agents (and people) working on this site: Vatsal Goyal's portfolio,
 a Next.js site whose content lives in Markdown files in `content/`.
 
@@ -29,7 +31,11 @@ a Next.js site whose content lives in Markdown files in `content/`.
      instead of hexagons). Check the text, pictures, links and downloads.
 3. **Log it.** Move the item from `future.md` to `completed.md`, under today's date
    (newest date first), with a short note of what changed and which files.
-4. **Deploying:** never push, merge or deploy unless the user asks, and only after the
+4. **Version it.** Bump `version:` in `content/site.md` once per deploy (2.01.02 →
+   2.01.03 for small changes; raise the middle number for bigger ones), update the
+   "Current version" line at the top of every `.md` file here, and put the new version in
+   the `completed.md` entry. It shows in the site's footer.
+5. **Deploying:** never push, merge or deploy unless the user asks, and only after the
    steps above pass. Pushing `main` publishes the site.
 
 ## Where things are

@@ -285,11 +285,30 @@ function readDate(e: Entry, key: string, required: boolean): string | undefined 
 
 const PAGES = ['projects', 'skills', 'dsa', 'resumes', 'blog'] as const;
 
+/** The project's own .md files, which each state the current version */
+const VERSIONED_DOCS = ['AGENTS.md', 'CLAUDE.md', 'README.md', 'future.md', 'completed.md'];
+
+/** Fails when a doc's "Current version" line doesn't match content/site.md */
+function checkDocVersions(e: Entry, version: string): void {
+  for (const doc of VERSIONED_DOCS) {
+    const file = path.join(process.cwd(), doc);
+    if (!fs.existsSync(file)) continue;
+    const stated = /Current version:\s*\**v?(\d+\.\d+\.\d+)/i.exec(fs.readFileSync(file, 'utf8'))?.[1];
+    if (stated !== version) {
+      e.fail('version', `is ${version}, but ${doc} says "Current version: ${stated ?? '(missing)'}". Update ${doc} to match.`);
+    }
+  }
+}
+
 /** Site title, page headings and hints, and the footer (content/site.md) */
 export function getSite(): Site {
   return loadFile('site.md', (e, body) => {
+    const version = e.text('version');
+    if (!/^\d+\.\d+\.\d+$/.test(version)) e.fail('version', `must look like 2.01.02; got "${version}"`);
+    checkDocVersions(e, version);
     const pages = e.group('pages');
     const site = {
+      version,
       title: e.text('title'),
       description: e.text('description'),
       pages: Object.fromEntries(PAGES.map((page) => {

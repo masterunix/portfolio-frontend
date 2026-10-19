@@ -1,5 +1,7 @@
 # Future changes
 
+**Current version: 2.01.02.** With every deployed change, bump `version:` in `content/site.md` and update this line in each `.md` file at the top of the project (AGENTS.md, CLAUDE.md, README.md, future.md, completed.md) to match; the build fails if they disagree.
+
 Changes to make to the site. Write each one as a bullet under **To do**, in plain words,
 with whatever details help (links, dates, text to use, where a picture is). Agents read
 this at the start of a session, ask before doing anything, test the change locally, and

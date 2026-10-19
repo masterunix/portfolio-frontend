@@ -687,8 +687,9 @@ a.mobile-card:active {
 
 .site-footer {
   text-align: center;
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.5);
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.78);
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.85);
 }
 
 .site-footer p + p {
@@ -696,23 +697,36 @@ a.mobile-card:active {
 }
 
 .site-footer-small {
-  font-size: 10px;
-  color: rgba(255, 255, 255, 0.4);
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.62);
+}
+
+/* The site's version, after the first line (content/site.md) */
+.site-version {
+  margin-left: 8px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.08);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  color: rgba(255, 255, 255, 0.85);
+  white-space: nowrap;
 }
 
 .site-footer a {
   text-decoration: underline;
+  text-underline-offset: 2px;
   transition: color 0.2s ease;
 }
 
 .site-footer a:hover {
-  color: rgba(255, 255, 255, 0.6);
+  color: #fff;
 }
 
 .mobile-footer {
   padding: 24px 0;
   margin-top: 16px;
-  opacity: 0.7;
 }
 
 /* ═══ Gleck ════════════════════════════════════════════════════════════════ */
@@ -1240,8 +1254,7 @@ a.gleck-notice:hover,
   padding: 16px 20px;
   border-radius: 14px;
   background: rgba(255, 255, 255, 0.07);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-left: 3px solid rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.16);
 }
 
 .prose .md-callout-title {

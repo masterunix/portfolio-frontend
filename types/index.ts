@@ -116,6 +116,8 @@ export interface PageText {
 
 /** content/site.md */
 export interface Site {
+  /** Shown in the footer, e.g. 2.01.02 */
+  version: string;
   title: string;
   description: string;
   pages: Record<'projects' | 'skills' | 'dsa' | 'resumes' | 'blog', PageText>;
