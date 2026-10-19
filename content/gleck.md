@@ -11,6 +11,7 @@ moreLink: https://github.com/masterunix/gleck
 ---
 
 - Hey There! I'm Gleck!
+- After setting up alerts for months, he finally bought the Logitech MX Combo!
 - I found some bugs. Added an event for next sunday.
 - [Portfolio v2 is live, Click here to visit the old version.](https://v1.vatsalgoyal.com)
 - Currently interning in Full Stack Development.
