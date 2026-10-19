@@ -25,7 +25,11 @@ export function generateMetadata(): Metadata {
     openGraph: { ...baseOpenGraph(), title, description, url: '/' },
     twitter: { card: 'summary_large_image', title, description },
     robots: { index: true, follow: true, googleBot: { index: true, follow: true, 'max-image-preview': 'large', 'max-snippet': -1 } },
-    icons: { icon: '/icon.png', apple: '/icon.png' },
+    // A hexagon drawn in SVG (public/icon.svg); favicon.ico and the PNGs are rendered from it
+    icons: {
+      icon: [{ url: '/icon.svg', type: 'image/svg+xml' }, { url: '/favicon.ico', sizes: '16x16 32x32 48x48' }],
+      apple: { url: '/apple-icon.png', sizes: '180x180' },
+    },
     category: 'technology',
   };
 }

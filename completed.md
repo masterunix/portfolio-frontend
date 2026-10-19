@@ -1,9 +1,15 @@
 # Completed changes
 
-**Current version: 2.05.00.** With every deployed change, bump `version:` in `content/site.md` and update this line in each `.md` file at the top of the project (AGENTS.md, CLAUDE.md, README.md, future.md, completed.md) to match; the build fails if they disagree.
+**Current version: 2.05.01.** With every deployed change, bump `version:` in `content/site.md` and update this line in each `.md` file at the top of the project (AGENTS.md, CLAUDE.md, README.md, future.md, completed.md) to match; the build fails if they disagree.
 
 Changes that have been made and tested, newest first. Agents move items here from
 [`future.md`](future.md) once they're done, with a note of what changed.
+
+## 2026-10-19 · v2.05.01
+
+- New favicon: a dark hexagon with a purple-to-blue outline and a small solid hexagon,
+  drawn in SVG (`public/icon.svg`). `app/favicon.ico`, `public/apple-icon.png` and
+  `public/icon-192.png` / `icon-512.png` are rendered from it. Removed `public/icon.png`.
 
 ## 2026-10-19 · v2.05.00
 
