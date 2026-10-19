@@ -1,9 +1,15 @@
 # Completed changes
 
-**Current version: 2.05.02.** With every deployed change, bump `version:` in `content/site.md` and update this line in each `.md` file at the top of the project (AGENTS.md, CLAUDE.md, README.md, future.md, completed.md) to match; the build fails if they disagree.
+**Current version: 2.05.03.** With every deployed change, bump `version:` in `content/site.md` and update this line in each `.md` file at the top of the project (AGENTS.md, CLAUDE.md, README.md, future.md, completed.md) to match; the build fails if they disagree.
 
 Changes that have been made and tested, newest first. Agents move items here from
 [`future.md`](future.md) once they're done, with a note of what changed.
+
+## 2026-10-19 · v2.05.03
+
+- Clicking anywhere on a project, experience or blog hexagon (or its phone card) opens
+  its popup; Read more stays as a hint and for keyboards. Its links (GitHub, Visit) still
+  go straight to the link (`components/TileDialog.tsx`).
 
 ## 2026-10-19 · v2.05.02
 

@@ -1,6 +1,6 @@
 # AGENTS.md
 
-**Current version: 2.05.02.** With every deployed change, bump `version:` in `content/site.md` and update this line in each `.md` file at the top of the project (AGENTS.md, CLAUDE.md, README.md, future.md, completed.md) to match; the build fails if they disagree.
+**Current version: 2.05.03.** With every deployed change, bump `version:` in `content/site.md` and update this line in each `.md` file at the top of the project (AGENTS.md, CLAUDE.md, README.md, future.md, completed.md) to match; the build fails if they disagree.
 
 Instructions for AI agents (and people) working on this site: Vatsal Goyal's portfolio,
 a Next.js site whose content lives in Markdown files in `content/`.
@@ -62,7 +62,7 @@ description goes below them. `order` sorts entries (lowest first); `draft: true`
 
 ### Tiles with Read more
 
-Projects, experience (`row: middle` skills) and blog posts open a popup from their tile.
+Projects, experience (`row: middle` skills) and blog posts open a popup when their tile is clicked.
 For projects and experience:
 
 - `summary:` is the sentence on the tile. Keep it to one line or two.

@@ -1,14 +1,16 @@
 /**
- * TileDialog.tsx — Read more: a button on a tile that opens the tile's details in a
- * popup. The popup grows out of the tile's hexagon (or card, on phones): it starts as
- * a hexagon the size of the tile and opens up into the panel; closing runs it back.
+ * TileDialog.tsx — A tile with details opens them in a popup when it's clicked
+ * anywhere (except on its own links), or from its Read more button, which is what
+ * keyboards and screen readers use. The popup grows out of the tile's hexagon (or card,
+ * on phones): it starts as a hexagon the size of the tile and opens up into the panel;
+ * closing runs it back.
  *
  * A native <dialog>, so focus stays inside it, Esc closes it and the page behind is
  * inert. It's portalled to <body>, out of the hexagon's clipping and fading.
  */
 'use client';
 
-import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 
 import { SmartLink } from '@/components/transition';
@@ -20,28 +22,39 @@ const RECTANGLE = 'polygon(50% 0%, 100% 0%, 100% 100%, 50% 100%, 0% 100%, 0% 0%)
 const OPEN_MS = 460;
 const CLOSE_MS = 320;
 
-export default function ReadMore({ tile }: { tile: Tile }) {
+/**
+ * A tile's content that opens its details when clicked. Clicks on its links (GitHub,
+ * Visit…) go to the link instead.
+ */
+export function DetailsTile({ tile, className, children }: { tile: Tile; className: string; children: ReactNode }) {
   const [origin, setOrigin] = useState<DOMRect | null>(null);
-  const label = tile.details?.label ?? 'Read more';
+
+  // Grow out of the hexagon (or the phone card) that was clicked
+  const open = (from: Element) => setOrigin((from.closest('.hex, .mobile-card') ?? from).getBoundingClientRect());
 
   return (
-    <>
-      <button
-        type="button"
-        className="tile-more"
-        onClick={(e) => {
-          // Grow out of the hexagon (or the phone card) this button is in
-          e.preventDefault();
-          e.stopPropagation();
-          const from = e.currentTarget.closest('.hex, .mobile-card') ?? e.currentTarget;
-          setOrigin(from.getBoundingClientRect());
-        }}
-        aria-haspopup="dialog"
-      >
-        {label}<span aria-hidden="true">→</span>
-      </button>
+    <div
+      className={`${className} has-details`}
+      onClick={(e) => {
+        if ((e.target as Element).closest('a')) return;
+        open(e.currentTarget);
+      }}
+    >
+      {children}
       {origin && createPortal(<TileDialog tile={tile} origin={origin} onClosed={() => setOrigin(null)} />, document.body)}
-    </>
+    </div>
+  );
+}
+
+/**
+ * The Read more button inside a DetailsTile: a hint for mouse users (the whole tile
+ * opens) and the way in for keyboards and screen readers. Its click reaches the tile.
+ */
+export function ReadMore({ label = 'Read more' }: { label?: string }) {
+  return (
+    <button type="button" className="tile-more" aria-haspopup="dialog">
+      {label}<span aria-hidden="true">→</span>
+    </button>
   );
 }
 

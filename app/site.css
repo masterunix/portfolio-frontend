@@ -445,7 +445,17 @@ a.tile:hover .hex-button {
   letter-spacing: 0.06em;
 }
 
-/* Read more, after a tile's description (TileDialog) */
+/* A tile with details opens them when clicked anywhere (TileDialog) */
+.has-details {
+  cursor: pointer;
+}
+
+.mobile-card.has-details:active {
+  transform: scale(0.98);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Read more, after a tile's description: the hint, and the keyboard's way in */
 .tile-more {
   font-size: var(--small, 12px);
   font-weight: 600;
@@ -467,8 +477,13 @@ a.tile:hover .hex-button {
   transition: transform 0.2s ease;
 }
 
-.tile-more:hover span {
+.tile-more:hover span,
+.has-details:hover .tile-more span {
   transform: translateX(3px);
+}
+
+.has-details:hover .tile-more {
+  text-decoration-color: currentColor;
 }
 
 .mobile-card-actions .tile-more {

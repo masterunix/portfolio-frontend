@@ -11,7 +11,7 @@ import Link from 'next/link';
 
 import BackArrow from '@/components/BackArrow';
 import Footer from '@/components/Footer';
-import ReadMore from '@/components/TileDialog';
+import { DetailsTile, ReadMore } from '@/components/TileDialog';
 import { SmartLink } from '@/components/transition';
 import type { Tile } from '@/lib/tiles';
 
@@ -72,7 +72,7 @@ function MobileCard({ tile, index }: { tile: Tile; index: number }) {
       {!tile.link && description}
       {(tile.details || !!tile.actions?.length) && (
         <div className="mobile-card-actions">
-          {tile.details && <ReadMore tile={tile} />}
+          {tile.details && <ReadMore label={tile.details.label} />}
           {tile.actions?.map(({ label, ...action }) => (
             <SmartLink key={action.href} {...action} className="hex-button">{label}</SmartLink>
           ))}
@@ -82,6 +82,7 @@ function MobileCard({ tile, index }: { tile: Tile; index: number }) {
   );
 
   const style = { '--i': index } as CSSProperties;
+  if (tile.details) return <li style={style} className="mobile-card-item"><DetailsTile tile={tile} className="mobile-card">{content}</DetailsTile></li>;
   if (!tile.link) return <li className="mobile-card" style={style}>{content}</li>;
   const { label, ...link } = tile.link;
   return (
