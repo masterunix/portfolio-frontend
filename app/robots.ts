@@ -1,5 +1,5 @@
 /**
- * robots.ts — /robots.txt: everything may be crawled; points to the sitemap.
+ * robots.ts: /robots.txt: everything may be crawled; points to the sitemap.
  */
 import type { MetadataRoute } from 'next';
 

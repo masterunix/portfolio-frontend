@@ -1,5 +1,5 @@
 /**
- * /summary — The whole site on one page, for anyone short on time. Everything on it
+ * /summary: The whole site on one page, for anyone short on time. Everything on it
  * comes from content/summary.md.
  *
  * A server component: the whole page is in the HTML. The body is HTML that

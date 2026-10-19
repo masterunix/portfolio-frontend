@@ -1,5 +1,5 @@
 /**
- * globals.css — Tailwind v4's theme (colours, spacing, sizes) and utilities. Its reset
+ * globals.css: Tailwind v4's theme (colours, spacing, sizes) and utilities. Its reset
  * (preflight) is left out: the site's own base styles are in site.css.
  *
  * Keep the site's styles in site.css, not here: Tailwind caches this file in dev and

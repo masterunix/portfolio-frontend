@@ -1,5 +1,5 @@
 /**
- * ItemIcon.tsx — An item's logo, or its fallback (an emoji or letter) when there is no
+ * ItemIcon.tsx: An item's logo, or its fallback (an emoji or letter) when there is no
  * logo or it fails to load, so a tile never shows a broken image. The icon square
  * around it sets the size (site.css, .tile-icon); the text shrinks to fit longer
  * fallbacks like "N.js".

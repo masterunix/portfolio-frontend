@@ -1,5 +1,5 @@
 /**
- * Typewriter.tsx — The line typing itself out at the top of the home page: types each
+ * Typewriter.tsx: The line typing itself out at the top of the home page: types each
  * message, pauses, deletes it, and moves on. A message with a link opens it when
  * clicked (other sites in a new tab). It's decoration, so it isn't the page's heading:
  * the home page has its own (hidden) h1 for search engines and screen readers.

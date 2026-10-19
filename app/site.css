@@ -1,5 +1,5 @@
 /**
- * site.css — The site's styles.
+ * site.css: The site's styles.
  *
  *   Base · Glass · Hexagons · Tiles · Hex pages · Carousel · Mobile · Footer
  *   · Gleck · Articles · Animations
@@ -79,6 +79,8 @@ ul {
   width: 100%;
   height: 100%;
   pointer-events: none;
+  /* Drawn at half resolution (ShaderBackground): keep the dither blocks crisp */
+  image-rendering: pixelated;
 }
 
 /* The mobile layout; wide screens get the hex layout instead */
@@ -241,6 +243,13 @@ a.tile:hover .hex-button {
     5.84% 78.02%, 3.8% 76.6%, 2.2% 74.7%, 1.3% 72.6%, 0.84% 70.26%,
     0.84% 29.74%, 1.3% 27.4%, 2.2% 25.3%, 3.8% 23.4%, 5.84% 21.98%
   );
+}
+
+/* Low-power mode (ShaderBackground): a plain tint instead of the live blur */
+html[data-low-power] .hex-glass-blur {
+  background: rgba(10, 10, 16, 0.86);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
 }
 
 .hex-outline {

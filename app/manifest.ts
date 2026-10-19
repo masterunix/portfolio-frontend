@@ -1,5 +1,5 @@
 /**
- * manifest.ts — /manifest.webmanifest: the name and icon a phone uses when the site is
+ * manifest.ts: /manifest.webmanifest: the name and icon a phone uses when the site is
  * added to the home screen.
  */
 import type { MetadataRoute } from 'next';

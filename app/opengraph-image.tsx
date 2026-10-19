@@ -1,5 +1,5 @@
 /**
- * opengraph-image.tsx — The picture link previews show (LinkedIn, X, WhatsApp, Slack…),
+ * opengraph-image.tsx: The picture link previews show (LinkedIn, X, WhatsApp, Slack…),
  * drawn at build time from content/summary.md: the name, the tagline and the address,
  * in JetBrains Mono over the site's colours. Every page uses it unless it sets its own.
  */

@@ -1,5 +1,5 @@
 /**
- * HexTile.tsx — A Tile (lib/tiles) inside a glass hexagon.
+ * HexTile.tsx: A Tile (lib/tiles) inside a glass hexagon.
  *
  * A tile with a `link` is one big link, with its label shown as a button; a tile
  * with `actions` has a button for each; a tile with `details` opens them in a popup

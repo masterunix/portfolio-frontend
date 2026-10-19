@@ -1,5 +1,5 @@
 /**
- * TileDialog.tsx — A tile with details opens them in a popup when it's clicked
+ * TileDialog.tsx: A tile with details opens them in a popup when it's clicked
  * anywhere (except on its own links), or from its Read more button, which is what
  * keyboards and screen readers use. The popup grows out of the tile's hexagon (or card,
  * on phones): it starts as a hexagon the size of the tile and opens up into the panel;

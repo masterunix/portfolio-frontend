@@ -1,5 +1,5 @@
 /**
- * useNoticeCarousel.ts — Moves to the next Gleck notice every 5 seconds while the
+ * useNoticeCarousel.ts: Moves to the next Gleck notice every 5 seconds while the
  * widget is expanded and has more than one.
  */
 import { useState, useEffect } from 'react';

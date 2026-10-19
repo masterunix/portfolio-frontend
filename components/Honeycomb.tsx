@@ -1,5 +1,5 @@
 /**
- * Honeycomb.tsx — A fixed honeycomb of glass hexagons, centred in the window, with
+ * Honeycomb.tsx: A fixed honeycomb of glass hexagons, centred in the window, with
  * tiles in some of its cells. Used inside HexPage (home, DSA, resumes, blog). A filled
  * honeycomb covers the whole window, with empty hexes wherever there's no tile.
  */

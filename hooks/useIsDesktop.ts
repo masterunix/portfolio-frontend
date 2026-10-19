@@ -1,5 +1,5 @@
 /**
- * useIsDesktop.ts — True when the viewport is at least 768px wide (the hex layouts).
+ * useIsDesktop.ts: True when the viewport is at least 768px wide (the hex layouts).
  *
  * False on the server and while hydrating, so the server-rendered page is the mobile
  * layout (CSS hides it on wide screens) and the hex layout mounts in the browser.

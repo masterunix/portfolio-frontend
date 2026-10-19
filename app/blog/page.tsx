@@ -1,5 +1,5 @@
 /**
- * /blog — Every post, newest first, in the same hexagon carousel as the projects. A
+ * /blog: Every post, newest first, in the same hexagon carousel as the projects. A
  * post's Read opens the whole post in a wide popup; each post also has its own page
  * (/blog/<slug>), for links and search engines.
  */

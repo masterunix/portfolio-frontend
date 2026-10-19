@@ -1,5 +1,5 @@
 /**
- * MobileList.tsx — The narrow-screen layout: a header and a list of glass cards, one
+ * MobileList.tsx: The narrow-screen layout: a header and a list of glass cards, one
  * per Tile. Rendered on the server, so it's also what search engines read.
  *
  * With more than one section (Experience / Skills), tabs switch between them.

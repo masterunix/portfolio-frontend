@@ -1,5 +1,5 @@
 /**
- * hexTransition.ts — Timing for the hexagon intro and outro, shared by every page.
+ * hexTransition.ts: Timing for the hexagon intro and outro, shared by every page.
  *
  * Both are a diagonal wave from the top-left: each hex starts (row + col) steps after
  * the first. The animations themselves are CSS (globals.css, .hex); this file gives

@@ -1,5 +1,5 @@
 /**
- * BackArrow.tsx — The ← in every back link, drawn as a line icon so it sits centred
+ * BackArrow.tsx: The ← in every back link, drawn as a line icon so it sits centred
  * on the text and keeps its weight in any font (site.css, .back-arrow).
  */
 export default function BackArrow() {

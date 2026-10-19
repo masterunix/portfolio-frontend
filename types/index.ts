@@ -1,5 +1,5 @@
 /**
- * types/index.ts — The site's content, as lib/content.ts loads it from content/.
+ * types/index.ts: The site's content, as lib/content.ts loads it from content/.
  */
 
 /** A file in public/, checked to exist when the content loads */

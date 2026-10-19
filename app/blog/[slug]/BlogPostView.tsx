@@ -1,5 +1,5 @@
 /**
- * BlogPostView.tsx — A blog post inside the glass panel.
+ * BlogPostView.tsx: A blog post inside the glass panel.
  *
  * A server component, so the article is in the page's HTML for search engines and
  * link previews. The body is HTML that lib/content.ts rendered from the post's

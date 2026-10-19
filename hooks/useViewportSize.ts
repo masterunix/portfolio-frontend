@@ -1,5 +1,5 @@
 /**
- * useViewportSize.ts — The window's size, for the hex layouts. Null on the server.
+ * useViewportSize.ts: The window's size, for the hex layouts. Null on the server.
  *
  * Read straight from the window when a component mounts in the browser (so a hex grid
  * draws in its first render), then updated 150ms after resizing stops, so dragging the

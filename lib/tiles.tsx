@@ -1,5 +1,5 @@
 /**
- * tiles.tsx — Every hexagon and mobile card shows a Tile: an icon, a title, a few
+ * tiles.tsx: Every hexagon and mobile card shows a Tile: an icon, a title, a few
  * lines of text and some links. Pages turn their content into tiles here, on the
  * server, and HexTile / MobileCard draw them the same way everywhere.
  */

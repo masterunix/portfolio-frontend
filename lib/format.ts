@@ -1,5 +1,5 @@
 /**
- * format.ts — Small formatting helpers shared by server and client code.
+ * format.ts: Small formatting helpers shared by server and client code.
  */
 
 /** "2026-10-18" → "Oct 18, 2026" (in UTC, so it never shifts a day) */

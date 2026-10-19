@@ -1,5 +1,5 @@
 /**
- * useCarousel.ts — The carousel's scroll position: a steady drift, plus going to a
+ * useCarousel.ts: The carousel's scroll position: a steady drift, plus going to a
  * tile (buttons, or the ← → keys) by easing it to the middle of the window. The active
  * tile follows whichever one is in the middle as it drifts, so the buttons keep up.
  *

@@ -1,5 +1,5 @@
 /**
- * transition.tsx — Leaving a hex page plays its outro first.
+ * transition.tsx: Leaving a hex page plays its outro first.
  *
  * HexPage provides the context: `leave(href)` starts the outro and navigates when
  * the grid's exit wave (reported with useExitDuration) has finished. Hexagons, the

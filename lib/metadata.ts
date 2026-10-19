@@ -1,5 +1,5 @@
 /**
- * metadata.ts — What search engines and link previews see: each page's title,
+ * metadata.ts: What search engines and link previews see: each page's title,
  * description and canonical address, and the structured data (JSON-LD) describing me
  * and the site. All of it comes from content/site.md and content/summary.md.
  */

@@ -1,10 +1,16 @@
 /**
- * ShaderBackground.tsx — The animated background: dithered colour blobs drifting
+ * ShaderBackground.tsx: The animated background: dithered colour blobs drifting
  * behind every page, in the active theme's colours for the current page
  * (content/background.md). Colours ease over when you change page.
  *
  * One fragment shader on a full-screen triangle, in plain WebGL: no 3D library to
  * download before the page can start.
+ *
+ * It's drawn at half the window's CSS resolution and scaled up with crisp pixels. The
+ * look is all dither blocks of 4 screen pixels (2 CSS pixels on high-DPI screens), which
+ * this still draws exactly, but the shader runs for a quarter of the pixels (a sixteenth
+ * on high-DPI screens). Full resolution made low-end and software-rendered GPUs drop to
+ * ~24fps.
  */
 'use client';
 
@@ -12,6 +18,16 @@ import { useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 
 import type { Background, ThemePage } from '@/types';
+
+/** Canvas pixels per CSS pixel */
+const RENDER_SCALE = 0.5;
+
+/**
+ * Low-power mode: if frames keep running slow (two 1s windows under ~40fps), the page
+ * marks <html data-low-power>, and site.css swaps the hexagons' live blur for a plain
+ * tint, the costliest thing left on weak GPUs (and in Firefox, whose blur is slower).
+ */
+const SLOW_FRAME_MS = 25;
 
 /**
  * The blobs. Each drifts around (x, y) by `ax`/`ay`, at speeds `fx`/`fy`, along sin
@@ -60,6 +76,7 @@ const FRAGMENT = /* glsl */ `
   precision highp float;
   uniform float u_time;
   uniform float u_speed;
+  uniform float u_block;
   uniform vec3 u_colors[4];
   varying vec2 vUv;
 
@@ -70,7 +87,8 @@ const FRAGMENT = /* glsl */ `
 
   void main() {
     float t = u_time * u_speed * 0.08;
-    float dither = (bayer8(floor(gl_FragCoord.xy / 4.0)) - 0.5) * 0.08;
+    // Dither blocks of 4 screen pixels, whatever the canvas resolution (u_block, in canvas pixels)
+    float dither = (bayer8(floor(gl_FragCoord.xy / u_block)) - 0.5) * 0.08;
     vec3 color = vec3(0.0);
     ${BLOBS.map((b) => `
     color = max(color, ${colorOf(b.color)} * step(distance(vUv, vec2(
@@ -138,17 +156,28 @@ export default function ShaderBackground({ background }: { background: Backgroun
     gl.enableVertexAttribArray(position);
     gl.vertexAttribPointer(position, 2, gl.FLOAT, false, 0, 0);
     const u = (name: string) => gl.getUniformLocation(program, name);
-    const [uTime, uSpeed, uAspect, uColors] = [u('u_time'), u('u_speed'), u('u_aspect'), u('u_colors')];
+    const [uTime, uSpeed, uAspect, uColors, uBlock] = [u('u_time'), u('u_speed'), u('u_aspect'), u('u_colors'), u('u_block')];
 
     const current = target.current.map((c) => [...c]);
     const start = performance.now();
     let last = start;
     let frame = 0;
+    // Frame timing for low-power mode, from 3s in (after the page's intro)
+    let windowStart = 0, windowFrames = 0, slowWindows = 0;
+    const watchSpeed = (now: number, delta: number) => {
+      if (now - start < 3000 || delta > 250 || document.documentElement.dataset.lowPower !== undefined) return;
+      if (!windowStart) windowStart = now;
+      windowFrames++;
+      if (now - windowStart < 1000) return;
+      slowWindows = (now - windowStart) / windowFrames > SLOW_FRAME_MS ? slowWindows + 1 : 0;
+      if (slowWindows >= 2) document.documentElement.dataset.lowPower = '';
+      windowStart = now;
+      windowFrames = 0;
+    };
 
     const draw = (now: number) => {
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      const width = Math.round(canvas.clientWidth * dpr);
-      const height = Math.round(canvas.clientHeight * dpr);
+      const width = Math.max(1, Math.round(canvas.clientWidth * RENDER_SCALE));
+      const height = Math.max(1, Math.round(canvas.clientHeight * RENDER_SCALE));
       if (canvas.width !== width || canvas.height !== height) {
         canvas.width = width;
         canvas.height = height;
@@ -157,6 +186,7 @@ export default function ShaderBackground({ background }: { background: Backgroun
 
       // Ease toward the page's colours, a little each frame
       const ease = Math.min(1, ((now - last) / 1000) * 0.5);
+      watchSpeed(now, now - last);
       last = now;
       target.current.forEach((to, i) => {
         current[i] ??= [...to];
@@ -166,6 +196,7 @@ export default function ShaderBackground({ background }: { background: Backgroun
       gl.uniform1f(uTime, (now - start) / 1000);
       gl.uniform1f(uSpeed, speedRef.current);
       gl.uniform1f(uAspect, width / height);
+      gl.uniform1f(uBlock, (4 / Math.min(window.devicePixelRatio || 1, 2)) * RENDER_SCALE);
       gl.uniform3fv(uColors, current.flat());
       gl.drawArrays(gl.TRIANGLES, 0, 3);
       frame = requestAnimationFrame(draw);

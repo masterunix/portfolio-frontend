@@ -1,5 +1,5 @@
 /**
- * Gleck.tsx — Gleck, my AI agent, in the bottom-left corner of every page. His eyes
+ * Gleck.tsx: Gleck, my AI agent, in the bottom-left corner of every page. His eyes
  * follow the cursor and blink now and then.
  *
  * Wide screens: one glass widget that stays put across pages, with the "Updates are

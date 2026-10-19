@@ -1,5 +1,5 @@
 /**
- * Hexagon.tsx — A glass hexagon at a fixed spot, waving in after `delay` seconds and
+ * Hexagon.tsx: A glass hexagon at a fixed spot, waving in after `delay` seconds and
  * out after `exitDelay` once the page leaves (CSS: .hex in globals.css).
  */
 import type { CSSProperties, ReactNode } from 'react';

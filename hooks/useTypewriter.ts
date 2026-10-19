@@ -1,5 +1,5 @@
 /**
- * useTypewriter.ts — Types each message a character at a time, pauses, deletes it at
+ * useTypewriter.ts: Types each message a character at a time, pauses, deletes it at
  * twice the speed, then moves to the next, looping forever.
  */
 import { useEffect, useState } from 'react';

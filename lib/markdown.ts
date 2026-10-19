@@ -1,5 +1,5 @@
 /**
- * markdown.ts — Markdown to HTML for the content files (blog posts, the summary,
+ * markdown.ts: Markdown to HTML for the content files (blog posts, the summary,
  * Gleck's notices, the footer).
  *
  * Normal Markdown (and HTML, for anything else), links to other sites open in a new

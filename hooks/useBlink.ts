@@ -1,5 +1,5 @@
 /**
- * useBlink.ts — Gleck blinks on his own every few seconds (now and then twice), and
+ * useBlink.ts: Gleck blinks on his own every few seconds (now and then twice), and
  * on demand. Returns whether the eyes are shut, and a function to blink now.
  */
 import { useCallback, useEffect, useState } from 'react';

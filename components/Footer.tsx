@@ -1,5 +1,5 @@
 /**
- * Footer.tsx — The footer's lines from content/site.md: the first shows everywhere,
+ * Footer.tsx: The footer's lines from content/site.md: the first shows everywhere,
  * the rest only on wide layouts, and the site's version follows the first line. The root
  * layout provides them (SiteProvider), so any page or frame can place a Footer.
  */

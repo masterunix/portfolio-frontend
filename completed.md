@@ -1,9 +1,24 @@
 # Completed changes
 
-**Current version: 2.06.02.** With every deployed change, bump `version:` in `content/site.md` and update this line in each `.md` file at the top of the project (AGENTS.md, CLAUDE.md, README.md, future.md, completed.md) to match; the build fails if they disagree.
+**Current version: 2.07.00.** With every deployed change, bump `version:` in `content/site.md` and update this line in each `.md` file at the top of the project (AGENTS.md, CLAUDE.md, README.md, future.md, completed.md) to match; the build fails if they disagree.
 
 Changes that have been made and tested, newest first. Agents move items here from
 [`future.md`](future.md) once they're done, with a note of what changed.
+
+## 2026-10-19 · v2.07.00
+
+- Smoother on low-end hardware: the background shader draws at half resolution (same
+  look, a quarter to a sixteenth of the work). Without a GPU on a high-DPI screen it went
+  from about 24 to 60 frames a second. If a device still runs slow, the page switches the
+  hexagons' live blur to a plain tint (`data-low-power`).
+- New blog post: "A week of rebuilding this site" (`content/blog/a-week-of-rebuilding-this-site.md`).
+- Em dash purge: none left in the project, and the build now fails on one in `content/`.
+  Writing rules added to AGENTS.md, CLAUDE.md and README.md.
+- AGENTS.md rewritten as a full guide to editing the content files: how a file works,
+  each file's fields, writing rules and don'ts.
+- v1.vatsalgoyal.com has a link in the top left of every page: "This is an old archive.
+  Please visit v2 for updated details. Click here" (deployed from the archived
+  Portfolio-Website folder with the Vercel CLI).
 
 ## 2026-10-19 · v2.06.02
 

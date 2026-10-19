@@ -1,5 +1,5 @@
 /**
- * GlassArticle.tsx — A readable glass panel over the animated background, for pages
+ * GlassArticle.tsx: A readable glass panel over the animated background, for pages
  * that are mostly text (blog posts, the summary).
  *
  * The panel fades up on arrival, and the back link fades it back down before

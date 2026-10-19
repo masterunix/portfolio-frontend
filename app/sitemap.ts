@@ -1,5 +1,5 @@
 /**
- * sitemap.ts — /sitemap.xml: every page, for search engines. Blog posts carry their
+ * sitemap.ts: /sitemap.xml: every page, for search engines. Blog posts carry their
  * own dates; the rest change whenever the site is deployed.
  */
 import type { MetadataRoute } from 'next';

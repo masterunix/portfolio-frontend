@@ -1,5 +1,5 @@
 /**
- * HexPage.tsx — The frame of every hex page.
+ * HexPage.tsx: The frame of every hex page.
  *
  * Narrow screens get `mobile` (server-rendered; CSS hides it on wide screens). Wide
  * screens get the hex layout passed as children, mounted in the browser since it's

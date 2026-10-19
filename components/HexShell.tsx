@@ -1,5 +1,5 @@
 /**
- * HexShell.tsx — The glass hexagon: a frosted blur layer, the outline, and a slot for
+ * HexShell.tsx: The glass hexagon: a frosted blur layer, the outline, and a slot for
  * the tile's content. Hexagon and the carousel wrap it with position and animation.
  *
  * An ancestor with opacity < 1 switches off the glass blur until the fade ends. So a

@@ -1,9 +1,9 @@
 /**
- * useEyeTracking.ts — Tracks cursor position for the Gleck anime eyes.
+ * useEyeTracking.ts: Tracks cursor position for the Gleck anime eyes.
  *
  * Calculates a normalized position (-1 to 1) for pupil movement based
  * on cursor distance from the widget center. The max tracking distance
- * is 200px — beyond that, the eyes look "fully" in that direction.
+ * is 200px; beyond that, the eyes look "fully" in that direction.
  *
  * @param widgetRef - React ref to the widget container element
  * @returns Object with normalized x and y positions for pupil rendering
@@ -28,7 +28,7 @@ export function useEyeTracking(widgetRef: RefObject<HTMLElement | null>): EyePos
   useEffect(() => {
     let frameId: number | null = null;
 
-    // Throttle to one state update per animation frame — mousemove can fire
+    // Throttle to one state update per animation frame, since mousemove can fire
     // far more often than 60Hz, and every update re-renders the whole widget
     const handleMouseMove = (e: MouseEvent) => {
       if (frameId !== null) return;

@@ -1,5 +1,5 @@
 /**
- * content.ts — Reads the site's content from content/, all Markdown files:
+ * content.ts: Reads the site's content from content/, all Markdown files:
  *
  *   content/site.md               the site's title, page headings and hints, the footer
  *   content/home.md               the home menu and the typewriter lines
@@ -211,6 +211,11 @@ function readMarkdownFile(file: string): { e: Entry; body: string } {
   const full = path.join(CONTENT, file);
   if (!fs.existsSync(full)) throw new Error(`[content] ${where} is missing`);
   const text = fs.readFileSync(full, 'utf8');
+  // House style: no em dashes (see AGENTS.md, "Writing")
+  const dash = text.split('\n').findIndex((line) => line.includes('\u2014'));
+  if (dash !== -1) {
+    throw new Error(`[content] ${where}, line ${dash + 1}: has an em dash (\u2014). Use a comma, a colon or two sentences instead`);
+  }
   const match = /^---\r?\n([\s\S]*?)\r?\n---\r?\n?([\s\S]*)$/.exec(text);
   if (!match) throw new Error(`[content] ${where} must start with its details between two --- lines`);
 

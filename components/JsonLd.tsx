@@ -1,5 +1,5 @@
 /**
- * JsonLd.tsx — Structured data for search engines, as a <script type="application/ld+json">.
+ * JsonLd.tsx: Structured data for search engines, as a <script type="application/ld+json">.
  * `<` is escaped so text from the content can never close the script tag.
  */
 export default function JsonLd({ data }: { data: object }) {

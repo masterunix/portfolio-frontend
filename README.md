@@ -2,7 +2,7 @@
 
 Vatsal Goyal's portfolio, live at **[vatsalgoyal.com](https://www.vatsalgoyal.com)**.
 
-**Current version: 2.06.02.** With every deployed change, bump `version:` in `content/site.md` and update this line in each `.md` file at the top of the project (AGENTS.md, CLAUDE.md, README.md, future.md, completed.md) to match; the build fails if they disagree.
+**Current version: 2.07.00.** With every deployed change, bump `version:` in `content/site.md` and update this line in each `.md` file at the top of the project (AGENTS.md, CLAUDE.md, README.md, future.md, completed.md) to match; the build fails if they disagree.
 
 A portfolio site of glass hexagons over an animated background: a honeycomb menu,
 scrolling carousels of projects, experience and blog posts (click a hexagon and its
@@ -163,6 +163,13 @@ right
 ```
 
 An unknown block, an unclosed one or a missing image fails like any other content mistake.
+
+## Writing
+
+Everything here is written to read like a person wrote it: plain, specific, first person
+in the summary and blog, and **no em dashes** (the long dash, U+2014). Use a comma, a colon
+or two sentences instead. The build fails on an em dash in `content/`. The full rules are
+under "Writing" in [`AGENTS.md`](AGENTS.md).
 
 ## Deploying
 

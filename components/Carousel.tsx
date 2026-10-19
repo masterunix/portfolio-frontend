@@ -1,5 +1,5 @@
 /**
- * Carousel.tsx — Three rows of glass hexagons scrolling sideways forever (projects,
+ * Carousel.tsx: Three rows of glass hexagons scrolling sideways forever (projects,
  * skills): the main tiles in the middle row, supporting tiles above and below. A bar
  * of buttons, or the arrow keys, centres a main tile. Used inside HexPage.
  *

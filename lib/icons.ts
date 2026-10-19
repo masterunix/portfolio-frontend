@@ -1,5 +1,5 @@
 /**
- * icons.ts — The built-in icons a home menu tile can use (content/home.md `icon:`),
+ * icons.ts: The built-in icons a home menu tile can use (content/home.md `icon:`),
  * as 24 × 24 SVG paths.
  */
 export const MENU_ICONS: Record<string, string> = {

@@ -1,5 +1,5 @@
 /**
- * hexLayout.ts — Geometry for the honeycomb grids.
+ * hexLayout.ts: Geometry for the honeycomb grids.
  *
  * Hexagons are sized from the viewport width (up to a 16:10 shape), rows are offset by half a hex on odd
  * rows, and the grid is centred. Every value is a whole pixel, and the horizontal
