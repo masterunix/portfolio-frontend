@@ -10,6 +10,11 @@ Changes that have been made and tested, newest first. Agents move items here fro
 - Added the site version (2.01.02) to the footer and a "Current version" line to each
   `.md` file here; the build checks they match `version:` in `content/site.md`.
 - Made the footer text easier to read, and gave callout boxes an even border all round.
+- Deployed to https://vatsalgoyal.com and checked it live (all pages, the resume
+  download, phone and desktop).
+- Retired Strapi: archived the `masterunix/portfolio-strapi` GitHub repo and moved its
+  folder to `Personal Projects/Deprecated or Complete/`. Still to do: suspend the Strapi
+  server on Render (`portfolio-strapi-10vw`).
 
 - Moved all content to Markdown in `content/`: projects, skills, resumes, DSA platforms
   and concepts, the home menu and typewriter, Gleck's notices, the footer and page text
