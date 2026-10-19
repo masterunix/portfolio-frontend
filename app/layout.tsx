@@ -5,6 +5,7 @@ import './globals.css';
 import './site.css';
 import Gleck from '@/components/Gleck';
 import ShaderBackground from '@/components/ShaderBackground';
+import BrowserNotice from '@/components/BrowserNotice';
 import { SiteProvider } from '@/components/Footer';
 import { getBackground, getGleck, getSite, getSummary } from '@/lib/content';
 import { baseOpenGraph } from '@/lib/metadata';
@@ -45,6 +46,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <SiteProvider footer={getSite().footer} version={getSite().version}>
           <ShaderBackground background={getBackground()} />
           <Gleck gleck={getGleck()} />
+          <BrowserNotice html={getSite().firefoxNotice} />
           <div className="page">{children}</div>
         </SiteProvider>
       </body>

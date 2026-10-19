@@ -1,6 +1,6 @@
 # AGENTS.md
 
-**Current version: 2.07.00.** With every deployed change, bump `version:` in `content/site.md` and update this line in each `.md` file at the top of the project (AGENTS.md, CLAUDE.md, README.md, future.md, completed.md) to match; the build fails if they disagree.
+**Current version: 2.07.01.** With every deployed change, bump `version:` in `content/site.md` and update this line in each `.md` file at the top of the project (AGENTS.md, CLAUDE.md, README.md, future.md, completed.md) to match; the build fails if they disagree.
 
 Instructions for AI agents (and people) working on this site: Vatsal Goyal's portfolio at
 [vatsalgoyal.com](https://www.vatsalgoyal.com), a Next.js site whose content lives in
@@ -174,7 +174,7 @@ shown; they tell search engines who Vatsal is. Update `updated:` when you change
 ### `content/site.md`
 
 - `version` (see "Version it"), `url` (the site's address), `title` and `description`
-  (search results), and `pages` (each page's heading, search description and carousel
+  (search results), `firefoxNotice` (the one-time popup in Firefox-engine browsers), and `pages` (each page's heading, search description and carousel
   hint).
 - Body: the footer lines. `{year}` becomes the current year.
 

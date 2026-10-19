@@ -5,15 +5,18 @@
 #                        top of the project to match (the build checks they agree).
 #   url                  the site's address, for search engines and link previews
 #   title, description   the site's name and summary (browser tab, search results, link previews)
+#   firefoxNotice        the popup shown once in Firefox and browsers built on its engine
+#                        (Markdown: **bold** and [links](https://…) work)
 #   pages                each page's heading, its search description, and the hint under
 #                        the carousel buttons (projects and skills)
 #
 # Below the second --- line: the footer, one line per paragraph. {year} becomes the current
 # year. The first line shows everywhere; the others only on wide screens.
-version: 2.07.00
+version: 2.07.01
 url: https://www.vatsalgoyal.com
 title: Vatsal Goyal · Full-stack and AI Developer
 description: Vatsal Goyal is a full-stack and AI developer in Jaipur, India, building AxeSuite and the RCIS studio. Projects, experience, skills and resume.
+firefoxNotice: "Firefox, and browsers that use its engine, have trouble with the blur this website uses. Please use **Chrome** or **Safari** for the best experience. Rest assured, the content is the same across all browsers!"
 pages:
   projects:
     title: My Projects & Work

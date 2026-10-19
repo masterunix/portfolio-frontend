@@ -346,6 +346,7 @@ export function getSite(): Site {
       url,
       title: e.text('title'),
       description: e.text('description'),
+      firefoxNotice: markdown.parseInline(e.text('firefoxNotice')) as string,
       pages: Object.fromEntries(PAGES.map((page) => {
         const p = pages.group(page);
         const text: PageText = { title: p.text('title'), description: p.text('description'), hint: p.optText('hint') };

@@ -140,6 +140,8 @@ export interface Site {
   title: string;
   description: string;
   pages: Record<'projects' | 'skills' | 'dsa' | 'resumes' | 'blog', PageText>;
+  /** The popup for Firefox-engine browsers, as inline HTML */
+  firefoxNotice: string;
   /** The footer's lines as inline HTML; the first shows everywhere */
   footer: string[];
 }
