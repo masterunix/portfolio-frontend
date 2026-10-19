@@ -2,10 +2,15 @@
  * Gleck.tsx — Gleck, my AI agent, in the bottom-left corner of every page. His eyes
  * follow the cursor and blink now and then.
  *
- * On the home page, on wide screens: a glass widget with Gleck's notices
- * (content/gleck.md), cycling every 5s. It expands 3s after collapsing and collapses
- * after 10s, until you close it yourself; ↑ shows every notice.
- * Everywhere else, and on phones: just the eyes, linking to Gleck's repository.
+ * Wide screens: one glass widget that stays put across pages, with the "Updates are
+ * managed by Gleck" line under it everywhere. On the home page it opens to Gleck's
+ * notices (content/gleck.md), cycling every 5s; it collapses after 10s and opens again
+ * 3s later, until you close it yourself. ^ is always there: it opens the widget, then
+ * shows every notice. On other pages it's just the eyes.
+ * Phones: just the eyes, linking to Gleck's repository.
+ *
+ * The widget is never unmounted or re-laid out: it only changes width (and the
+ * notice list its height), so every change is one smooth CSS transition.
  */
 'use client';
 
@@ -13,7 +18,6 @@ import { useEffect, useRef, useState } from 'react';
 import { usePathname } from 'next/navigation';
 
 import { useBlink } from '@/hooks/useBlink';
-
 import { useEyeTracking } from '@/hooks/useEyeTracking';
 import { useIsDesktop } from '@/hooks/useIsDesktop';
 import { useNoticeCarousel } from '@/hooks/useNoticeCarousel';
@@ -26,85 +30,90 @@ const COLLAPSE_AFTER_MS = 10000;
 
 export default function Gleck({ gleck }: { gleck: GleckContent }) {
   const isDesktop = useIsDesktop();
-  const isHome = usePathname() === '/';
-  if (isDesktop && isHome) return <GleckWidget gleck={gleck} />;
-  return <GleckEyes link={gleck.moreLink} size={isDesktop ? 14 : 12} />;
+  return (
+    <>
+      <GleckEyes link={gleck.moreLink} />
+      {isDesktop && <GleckWidget gleck={gleck} />}
+    </>
+  );
 }
 
-/** Just the eyes, in a glass square: every page but home, and phones */
-function GleckEyes({ link, size }: { link: string; size: number }) {
+/** Phones: just the eyes, in a glass square, linking to Gleck's repository */
+function GleckEyes({ link }: { link: string }) {
   const ref = useRef<HTMLAnchorElement>(null);
   const look = useEyeTracking(ref);
-  const { shut, blink } = useBlink();
+  const { shut } = useBlink();
   return (
-    <a ref={ref} href={link} target="_blank" rel="noopener noreferrer" className="gleck gleck-mini"
-      aria-label="Gleck, my AI agent" title="Gleck, my AI agent" onMouseEnter={blink}>
-      <Eyes size={size} look={look} closed={shut} />
+    <a ref={ref} href={link} target="_blank" rel="noopener noreferrer" className="gleck gleck-mini mobile-only"
+      aria-label="Gleck, my AI agent">
+      <Eyes size={12} look={look} closed={shut} />
     </a>
   );
 }
 
 function GleckWidget({ gleck }: { gleck: GleckContent }) {
   const { notices } = gleck;
+  const isHome = usePathname() === '/';
   const ref = useRef<HTMLDivElement>(null);
-  const [expanded, setExpanded] = useState(true);
-  const [enlarged, setEnlarged] = useState(false);
+  const [open, setOpen] = useState(true);
+  const [listOpen, setListOpen] = useState(false);
   const [closedByUser, setClosedByUser] = useState(false);
   const { shut, blink } = useBlink();
   const look = useEyeTracking(ref);
+  const expanded = isHome && open;
   const { index, setIndex } = useNoticeCarousel(notices.length, expanded);
 
-  // Collapse after a while, and pop back open a little later, until closed by hand
+  // On the home page: collapse after a while, and open again a little later, until closed by hand
   useEffect(() => {
-    if (closedByUser || enlarged) return;
-    const timer = setTimeout(() => setExpanded(!expanded), expanded ? COLLAPSE_AFTER_MS : EXPAND_AFTER_MS);
+    if (!isHome || closedByUser || listOpen) return;
+    const timer = setTimeout(() => setOpen(!open), open ? COLLAPSE_AFTER_MS : EXPAND_AFTER_MS);
     return () => clearTimeout(timer);
-  }, [expanded, enlarged, closedByUser]);
+  }, [isHome, open, listOpen, closedByUser]);
 
-  const open = () => { setExpanded(true); setClosedByUser(false); };
-  const close = () => { setExpanded(false); setEnlarged(false); setClosedByUser(true); };
+  const show = () => { setOpen(true); setClosedByUser(false); };
+  const close = () => { setOpen(false); setListOpen(false); setClosedByUser(true); };
   const notice = notices[index];
+  const state = !isHome ? 'eyes' : !expanded ? 'collapsed' : listOpen ? 'list' : 'open';
 
   return (
     <div ref={ref} className="gleck" role="complementary" aria-label="Gleck's notices">
-      <div className={`gleck-widget glass ${expanded ? (enlarged ? 'is-enlarged' : '') : 'is-collapsed'}`}>
+      <div className="gleck-widget glass" data-state={state}>
         <div className="gleck-row">
-          <button className="gleck-eyes" onClick={() => { blink(); open(); }} aria-label="Blink">
+          <button className="gleck-eyes" onClick={() => { blink(); if (isHome) show(); }} aria-label={isHome ? 'Open Gleck' : 'Blink'}>
             <Eyes size={14} look={look} closed={shut} />
           </button>
-          {expanded && (
-            <>
-              <div className="gleck-text">
-                {notice ? <Notice notice={notice} /> : <span className="gleck-hello">Hi! I&apos;m Gleck.</span>}
-              </div>
-              <button className="gleck-button" onClick={() => setEnlarged(!enlarged)}
-                aria-label={enlarged ? 'Show less' : 'Show all notices'}>
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                  <path d={enlarged ? 'M3 5L7 9L11 5' : 'M3 9L7 5L11 9'} />
-                </svg>
-              </button>
-              <button className="gleck-button gleck-button-danger" onClick={close} aria-label="Close">
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round">
-                  <path d="M2 2L10 10M10 2L2 10" />
-                </svg>
-              </button>
-            </>
-          )}
+          <div className="gleck-text" aria-live="polite" inert={!expanded}>
+            {notice
+              ? <Notice key={index} notice={notice} />
+              : <span className="gleck-hello">Hi! I&apos;m Gleck.</span>}
+          </div>
+          <button className="gleck-button gleck-toggle" inert={!isHome}
+            onClick={() => (expanded ? setListOpen(!listOpen) : show())}
+            aria-label={!expanded ? 'Open Gleck' : listOpen ? 'Hide all notices' : 'Show all notices'} aria-expanded={listOpen}>
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M3 9L7 5L11 9" />
+            </svg>
+          </button>
+          <button className="gleck-button gleck-button-danger gleck-close" onClick={close} inert={!expanded} aria-label="Close">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true">
+              <path d="M2 2L10 10M10 2L2 10" />
+            </svg>
+          </button>
         </div>
 
-        {expanded && enlarged && notices.length > 0 && (
-          <div className="gleck-all">
-            <h3>All Updates</h3>
-            {notices.map((n, i) => (
-              <div key={i} className={`gleck-notice-item ${i === index ? 'active' : ''}`}>
-                <button onClick={() => setIndex(i)} aria-label={`Show notice ${i + 1}`} className="gleck-notice-pick" />
-                <Notice notice={n} />
-              </div>
-            ))}
+        {notices.length > 0 && (
+          <div className="gleck-all" inert={state !== 'list'}>
+            <div className="gleck-all-inner">
+              <h3>All updates</h3>
+              {notices.map((n, i) => (
+                <div key={i} className={`gleck-notice-item ${i === index ? 'active' : ''}`}>
+                  <button onClick={() => setIndex(i)} aria-label={`Show notice ${i + 1}`} className="gleck-notice-pick" />
+                  <Notice notice={n} />
+                </div>
+              ))}
+            </div>
           </div>
         )}
-
-        {!expanded && <button className="gleck-expand" onClick={open} aria-label="Open">+</button>}
       </div>
 
       <a href={gleck.moreLink} target="_blank" rel="noopener noreferrer" className="gleck-know-more">

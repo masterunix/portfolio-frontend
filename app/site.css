@@ -1003,67 +1003,95 @@ a.mobile-card:active {
   backdrop-filter: blur(20px);
 }
 
+/* The widget only ever changes width (and the notice list its height), each with one
+   transition, so it never jumps. Row: eyes · notice · ^ · ×. Widths per state:
+   eyes (other pages) 60px, collapsed (home) 98px, open 400px. */
 .gleck-widget {
-  position: relative;
+  --gleck-ease: cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   flex-direction: column;
-  min-width: 300px;
-  max-width: 600px;
-  min-height: 60px;
-  padding: 12px 16px;
+  width: min(400px, calc(100vw - 32px));
+  padding: 12px 14px;
   border-radius: 16px;
   border-color: rgba(255, 255, 255, 0.1);
   overflow: hidden;
-  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: width 0.45s var(--gleck-ease);
 }
 
-.gleck-widget.is-collapsed {
-  justify-content: center;
-  width: 60px;
-  min-width: 60px;
-  height: 60px;
-  padding: 0;
-}
-
-.gleck-widget.is-enlarged {
-  width: 33.333vw;
-  max-width: 33.333vw;
-  height: 33.333vh;
-  padding: 12px;
-}
+.gleck-widget[data-state='collapsed'] { width: 98px; }
+.gleck-widget[data-state='eyes'] { width: 60px; }
 
 .gleck-row {
   display: flex;
-  flex-shrink: 0;
   align-items: center;
-  gap: 12px;
-  min-height: 36px;
+  height: 36px;
 }
 
-.is-collapsed .gleck-row {
-  justify-content: center;
-}
-
-.gleck-eyes,
-.gleck-eye-pair {
+.gleck-eyes {
   display: inline-flex;
   flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 36px;
+}
+
+.gleck-eye-pair {
+  display: inline-flex;
   align-items: center;
 }
 
 .gleck-text {
   flex: 1;
   min-width: 0;
+  margin-left: 10px;
   overflow: hidden;
   font-size: 14px;
   line-height: 1.4;
   white-space: nowrap;
-  text-overflow: ellipsis;
+  transition: opacity 0.3s ease 0.15s, margin 0.45s var(--gleck-ease);
 }
 
-.is-enlarged .gleck-text {
-  white-space: normal;
+/* Each notice fades in as it comes round */
+.gleck-text > * {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  animation: fadeIn 0.4s ease-out;
 }
+
+/* ^ and ×: they fold away to nothing when they don't apply */
+.gleck-row > .gleck-button {
+  margin-left: 8px;
+  overflow: hidden;
+  transition: width 0.45s var(--gleck-ease), margin 0.45s var(--gleck-ease), opacity 0.3s ease,
+    background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.gleck-toggle svg {
+  flex-shrink: 0;
+  transition: transform 0.35s var(--gleck-ease);
+}
+
+.gleck-widget[data-state='list'] .gleck-toggle svg { transform: rotate(180deg); }
+
+.gleck-widget:not([data-state='open']):not([data-state='list']) .gleck-text,
+.gleck-widget:not([data-state='open']):not([data-state='list']) .gleck-close {
+  opacity: 0;
+  transition-delay: 0s;
+}
+
+.gleck-widget:not([data-state='open']):not([data-state='list']) .gleck-text { margin-left: 0; }
+
+.gleck-widget:not([data-state='open']):not([data-state='list']) .gleck-close,
+.gleck-widget[data-state='eyes'] .gleck-toggle {
+  width: 0;
+  margin-left: 0;
+  border-width: 0;
+}
+
+.gleck-widget[data-state='collapsed'] .gleck-toggle { margin-left: 10px; }
+.gleck-widget[data-state='eyes'] .gleck-toggle { opacity: 0; }
 
 .gleck-hello {
   color: rgba(255, 255, 255, 0.6);
@@ -1106,28 +1134,30 @@ a.gleck-notice:hover,
   border-color: rgba(239, 68, 68, 0.5);
 }
 
-.gleck-expand {
-  position: absolute;
-  top: 4px;
-  right: 4px;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.1);
-  font-size: 12px;
+/* Every notice: the list opens downwards under the row */
+.gleck-all {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition: grid-template-rows 0.45s var(--gleck-ease), opacity 0.3s ease;
 }
 
-/* Every notice, when enlarged */
-.gleck-all {
-  flex: 1;
-  margin-top: 12px;
-  padding-top: 12px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+.gleck-widget[data-state='list'] .gleck-all {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+
+/* Scrolls when there are many; sized the same open or closed, so closing is smooth */
+.gleck-all-inner {
+  min-height: 0;
+  max-height: min(45vh, 420px);
   overflow: hidden auto;
 }
 
 .gleck-all h3 {
-  margin-bottom: 12px;
+  margin: 12px 0;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
   font-size: 14px;
   font-weight: 600;
 }

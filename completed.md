@@ -1,9 +1,19 @@
 # Completed changes
 
-**Current version: 2.05.01.** With every deployed change, bump `version:` in `content/site.md` and update this line in each `.md` file at the top of the project (AGENTS.md, CLAUDE.md, README.md, future.md, completed.md) to match; the build fails if they disagree.
+**Current version: 2.05.02.** With every deployed change, bump `version:` in `content/site.md` and update this line in each `.md` file at the top of the project (AGENTS.md, CLAUDE.md, README.md, future.md, completed.md) to match; the build fails if they disagree.
 
 Changes that have been made and tested, newest first. Agents move items here from
 [`future.md`](future.md) once they're done, with a note of what changed.
+
+## 2026-10-19 · v2.05.02
+
+- Gleck's widget animates cleanly: it stays mounted on every page and only its width
+  changes (60px eyes on other pages, 98px collapsed, 400px open), with the notice list
+  sliding open beneath. Notices fade in as they change.
+- The "Updates are managed by Gleck" line stays on every page, so the widget no longer
+  shifts when you change page.
+- The ^ button is always visible on the home page (it replaces the old + badge): it opens
+  Gleck, then shows every notice.
 
 ## 2026-10-19 · v2.05.01
 
