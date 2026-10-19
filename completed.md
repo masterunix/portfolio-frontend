@@ -1,9 +1,15 @@
 # Completed changes
 
-**Current version: 2.06.00.** With every deployed change, bump `version:` in `content/site.md` and update this line in each `.md` file at the top of the project (AGENTS.md, CLAUDE.md, README.md, future.md, completed.md) to match; the build fails if they disagree.
+**Current version: 2.06.01.** With every deployed change, bump `version:` in `content/site.md` and update this line in each `.md` file at the top of the project (AGENTS.md, CLAUDE.md, README.md, future.md, completed.md) to match; the build fails if they disagree.
 
 Changes that have been made and tested, newest first. Agents move items here from
 [`future.md`](future.md) once they're done, with a note of what changed.
+
+## 2026-10-19 · v2.06.01
+
+- Footer copyright is just the current year: © 2026 (`{year}` in `content/site.md`).
+- v1.vatsalgoyal.com is live (the Cloudflare CNAME is in). vatsalgoyal.me has expired and
+  is being let go; nothing on the site links to it.
 
 ## 2026-10-19 · v2.06.00
 
