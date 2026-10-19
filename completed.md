@@ -1,9 +1,15 @@
 # Completed changes
 
-**Current version: 2.07.01.** With every deployed change, bump `version:` in `content/site.md` and update this line in each `.md` file at the top of the project (AGENTS.md, CLAUDE.md, README.md, future.md, completed.md) to match; the build fails if they disagree.
+**Current version: 2.07.02.** With every deployed change, bump `version:` in `content/site.md` and update this line in each `.md` file at the top of the project (AGENTS.md, CLAUDE.md, README.md, future.md, completed.md) to match; the build fails if they disagree.
 
 Changes that have been made and tested, newest first. Agents move items here from
 [`future.md`](future.md) once they're done, with a note of what changed.
+
+## 2026-10-19 · v2.07.02
+
+- Tidy-up: removed `types/three-extend.d.ts`, left over from the three.js background the
+  site no longer uses. Folder layout checked: code in `app/`, `components/`, `hooks/`,
+  `lib/`, `types/`; content in `content/`; files in `public/`; docs at the top.
 
 ## 2026-10-19 · v2.07.01
 

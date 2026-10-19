@@ -12,7 +12,7 @@
 #
 # Below the second --- line: the footer, one line per paragraph. {year} becomes the current
 # year. The first line shows everywhere; the others only on wide screens.
-version: 2.07.01
+version: 2.07.02
 url: https://www.vatsalgoyal.com
 title: Vatsal Goyal · Full-stack and AI Developer
 description: Vatsal Goyal is a full-stack and AI developer in Jaipur, India, building AxeSuite and the RCIS studio. Projects, experience, skills and resume.
