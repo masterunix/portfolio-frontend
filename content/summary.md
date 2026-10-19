@@ -48,7 +48,7 @@ I'm open to **full-stack and AI engineering roles**. Email is the quickest way t
 
 ## What I'm working on
 
-### [AxeSuite](https://home.axesuite.tech)
+### [AxeSuite](https://home.axesuite.tech) ⭐
 
 A productivity suite for CS students and engineers, and the project I spend most of my time on:
 seven web apps and a desktop app that share one login, one Postgres database and one AI
@@ -66,7 +66,7 @@ One Google sign-in for every app, AI that calls the same typed actions as the ap
 and offline sync. Next.js, React, TypeScript, Tailwind, Postgres (Neon), LangChain, LangGraph,
 MCP, Electron, Vitest, Playwright. The code is private (500+ commits), but every app is live.
 
-### [RCIS](https://rcis-systems.vercel.app)
+### [RCIS](https://rcis-systems.vercel.app) ⭐
 
 My web development studio: a website delivered in 10 minutes, with no lock-in, and a real
 developer who can step in whenever it's needed. We also build the systems behind websites, like
@@ -82,7 +82,7 @@ LFM2-1.2B models fine-tuned with LoRA (MLX and PEFT), and two 124M GPT-2s traine
 with nanoGPT, on FAISS-deduplicated data. [Code](https://github.com/masterunix/PocketLM) and
 [weights](https://huggingface.co/axe-net/PocketLM) are open. PyTorch, MLX, LoRA, FAISS, TypeScript.
 
-### FT7
+### FT7 ⭐
 
 An AI-enabled trading system on Flattrade's API, inside hard limits on position size, trades per
 day and losses, with a kill switch that blocks every script able to place an order. Includes a

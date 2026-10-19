@@ -1,10 +1,15 @@
-# Vatsal Goyal — Portfolio
+# portfolio-v2
 
-**Current version: 2.05.03.** With every deployed change, bump `version:` in `content/site.md` and update this line in each `.md` file at the top of the project (AGENTS.md, CLAUDE.md, README.md, future.md, completed.md) to match; the build fails if they disagree.
+Vatsal Goyal's portfolio, live at **[vatsalgoyal.com](https://www.vatsalgoyal.com)**.
+
+**Current version: 2.06.00.** With every deployed change, bump `version:` in `content/site.md` and update this line in each `.md` file at the top of the project (AGENTS.md, CLAUDE.md, README.md, future.md, completed.md) to match; the build fails if they disagree.
 
 A portfolio site of glass hexagons over an animated background: a honeycomb menu,
-scrolling carousels of projects and skills, resumes, coding profiles, a blog and a
-summary page. On phones, every page is a list of glass cards instead.
+scrolling carousels of projects, experience and blog posts (click a hexagon and its
+details open in a popup that grows out of it), resumes, coding profiles, and a
+one-page summary for recruiters. Gleck, my AI agent, sits in the corner with his
+notices. On phones, every page is a list of glass cards instead. The first version
+is still up at [v1.vatsalgoyal.com](https://v1.vatsalgoyal.com).
 
 Built with Next.js 16 (App Router), React 19, TypeScript and Tailwind CSS 4, with no
 animation or 3D libraries: the hexagons animate with CSS, the carousel with one
@@ -72,7 +77,8 @@ public/media/              Logos, resumes and attachments the content points to
 
 **Tiles.** A tile is an icon, a title, a few lines of text, and either one link
 (the whole tile) or some buttons. Projects, experience and blog posts also have
-details: Read more opens them in a popup (`TileDialog`). The same tile renders as a hexagon (`HexTile`) or
+details: clicking the tile anywhere but its links (or its Read more button, for
+keyboards) opens them in a popup (`TileDialog`). The same tile renders as a hexagon (`HexTile`) or
 a card (`MobileList`), so every page looks and behaves alike.
 
 **Mobile and desktop.** `HexPage` renders the mobile list on the server, so the
@@ -84,6 +90,19 @@ plays the outro, the same wave fading out, then navigates. Hexes fade in through
 CSS variable rather than opacity, so the glass blur fades in with the outline
 (details in `components/HexShell.tsx` and `lib/hexTransition.ts`). Links to other
 sites, files and email work like normal links.
+
+**Carousels.** The grid is drawn three times side by side and wraps, so it loops
+forever. It starts with the first tile in the middle and drifts; the button bar
+follows whichever tile is in the middle, and the buttons or ← → keys bring one there.
+
+**Gleck.** The widget stays mounted across pages and only changes width (closed, with
+his eyes and ^, or open on a notice), so it never jumps. It opens by itself on the
+home page; ^ opens it anywhere, and shows every notice.
+
+**Search engines.** Every page has a canonical address, Open Graph and X cards and a
+generated preview image (`app/opengraph-image.tsx`), plus `sitemap.xml`, `robots.txt`
+and schema.org data about me (`lib/metadata.ts`). The favicon is a hand-written SVG
+hexagon (`public/icon.svg`); the `.ico` and PNG icons are rendered from it.
 
 ## Content
 
@@ -101,7 +120,7 @@ reload in dev, and on the next deploy in production. There is no CMS or database
 | `content/dsa/platforms/<name>.md` | /dsa middle row, one per platform |
 | `content/dsa/concepts.md` | /dsa top and bottom rows |
 | `content/blog/<name>.md` | /blog's carousel (a post opens in a popup) and /blog/&lt;name&gt; |
-| `content/gleck.md` | Gleck's notices, bottom left of the home page (other pages show just his eyes) |
+| `content/gleck.md` | Gleck's notices, bottom left (they open by themselves on the home page; ^ opens them anywhere) |
 | `content/background.md` | the animated background's colours |
 
 An entry file has its settings between two `---` lines at the top and its description
@@ -147,8 +166,10 @@ An unknown block, an unclosed one or a missing image fails like any other conten
 
 ## Deploying
 
-`npm run build` renders every page ahead of time. Deploy on Vercel or any Node host;
-`next.config.ts` ships `content/` with the server in case a page renders on demand.
+`npm run build` renders every page ahead of time. It's hosted on Vercel (project
+`portfolio-v2`): pushing `main` to [github.com/masterunix/portfolio-v2](https://github.com/masterunix/portfolio-v2)
+deploys it. `next.config.ts` ships `content/` with the server in case a page renders
+on demand.
 
 ## License
 

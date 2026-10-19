@@ -1019,8 +1019,8 @@ a.mobile-card:active {
 }
 
 /* The widget only ever changes width (and the notice list its height), each with one
-   transition, so it never jumps. Row: eyes · notice · ^ · ×. Widths per state:
-   eyes (other pages) 60px, collapsed (home) 98px, open 400px. */
+   transition, so it never jumps. Row: eyes · notice · ^ · ×. Widths: closed 98px
+   (eyes and ^), open 400px. */
 .gleck-widget {
   --gleck-ease: cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
@@ -1034,7 +1034,6 @@ a.mobile-card:active {
 }
 
 .gleck-widget[data-state='collapsed'] { width: 98px; }
-.gleck-widget[data-state='eyes'] { width: 60px; }
 
 .gleck-row {
   display: flex;
@@ -1098,15 +1097,13 @@ a.mobile-card:active {
 
 .gleck-widget:not([data-state='open']):not([data-state='list']) .gleck-text { margin-left: 0; }
 
-.gleck-widget:not([data-state='open']):not([data-state='list']) .gleck-close,
-.gleck-widget[data-state='eyes'] .gleck-toggle {
+.gleck-widget:not([data-state='open']):not([data-state='list']) .gleck-close {
   width: 0;
   margin-left: 0;
   border-width: 0;
 }
 
 .gleck-widget[data-state='collapsed'] .gleck-toggle { margin-left: 10px; }
-.gleck-widget[data-state='eyes'] .gleck-toggle { opacity: 0; }
 
 .gleck-hello {
   color: rgba(255, 255, 255, 0.6);

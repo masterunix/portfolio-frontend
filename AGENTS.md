@@ -1,6 +1,6 @@
 # AGENTS.md
 
-**Current version: 2.05.03.** With every deployed change, bump `version:` in `content/site.md` and update this line in each `.md` file at the top of the project (AGENTS.md, CLAUDE.md, README.md, future.md, completed.md) to match; the build fails if they disagree.
+**Current version: 2.06.00.** With every deployed change, bump `version:` in `content/site.md` and update this line in each `.md` file at the top of the project (AGENTS.md, CLAUDE.md, README.md, future.md, completed.md) to match; the build fails if they disagree.
 
 Instructions for AI agents (and people) working on this site: Vatsal Goyal's portfolio,
 a Next.js site whose content lives in Markdown files in `content/`.
@@ -51,7 +51,7 @@ a Next.js site whose content lives in Markdown files in `content/`.
 | DSA platforms (/dsa middle row) | `content/dsa/platforms/<name>.md`, one each |
 | DSA concepts (/dsa top and bottom rows) | `content/dsa/concepts.md` |
 | Blog posts (/blog carousel, and each post's own page) | `content/blog/<name>.md` (the file name is the URL) |
-| Gleck's notices and link (bottom left of the home page; other pages show only his eyes) | `content/gleck.md` |
+| Gleck's notices and link (bottom left; they open by themselves on the home page, ^ opens them anywhere) | `content/gleck.md` |
 | Search engines and link previews (site address, titles, descriptions) | `content/site.md`; `jobTitle`/`school` in `content/summary.md` |
 | Background colours | `content/background.md` |
 

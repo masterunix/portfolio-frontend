@@ -1,5 +1,5 @@
 ---
-title: FT7
+title: FT7 ⭐
 tech: Python, Electron, WebSockets, pandas, AWS, Tailscale
 summary: An AI-enabled trading system on Flattrade's API, inside hard limits on risk.
 color: "#0f766e"

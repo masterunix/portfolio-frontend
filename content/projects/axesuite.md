@@ -1,5 +1,5 @@
 ---
-title: AxeSuite
+title: AxeSuite ⭐
 tech: Next.js, TypeScript, Postgres, LangGraph, MCP, Electron
 summary: "A productivity suite for CS students and engineers: seven web apps and a desktop app, with one login and one AI assistant."
 visit: https://home.axesuite.tech

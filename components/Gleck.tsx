@@ -3,10 +3,10 @@
  * follow the cursor and blink now and then.
  *
  * Wide screens: one glass widget that stays put across pages, with the "Updates are
- * managed by Gleck" line under it everywhere. On the home page it opens to Gleck's
- * notices (content/gleck.md), cycling every 5s; it collapses after 10s and opens again
- * 3s later, until you close it yourself. ^ is always there: it opens the widget, then
- * shows every notice. On other pages it's just the eyes.
+ * managed by Gleck" line under it everywhere. ^ is always next to the eyes: it opens the
+ * widget to Gleck's notices (content/gleck.md), then shows every one. On the home page
+ * the widget also opens by itself, cycling notices every 5s; it collapses after 10s and
+ * opens again 3s later, until you close it. On other pages it stays closed until asked.
  * Phones: just the eyes, linking to Gleck's repository.
  *
  * The widget is never unmounted or re-laid out: it only changes width (and the
@@ -53,14 +53,24 @@ function GleckEyes({ link }: { link: string }) {
 
 function GleckWidget({ gleck }: { gleck: GleckContent }) {
   const { notices } = gleck;
-  const isHome = usePathname() === '/';
+  const pathname = usePathname();
+  const isHome = pathname === '/';
   const ref = useRef<HTMLDivElement>(null);
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(isHome);
   const [listOpen, setListOpen] = useState(false);
   const [closedByUser, setClosedByUser] = useState(false);
   const { shut, blink } = useBlink();
   const look = useEyeTracking(ref);
-  const expanded = isHome && open;
+  const expanded = open;
+
+  // A new page starts fresh: open on home, closed elsewhere
+  const [page, setPage] = useState(pathname);
+  if (page !== pathname) {
+    setPage(pathname);
+    setOpen(isHome);
+    setListOpen(false);
+    setClosedByUser(false);
+  }
   const { index, setIndex } = useNoticeCarousel(notices.length, expanded);
 
   // On the home page: collapse after a while, and open again a little later, until closed by hand
@@ -73,13 +83,13 @@ function GleckWidget({ gleck }: { gleck: GleckContent }) {
   const show = () => { setOpen(true); setClosedByUser(false); };
   const close = () => { setOpen(false); setListOpen(false); setClosedByUser(true); };
   const notice = notices[index];
-  const state = !isHome ? 'eyes' : !expanded ? 'collapsed' : listOpen ? 'list' : 'open';
+  const state = !expanded ? 'collapsed' : listOpen ? 'list' : 'open';
 
   return (
     <div ref={ref} className="gleck" role="complementary" aria-label="Gleck's notices">
       <div className="gleck-widget glass" data-state={state}>
         <div className="gleck-row">
-          <button className="gleck-eyes" onClick={() => { blink(); if (isHome) show(); }} aria-label={isHome ? 'Open Gleck' : 'Blink'}>
+          <button className="gleck-eyes" onClick={() => { blink(); show(); }} aria-label="Open Gleck">
             <Eyes size={14} look={look} closed={shut} />
           </button>
           <div className="gleck-text" aria-live="polite" inert={!expanded}>
@@ -87,7 +97,7 @@ function GleckWidget({ gleck }: { gleck: GleckContent }) {
               ? <Notice key={index} notice={notice} />
               : <span className="gleck-hello">Hi! I&apos;m Gleck.</span>}
           </div>
-          <button className="gleck-button gleck-toggle" inert={!isHome}
+          <button className="gleck-button gleck-toggle"
             onClick={() => (expanded ? setListOpen(!listOpen) : show())}
             aria-label={!expanded ? 'Open Gleck' : listOpen ? 'Hide all notices' : 'Show all notices'} aria-expanded={listOpen}>
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">

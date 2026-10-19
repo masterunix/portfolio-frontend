@@ -1,5 +1,6 @@
 ---
-# Gleck's widget, at the bottom left of every page.
+# Gleck's widget, at the bottom left of every page. It opens to these notices by itself
+# on the home page; its ^ button opens them on any page.
 #   moreText, moreLink   the line under the widget
 #
 # Below the second --- line: Gleck's notices, in order, one per "- " line. **Bold**,

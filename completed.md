@@ -1,9 +1,21 @@
 # Completed changes
 
-**Current version: 2.05.03.** With every deployed change, bump `version:` in `content/site.md` and update this line in each `.md` file at the top of the project (AGENTS.md, CLAUDE.md, README.md, future.md, completed.md) to match; the build fails if they disagree.
+**Current version: 2.06.00.** With every deployed change, bump `version:` in `content/site.md` and update this line in each `.md` file at the top of the project (AGENTS.md, CLAUDE.md, README.md, future.md, completed.md) to match; the build fails if they disagree.
 
 Changes that have been made and tested, newest first. Agents move items here from
 [`future.md`](future.md) once they're done, with a note of what changed.
+
+## 2026-10-19 · v2.06.00
+
+- The carousel's button bar follows the tile in the middle as it drifts, and the carousel
+  starts with the first tile (AxeSuite, Pratham Software) in the middle. Each copy of the
+  grid is now a whole number of rounds of the tiles, so every tile always shows, however
+  many there are (`components/Carousel.tsx`, `hooks/useCarousel.ts`).
+- Gleck's ^ is next to his eyes on every page and works everywhere: it opens the notices,
+  then lists them all. The widget still opens by itself only on the home page.
+- ⭐ next to AxeSuite, RCIS and FT7 (project titles and the summary).
+- README rewritten for portfolio-v2 (popups, carousels, Gleck, SEO, deploying); the profile
+  README's source link points to masterunix/portfolio-v2.
 
 ## 2026-10-19 · v2.05.03
 

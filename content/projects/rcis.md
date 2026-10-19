@@ -1,5 +1,5 @@
 ---
-title: RCIS
+title: RCIS ⭐
 tech: Next.js, TypeScript, WordPress, GLSL, Supabase, Python
 summary: "My web development studio: a website delivered in 10 minutes, with no lock-in."
 visit: https://rcis-systems.vercel.app
