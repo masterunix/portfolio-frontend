@@ -1,11 +1,12 @@
 /**
  * ItemIcon.tsx — An item's logo, or its fallback (an emoji or letter) when there is no
  * logo or it fails to load, so a tile never shows a broken image. The icon square
- * around it sets the size (globals.css, .tile-icon).
+ * around it sets the size (site.css, .tile-icon); the text shrinks to fit longer
+ * fallbacks like "N.js".
  */
 'use client';
 
-import { useState } from 'react';
+import { useState, type CSSProperties } from 'react';
 import Image from 'next/image';
 
 import type { Media } from '@/types';
@@ -20,7 +21,9 @@ export default function ItemIcon({ logo, fallback, alt }: ItemIconProps) {
   // Keyed by URL, so a carousel slot that switches to another item retries
   const [failedUrl, setFailedUrl] = useState<string | null>(null);
 
-  if (!logo || failedUrl === logo.url) return <span className="item-icon-fallback">{fallback}</span>;
+  if (!logo || failedUrl === logo.url) {
+    return <span className="item-icon-fallback" style={{ '--chars': [...fallback].length } as CSSProperties}>{fallback}</span>;
+  }
 
   return (
     <Image

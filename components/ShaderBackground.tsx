@@ -175,5 +175,5 @@ export default function ShaderBackground({ background }: { background: Backgroun
   }, [visible]);
 
   if (!visible) return null;
-  return <canvas ref={canvasRef} className="background" aria-hidden="true" />;
+  return <canvas ref={canvasRef} className="background" style={{ opacity: background!.brightness }} aria-hidden="true" />;
 }

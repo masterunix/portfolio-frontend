@@ -103,6 +103,8 @@ export type ThemePage = 'all' | 'home' | 'projects' | 'skills' | 'dsa' | 'resume
 /** content/background.md (null when not animated) */
 export interface Background {
   speed: number;
+  /** 0.2–1: dims the colours, so text over them is easier to read */
+  brightness: number;
   /** 4 colours per page; `all` is always there */
   palettes: Partial<Record<ThemePage, string[]>> & { all: string[] };
 }

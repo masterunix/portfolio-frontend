@@ -9,7 +9,7 @@
 #
 # Below the second --- line: the footer, one line per paragraph. {year} becomes the current
 # year. The first line shows everywhere; the others only on wide screens.
-version: 2.01.03
+version: 2.02.00
 title: Vatsal Goyal - Portfolio
 description: Full-stack developer, AI/ML enthusiast, and problem solver. Explore my projects, skills, and journey.
 pages:

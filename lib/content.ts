@@ -291,7 +291,7 @@ const VERSIONED_DOCS = ['AGENTS.md', 'CLAUDE.md', 'README.md', 'future.md', 'com
 /** Fails when a doc's "Current version" line doesn't match content/site.md */
 function checkDocVersions(e: Entry, version: string): void {
   for (const doc of VERSIONED_DOCS) {
-    const file = path.join(process.cwd(), doc);
+    const file = path.join(/*turbopackIgnore: true*/ process.cwd(), doc);
     if (!fs.existsSync(file)) continue;
     const stated = /Current version:\s*\**v?(\d+\.\d+\.\d+)/i.exec(fs.readFileSync(file, 'utf8'))?.[1];
     if (stated !== version) {
@@ -395,6 +395,7 @@ export function getBackground(): Background | null {
   return loadFile('background.md', (e) => {
     const animated = e.bool('animated', true);
     const speed = e.num('speed', 1, { min: 0.1, max: 3 });
+    const brightness = e.num('brightness', 1, { min: 0.2, max: 1 });
     const p = e.group('palettes');
     const palettes: Partial<Record<ThemePage, string[]>> = {};
     for (const page of THEME_PAGES) {
@@ -407,7 +408,7 @@ export function getBackground(): Background | null {
     }
     p.done();
     if (!palettes.all) e.fail('palettes', 'needs an `all` palette, for pages without their own');
-    return animated ? { speed, palettes: palettes as Background['palettes'] } : null;
+    return animated ? { speed, brightness, palettes: palettes as Background['palettes'] } : null;
   });
 }
 

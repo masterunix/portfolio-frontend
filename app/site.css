@@ -17,6 +17,12 @@
   --glass-border: 1px solid rgba(255, 255, 255, 0.18);
   --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.37), inset 0 1px 0 rgba(255, 255, 255, 0.1);
   --ease-out: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  /* Text: pure white only for headings; body text is a softer off-white, which glares
+     less on the dark background */
+  --text-strong: #fff;
+  --text: #e4e4ea;
+  --text-muted: rgba(228, 228, 234, 0.8);
+  --text-faint: rgba(228, 228, 234, 0.62);
 }
 
 *,
@@ -35,8 +41,9 @@ html {
 body {
   min-height: 100vh;
   background: #000;
-  color: #fff;
-  font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: var(--text);
+  font-family: var(--font-mono), ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-variant-ligatures: none;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
 }
@@ -71,7 +78,6 @@ ul {
   display: block;
   width: 100%;
   height: 100%;
-  opacity: 0.95;
   pointer-events: none;
 }
 
@@ -125,7 +131,7 @@ ul {
   border: 1px solid rgba(255, 255, 255, 0.3);
   background: rgba(255, 255, 255, 0.9);
   color: #000;
-  font-size: 9px;
+  font-size: 11px;
   font-weight: 600;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
@@ -210,7 +216,7 @@ a.tile:hover .hex-button {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: rgba(0, 0, 0, 0.25);
+  background: rgba(0, 0, 0, 0.4);
   -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
   clip-path: polygon(
@@ -245,6 +251,9 @@ a.tile:hover .hex-button {
 
 /* ═══ Tiles (HexTile, and the icon in mobile cards) ════════════════════════ */
 
+/* Each tile is a size container: its text and icon scale with the hexagon (cqi is
+   1% of its width), between a floor that stays readable on small windows and a cap
+   for very large ones. The sizes are set per tile size below. */
 .hex-content {
   position: absolute;
   inset: 0;
@@ -256,6 +265,36 @@ a.tile:hover .hex-button {
   gap: 8px;
   padding: 16px;
   text-align: center;
+  container-type: inline-size;
+}
+
+/* The carousel's middle row and the DSA platforms */
+.tile-md {
+  --icon: clamp(42px, 18px + 9.5cqi, 72px);
+  --title: clamp(13px, 7px + 2.6cqi, 21px);
+  --meta: clamp(11px, 5.5px + 2.2cqi, 16px);
+  --desc: clamp(11px, 5.5px + 2cqi, 16px);
+  --desc-width: 66cqi;
+  --small: clamp(10.5px, 5px + 1.9cqi, 14px);
+}
+
+/* The home menu */
+.tile-lg {
+  --icon: clamp(46px, 20px + 16.5cqi, 80px);
+  --title: clamp(13px, 7px + 3.2cqi, 20px);
+  --desc: clamp(11px, 6px + 2.4cqi, 15px);
+  --desc-width: 78cqi;
+  --small: clamp(10.5px, 5px + 2.2cqi, 14px);
+}
+
+/* The outer carousel rows and DSA concepts */
+.tile-sm {
+  --icon: clamp(38px, 16px + 8.6cqi, 64px);
+  --title: clamp(12px, 6px + 2.4cqi, 19px);
+  --meta: clamp(10.5px, 5px + 2cqi, 15px);
+  --desc: clamp(10.5px, 5px + 1.9cqi, 15px);
+  --desc-width: 62cqi;
+  --small: clamp(10px, 4.5px + 1.8cqi, 13px);
 }
 
 .tile-icon {
@@ -263,11 +302,15 @@ a.tile:hover .hex-button {
   flex-shrink: 0;
   align-items: center;
   justify-content: center;
-  width: 50px;
-  height: 50px;
+  width: var(--icon, 50px);
+  height: var(--icon, 50px);
   border-radius: 12px;
-  font-size: 24px;
+  background-color: var(--bg);
+  font-size: calc(var(--icon, 50px) * 0.46);
+  font-weight: 600;
+  /* White, or black on a very light square (White, Yellow) */
   color: #fff;
+  color: oklch(from var(--bg) clamp(0, (0.9 - l) * 1000, 1) 0 0);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   transition: transform 0.3s ease;
 }
@@ -279,54 +322,59 @@ a.tile:hover .hex-button {
   object-fit: contain;
 }
 
+/* Letters in place of a logo ("AS", "N.js"): monospace letters are wide, so longer
+   ones shrink to fit the square */
+.item-icon-fallback {
+  font-size: calc(var(--icon, 50px) * min(0.46, 1.4 / var(--chars, 1)));
+  letter-spacing: -0.04em;
+  line-height: 1;
+  white-space: nowrap;
+}
+
 .group:hover .tile-icon {
   transform: scale(1.1);
 }
 
 .tile-title {
-  font-size: 13px;
+  max-width: 88cqi;
+  font-size: var(--title);
   font-weight: 700;
-  line-height: 1.2;
+  line-height: 1.25;
+  color: var(--text-strong);
 }
 
 .tile-meta {
-  font-size: 11px;
+  font-size: var(--meta);
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.9);
+  color: var(--text);
 }
 
 .tile-desc {
-  max-width: 150px;
-  font-size: 10px;
-  line-height: 1.35;
-  color: rgba(255, 255, 255, 0.7);
+  max-width: var(--desc-width);
+  font-size: var(--desc);
+  line-height: 1.4;
+  color: var(--text-muted);
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;
   overflow: hidden;
 }
 
-/* The home menu */
-.tile-lg .tile-icon { width: 62px; height: 62px; }
-.tile-lg .tile-desc { max-width: 140px; color: rgba(255, 255, 255, 0.8); }
-
-/* The outer carousel rows and DSA concepts */
-.tile-sm .tile-icon { width: 45px; height: 45px; font-size: 20px; }
-.tile-sm .tile-title { font-size: 12px; }
-.tile-sm .tile-meta { font-size: 10px; }
-.tile-sm .tile-desc { max-width: 140px; font-size: 9px; line-height: 1.2; color: rgba(255, 255, 255, 0.6); }
+.tile .hex-button {
+  font-size: var(--small);
+}
 
 /* Skill level (beginner…expert) in its own colour */
 .tile-badge {
-  padding: 5px 14px;
+  padding: 0.4em 1.2em;
   border-radius: 999px;
   border: 1px solid color-mix(in srgb, var(--badge) 19%, transparent);
   background: color-mix(in srgb, var(--badge) 15%, transparent);
   box-shadow: 0 0 8px color-mix(in srgb, var(--badge) 30%, transparent);
   color: var(--badge);
-  font-size: 9px;
+  font-size: var(--small);
   font-weight: 700;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
@@ -334,12 +382,12 @@ a.tile:hover .hex-button {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
-  margin-top: 8px;
+  gap: 10px;
+  margin-top: 6px;
 }
 
 .tile > .hex-button {
-  margin-top: 8px;
+  margin-top: 6px;
 }
 
 /* "Draft" on unpublished blog posts (only shown while running locally) */
@@ -369,9 +417,10 @@ a.tile:hover .hex-button {
 
 .hex-page-title {
   margin-bottom: 12px;
-  font-size: 36px;
+  font-size: 34px;
   font-weight: 700;
-  letter-spacing: 0.025em;
+  letter-spacing: -0.01em;
+  color: var(--text-strong);
   white-space: nowrap;
   filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.7));
 }
@@ -398,9 +447,10 @@ a.tile:hover .hex-button {
 
 /* The home page heading */
 .typewriter {
-  font-size: 36px;
+  font-size: 34px;
   font-weight: 700;
-  letter-spacing: 0.02em;
+  letter-spacing: -0.01em;
+  color: var(--text-strong);
   white-space: nowrap;
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.7);
   border-right: 3px solid #fff;
@@ -451,7 +501,10 @@ a.tile:hover .hex-button {
   border-radius: 8px;
   border: 2px solid rgba(255, 255, 255, 0.2);
   background: var(--color);
-  font-size: 16px;
+  color: oklch(from var(--color) clamp(0, (0.9 - l) * 1000, 1) 0 0);
+  --icon: 32px;
+  font-size: 15px;
+  font-weight: 600;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
@@ -479,8 +532,8 @@ a.tile:hover .hex-button {
   display: flex;
   flex-direction: column;
   gap: 2px;
-  min-width: 140px;
-  max-width: 200px;
+  min-width: 160px;
+  max-width: 260px;
   margin-bottom: 12px;
   padding: 10px 14px;
   border-radius: 12px;
@@ -503,14 +556,15 @@ a.tile:hover .hex-button {
 }
 
 .carousel-tooltip strong {
-  font-size: 11px;
+  font-size: 13px;
+  color: var(--text-strong);
   white-space: nowrap;
 }
 
-.carousel-tooltip span {
-  font-size: 9px;
-  line-height: 1.25;
-  color: rgba(255, 255, 255, 0.6);
+.carousel-tooltip > span {
+  font-size: 11px;
+  line-height: 1.35;
+  color: var(--text-muted);
 }
 
 .carousel-hint {
@@ -521,9 +575,8 @@ a.tile:hover .hex-button {
   padding: 4px 12px;
   border-radius: 12px;
   background: rgba(0, 0, 0, 0.5);
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 12px;
-  letter-spacing: 0.5px;
+  color: var(--text);
+  font-size: 13px;
   white-space: nowrap;
   transform: translateX(-50%);
   --fade-delay: 800ms;
@@ -638,9 +691,7 @@ a.mobile-card:active {
 }
 
 .mobile-card .tile-icon {
-  width: 48px;
-  height: 48px;
-  font-size: 20px;
+  --icon: 48px;
 }
 
 .mobile-card-text {
@@ -650,20 +701,21 @@ a.mobile-card:active {
 
 .mobile-card-title {
   margin-bottom: 2px;
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 700;
+  color: var(--text-strong);
 }
 
 .mobile-card-meta {
   margin-bottom: 4px;
-  font-size: 11px;
-  color: rgba(255, 255, 255, 0.5);
+  font-size: 12px;
+  color: var(--text-faint);
 }
 
 .mobile-card-desc {
-  font-size: 12px;
-  line-height: 1.4;
-  color: rgba(255, 255, 255, 0.7);
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-muted);
 }
 
 .mobile-card-arrow {
@@ -679,7 +731,7 @@ a.mobile-card:active {
 
 .mobile-card-actions .hex-button {
   padding: 6px 14px;
-  font-size: 11px;
+  font-size: 12px;
 }
 
 /* ═══ Footer ═══════════════════════════════════════════════════════════════ */
@@ -687,7 +739,7 @@ a.mobile-card:active {
 .site-footer {
   text-align: center;
   font-size: 13px;
-  color: rgba(255, 255, 255, 0.78);
+  color: var(--text);
   text-shadow: 0 1px 6px rgba(0, 0, 0, 0.85);
 }
 
@@ -696,8 +748,8 @@ a.mobile-card:active {
 }
 
 .site-footer-small {
-  font-size: 11px;
-  color: rgba(255, 255, 255, 0.62);
+  font-size: 12px;
+  color: var(--text-muted);
 }
 
 /* The site's version, after the first line (content/site.md) */
@@ -915,17 +967,23 @@ a.gleck-notice:hover,
   pointer-events: auto;
 }
 
+/* Kept clear of the centred footer; hidden when the window is too narrow for both */
 .gleck-know-more {
   display: block;
+  max-width: clamp(200px, 50vw - 260px, 340px);
   margin-top: 8px;
   padding-left: 8px;
-  font-size: 11px;
+  font-size: 12px;
   color: rgba(255, 255, 255, 0.6);
   transition: color 0.2s ease;
 }
 
 .gleck-know-more:hover {
   color: rgba(255, 255, 255, 0.8);
+}
+
+@media (max-width: 1023px) {
+  .gleck-know-more { display: none; }
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -1012,7 +1070,7 @@ a.gleck-notice:hover,
   margin: 14px 0 0;
   font-size: 18px;
   line-height: 1.6;
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--text-muted);
 }
 
 .article-tags {
@@ -1040,9 +1098,9 @@ a.gleck-notice:hover,
   margin-top: 32px;
   padding-top: 28px;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
-  font-size: 16.5px;
+  font-size: 16px;
   line-height: 1.75;
-  color: rgba(255, 255, 255, 0.85);
+  color: var(--text);
   overflow-wrap: break-word;
 }
 
@@ -1058,7 +1116,7 @@ a.gleck-notice:hover,
 
 .prose h2 { font-size: 24px; margin: 2em 0 0.6em; }
 .prose h3 { font-size: 19px; margin: 1.8em 0 0.5em; }
-.prose h4 { font-size: 16.5px; margin: 1.6em 0 0.4em; }
+.prose h4 { font-size: 16px; margin: 1.6em 0 0.4em; }
 
 .prose p { margin: 0 0 1.15em; }
 
@@ -1096,8 +1154,7 @@ a.gleck-notice:hover,
 .prose blockquote p:last-child { margin-bottom: 0; }
 
 .prose code {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  font-size: 0.88em;
+  font-size: 0.9em;
   padding: 0.15em 0.4em;
   border-radius: 6px;
   background: rgba(255, 255, 255, 0.1);
@@ -1409,7 +1466,7 @@ a.gleck-notice:hover,
 .post-card p {
   font-size: 15px;
   line-height: 1.6;
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--text-muted);
 }
 
 .post-card .article-tags {

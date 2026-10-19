@@ -1,9 +1,23 @@
 # Completed changes
 
-**Current version: 2.01.03.** With every deployed change, bump `version:` in `content/site.md` and update this line in each `.md` file at the top of the project (AGENTS.md, CLAUDE.md, README.md, future.md, completed.md) to match; the build fails if they disagree.
+**Current version: 2.02.00.** With every deployed change, bump `version:` in `content/site.md` and update this line in each `.md` file at the top of the project (AGENTS.md, CLAUDE.md, README.md, future.md, completed.md) to match; the build fails if they disagree.
 
 Changes that have been made and tested, newest first. Agents move items here from
 [`future.md`](future.md) once they're done, with a note of what changed.
+
+## 2026-10-19 · v2.02.00
+
+- Switched the whole site to JetBrains Mono (`app/layout.tsx`).
+- Hexagon text is bigger and now scales with the hexagon, so it stays in proportion
+  from laptops to large monitors; the smallest text is at least 10–11px. Tooltips,
+  the carousel hint, phone cards and the footer's small line are a little bigger too.
+- Softer text: body text is off-white (pure white only for headings), the glass behind
+  hexagon text is darker, and the background has a new `brightness` setting in
+  `content/background.md` (set to 0.8).
+- New Summary icon on the home menu (an ID card) in `lib/icons.ts`.
+- Icon letters turn dark on very light squares (White, Yellow), so movie.fy, Node.js,
+  PostgreSQL, Xebia and Feedback are readable.
+- Gleck's "Updates are managed by…" line no longer runs into the footer.
 
 ## 2026-10-19 · v2.01.03
 

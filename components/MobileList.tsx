@@ -58,7 +58,7 @@ function MobileCard({ tile, index }: { tile: Tile; index: number }) {
   const content = (
     <>
       <div className="mobile-card-row">
-        {tile.icon && <div className="tile-icon" style={{ backgroundColor: tile.color }}>{tile.icon}</div>}
+        {tile.icon && <div className="tile-icon" style={{ '--bg': tile.color } as CSSProperties}>{tile.icon}</div>}
         <div className="mobile-card-text">
           <div className="mobile-card-title">{tile.title}</div>
           {tile.meta && <div className="mobile-card-meta">{tile.meta}</div>}

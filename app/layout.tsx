@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { Inter } from 'next/font/google';
+import { JetBrains_Mono } from 'next/font/google';
 
 import './globals.css';
 import './site.css';
@@ -8,7 +8,7 @@ import ShaderBackground from '@/components/ShaderBackground';
 import { SiteProvider } from '@/components/Footer';
 import { getBackground, getGleck, getSite } from '@/lib/content';
 
-const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
+const mono = JetBrains_Mono({ subsets: ['latin'], variable: '--font-mono' });
 
 export function generateMetadata(): Metadata {
   const { title, description } = getSite();
@@ -25,7 +25,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={inter.variable}>
+    <html lang="en" className={mono.variable}>
       <body>
         <SiteProvider footer={getSite().footer} version={getSite().version}>
           <ShaderBackground background={getBackground()} />
