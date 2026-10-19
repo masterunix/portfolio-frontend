@@ -1,9 +1,19 @@
 # Completed changes
 
-**Current version: 2.02.00.** With every deployed change, bump `version:` in `content/site.md` and update this line in each `.md` file at the top of the project (AGENTS.md, CLAUDE.md, README.md, future.md, completed.md) to match; the build fails if they disagree.
+**Current version: 2.02.01.** With every deployed change, bump `version:` in `content/site.md` and update this line in each `.md` file at the top of the project (AGENTS.md, CLAUDE.md, README.md, future.md, completed.md) to match; the build fails if they disagree.
 
 Changes that have been made and tested, newest first. Agents move items here from
 [`future.md`](future.md) once they're done, with a note of what changed.
+
+## 2026-10-19 · v2.02.01
+
+- Hexagons keep the same framing on 16:9 monitors (1080p, 1440p) as on a MacBook: they
+  scale with the window's width, but no further than a 16:10 window of the same height
+  would give them (`lib/hexLayout.ts`). Before, 1080p looked zoomed in.
+- The home and resumes honeycombs fill the window at any shape (4:3 to ultrawide) with
+  empty hexes beyond the grid (`components/Honeycomb.tsx`).
+- Hexagon titles are semibold, and titles and icons grow less on big screens (icons top
+  out at 54–64px).
 
 ## 2026-10-19 · v2.02.00
 

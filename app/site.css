@@ -270,8 +270,8 @@ a.tile:hover .hex-button {
 
 /* The carousel's middle row and the DSA platforms */
 .tile-md {
-  --icon: clamp(42px, 18px + 9.5cqi, 72px);
-  --title: clamp(13px, 7px + 2.6cqi, 21px);
+  --icon: clamp(40px, 22px + 8.5cqi, 60px);
+  --title: clamp(13px, 7px + 2.5cqi, 19px);
   --meta: clamp(11px, 5.5px + 2.2cqi, 16px);
   --desc: clamp(11px, 5.5px + 2cqi, 16px);
   --desc-width: 66cqi;
@@ -280,8 +280,8 @@ a.tile:hover .hex-button {
 
 /* The home menu */
 .tile-lg {
-  --icon: clamp(46px, 20px + 16.5cqi, 80px);
-  --title: clamp(13px, 7px + 3.2cqi, 20px);
+  --icon: clamp(44px, 26px + 12cqi, 64px);
+  --title: clamp(13px, 7px + 3cqi, 18px);
   --desc: clamp(11px, 6px + 2.4cqi, 15px);
   --desc-width: 78cqi;
   --small: clamp(10.5px, 5px + 2.2cqi, 14px);
@@ -289,8 +289,8 @@ a.tile:hover .hex-button {
 
 /* The outer carousel rows and DSA concepts */
 .tile-sm {
-  --icon: clamp(38px, 16px + 8.6cqi, 64px);
-  --title: clamp(12px, 6px + 2.4cqi, 19px);
+  --icon: clamp(36px, 19px + 7.6cqi, 54px);
+  --title: clamp(12px, 6px + 2.3cqi, 17px);
   --meta: clamp(10.5px, 5px + 2cqi, 15px);
   --desc: clamp(10.5px, 5px + 1.9cqi, 15px);
   --desc-width: 62cqi;
@@ -338,7 +338,7 @@ a.tile:hover .hex-button {
 .tile-title {
   max-width: 88cqi;
   font-size: var(--title);
-  font-weight: 700;
+  font-weight: 600;
   line-height: 1.25;
   color: var(--text-strong);
 }

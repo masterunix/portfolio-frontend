@@ -22,7 +22,7 @@ export const EXIT_PAUSE_MS = 150;
 
 /** Intro delay for the hex at (row, col), in seconds */
 export function enterDelay(row: number, col: number, stagger = HEX_STAGGER): number {
-  return (row + col) * stagger;
+  return Math.max(0, row + col) * stagger;
 }
 
 /** Outro delay for the hex at (row, col), in seconds: the top-left hex leaves first */

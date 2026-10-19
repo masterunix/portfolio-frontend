@@ -1,6 +1,7 @@
 /**
  * Honeycomb.tsx — A fixed honeycomb of glass hexagons, centred in the window, with
- * tiles in some of its cells. Used inside HexPage (home, DSA, resumes, blog).
+ * tiles in some of its cells. Used inside HexPage (home, DSA, resumes, blog). A filled
+ * honeycomb covers the whole window, with empty hexes wherever there's no tile.
  */
 'use client';
 
@@ -8,14 +9,14 @@ import HexTile from '@/components/HexTile';
 import Hexagon from '@/components/Hexagon';
 import { useExitDuration } from '@/components/transition';
 import { useViewportSize } from '@/hooks/useViewportSize';
-import { computeHexLayout, gridCells, hexOffset, type GridConfig } from '@/lib/hexLayout';
+import { computeHexLayout, hexOffset, visibleCells, type GridConfig } from '@/lib/hexLayout';
 import { enterDelay, exitDelay, exitDurationMs, HEX_STAGGER, lastStepOf } from '@/lib/hexTransition';
 import type { Tile } from '@/lib/tiles';
 
 interface HoneycombProps {
   grid: GridConfig;
   cells: Array<{ cell: readonly [number, number]; tile: Tile }>;
-  /** Draw empty hexagons in the cells without a tile (default), or only the tiles */
+  /** Fill the window with empty hexagons around the tiles (default), or show only the tiles */
   fill?: boolean;
   /** Seconds between diagonals of the intro wave */
   stagger?: number;
@@ -23,12 +24,15 @@ interface HoneycombProps {
 
 export default function Honeycomb({ grid, cells, fill = true, stagger = HEX_STAGGER }: HoneycombProps) {
   const viewport = useViewportSize();
+  const layout = viewport && computeHexLayout(viewport, grid);
   const tiles = new Map(cells.map(({ cell, tile }) => [cell.join('-'), tile]));
-  const shown = fill ? gridCells(grid) : cells.map(({ cell }) => cell);
+  const shown: Array<readonly [number, number]> = cells.map(({ cell }) => cell);
+  if (fill && layout && viewport) {
+    shown.push(...visibleCells(layout, viewport).filter((cell) => !tiles.has(cell.join('-'))));
+  }
   useExitDuration(exitDurationMs(lastStepOf(shown)));
 
-  if (!viewport) return null;
-  const layout = computeHexLayout(viewport, grid);
+  if (!layout) return null;
 
   return (
     <div className="absolute inset-0">
