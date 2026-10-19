@@ -9,15 +9,18 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 
 import GlassArticle from '@/components/GlassArticle';
+import JsonLd from '@/components/JsonLd';
 import { formatDate } from '@/lib/format';
 import { getSummary } from '@/lib/content';
+import { baseOpenGraph, profileSchema } from '@/lib/metadata';
 
 export function generateMetadata(): Metadata {
   const { title, tagline } = getSummary();
   return {
-    title,
+    title: 'Summary: experience, projects and skills',
     description: tagline,
-    openGraph: { title, description: tagline, type: 'profile' },
+    alternates: { canonical: '/summary' },
+    openGraph: { ...baseOpenGraph(), title, description: tagline, url: '/summary', type: 'profile' },
   };
 }
 
@@ -26,6 +29,7 @@ export default function SummaryPage() {
 
   return (
     <GlassArticle back={{ href: '/', label: 'Home' }}>
+      <JsonLd data={profileSchema()} />
       <header className="summary-header">
         {summary.photo && (
           <Image

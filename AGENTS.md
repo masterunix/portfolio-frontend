@@ -1,6 +1,6 @@
 # AGENTS.md
 
-**Current version: 2.04.00.** With every deployed change, bump `version:` in `content/site.md` and update this line in each `.md` file at the top of the project (AGENTS.md, CLAUDE.md, README.md, future.md, completed.md) to match; the build fails if they disagree.
+**Current version: 2.05.00.** With every deployed change, bump `version:` in `content/site.md` and update this line in each `.md` file at the top of the project (AGENTS.md, CLAUDE.md, README.md, future.md, completed.md) to match; the build fails if they disagree.
 
 Instructions for AI agents (and people) working on this site: Vatsal Goyal's portfolio,
 a Next.js site whose content lives in Markdown files in `content/`.
@@ -46,18 +46,32 @@ a Next.js site whose content lives in Markdown files in `content/`.
 | Home menu tiles and their text ("Summary — The whole site, on one page", …) and which one pulses, the typewriter lines | `content/home.md` |
 | Summary page | `content/summary.md` |
 | Live projects (/projects) | `content/projects/<name>.md`, one per project |
-| Experience and skills (/skills, and the outer rows of /projects) | `content/skills/<name>.md`, one each |
+| Experience and skills (/skills, and the outer rows of /projects) | `content/skills/<name>.md`, one each (`row: middle` is experience) |
 | Resumes (/resumes) and their PDFs | `content/resumes/<name>.md`; PDFs in `public/media/resumes/` |
 | DSA platforms (/dsa middle row) | `content/dsa/platforms/<name>.md`, one each |
 | DSA concepts (/dsa top and bottom rows) | `content/dsa/concepts.md` |
-| Blog posts | `content/blog/<name>.md` (the file name is the URL) |
-| Gleck's notices and link (bottom left) | `content/gleck.md` |
+| Blog posts (/blog carousel, and each post's own page) | `content/blog/<name>.md` (the file name is the URL) |
+| Gleck's notices and link (bottom left of the home page; other pages show only his eyes) | `content/gleck.md` |
+| Search engines and link previews (site address, titles, descriptions) | `content/site.md`; `jobTitle`/`school` in `content/summary.md` |
 | Background colours | `content/background.md` |
 
 Every folder has a `_template.md` listing all the fields: copy it to add an entry.
 Files starting with `_` are ignored. File names are lowercase-with-dashes (`my-project.md`).
 In each entry file, the settings go between the two `---` lines at the top and the
 description goes below them. `order` sorts entries (lowest first); `draft: true` hides one.
+
+### Tiles with Read more
+
+Projects, experience (`row: middle` skills) and blog posts open a popup from their tile.
+For projects and experience:
+
+- `summary:` is the sentence on the tile. Keep it to one line or two.
+- The body (below the second `---`) is the full details, in Markdown: paragraphs,
+  `- ` lists, **bold** and [links](https://…). It shows in the popup.
+- `period:` (like `Jul 2025` or `Sep – Dec 2025`) shows under the title in the popup.
+- Quote a value that contains `: ` (a colon and a space): `summary: "Two parts: like this"`.
+
+A blog post's popup shows the whole post, with a button to open it as its own page.
 
 ### Pictures and files
 

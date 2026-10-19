@@ -7,7 +7,8 @@ import type { ReactNode } from 'react';
 
 import ItemIcon from '@/components/ItemIcon';
 import { MENU_ICONS } from '@/lib/icons';
-import type { DSAConcept, DSAPlatform, MenuItem, Project, Resume, Skill, SkillLevel } from '@/types';
+import { formatDate } from '@/lib/format';
+import type { BlogPost, DSAConcept, DSAPlatform, MenuItem, Project, Resume, Skill, SkillLevel } from '@/types';
 
 export interface TileLink {
   label: string;
@@ -16,6 +17,20 @@ export interface TileLink {
   download?: string;
   /** Open in a new tab even though it's on this site (files) */
   newTab?: boolean;
+}
+
+/** What the Read more popup shows (TileDialog) */
+export interface TileDetails {
+  /** The full text, as HTML */
+  html: string;
+  /** Short lines under the title: dates, tech stack… */
+  facts: string[];
+  /** A wider popup, for long reads (blog posts) */
+  wide?: boolean;
+  /** Buttons in the popup, after the tile's own */
+  links?: TileLink[];
+  /** The popup's button label on the tile (default "Read more") */
+  label?: string;
 }
 
 export interface Tile {
@@ -32,6 +47,8 @@ export interface Tile {
   link?: TileLink;
   /** Separate buttons, for tiles that aren't one link */
   actions?: TileLink[];
+  /** A Read more button that opens these details in a popup */
+  details?: TileDetails;
   /** A glow pulsing around the icon, to draw the eye (home.md `pulse: true`) */
   pulse?: boolean;
   /** Hex size: lg for the home menu, sm for the outer carousel rows */
@@ -70,6 +87,11 @@ export function projectTile(project: Project, size?: Tile['size']): Tile {
       ...(project.github ? [{ label: 'GitHub', href: project.github }] : []),
       ...(project.visit ? [{ label: 'Visit', href: project.visit }] : []),
     ],
+    // Small tiles (the outer carousel rows) have no room for Read more
+    details: size === 'sm' ? undefined : {
+      html: project.html,
+      facts: [project.period, project.tech].filter((fact): fact is string => !!fact),
+    },
     size,
   };
 }
@@ -91,6 +113,11 @@ export function skillTile(skill: Skill, size?: Tile['size']): Tile {
     badge: skill.level && { label: skill.level, color: LEVEL_COLORS[skill.level] },
     // Small tiles (the outer carousel rows) have no room for buttons
     actions: size === 'sm' ? [] : skill.attachments.map((a) => ({ label: a.label, href: a.file.url, newTab: true })),
+    // Experience (the middle row) opens its details; skills are just the tile
+    details: size === 'sm' || skill.row !== 'middle' ? undefined : {
+      html: skill.html,
+      facts: skill.period ? [skill.period] : [],
+    },
     size,
   };
 }
@@ -126,5 +153,25 @@ export function resumeTile(resume: Resume): Tile {
     link: resume.file ? { label: 'Download', href: resume.file.url, download: resume.filename }
       : resume.link ? { label: 'Open', href: resume.link }
         : undefined,
+  };
+}
+
+/** A blog post: its tile opens the whole post in a wide popup */
+export function postTile(post: BlogPost): Tile {
+  const when = `${formatDate(post.date)} · ${post.readMins} min read${post.draft ? ' · Draft' : ''}`;
+  return {
+    key: `post-${post.slug}`,
+    title: post.title,
+    color: post.color,
+    icon: post.icon,
+    meta: when,
+    description: post.description,
+    details: {
+      html: post.html,
+      facts: [when, ...(post.tags.length ? [post.tags.join(' · ')] : [])],
+      wide: true,
+      label: 'Read',
+      links: [{ label: 'Open as a page', href: `/blog/${post.slug}` }],
+    },
   };
 }

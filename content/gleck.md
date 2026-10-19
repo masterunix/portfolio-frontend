@@ -11,7 +11,7 @@ moreLink: https://github.com/masterunix/gleck
 
 - Hey There! I'm Gleck!
 - I found some bugs. Added an event for next sunday.
-- [Portfolio v2 is live, Click here to visit the old version.](https://portfolio-website-54obaoeuj-masterunixs-projects.vercel.app/)
+- [Portfolio v2 is live, Click here to visit the old version.](https://v1.vatsalgoyal.com)
 - Currently interning in Full Stack Development.
 - Building Gleck to give myself the AI Edge!
 - Build AxeSuite, making CS Learning Seamless.

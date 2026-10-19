@@ -2,7 +2,9 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
 import BlogPostView from './BlogPostView';
+import JsonLd from '@/components/JsonLd';
 import { getPost, getPosts } from '@/lib/content';
+import { baseOpenGraph, postSchema } from '@/lib/metadata';
 
 /** Every post is built ahead of time; any other /blog/… address is a 404 */
 export const dynamicParams = false;
@@ -17,7 +19,11 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   return {
     title: post.title,
     description: post.description,
+    alternates: { canonical: `/blog/${post.slug}` },
+    ...(post.tags.length && { keywords: post.tags }),
     openGraph: {
+      ...baseOpenGraph(),
+      url: `/blog/${post.slug}`,
       title: post.title,
       description: post.description,
       type: 'article',
@@ -31,5 +37,10 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
   const post = getPost((await params).slug);
   if (!post) notFound();
-  return <BlogPostView post={post} />;
+  return (
+    <>
+      <JsonLd data={postSchema(post)} />
+      <BlogPostView post={post} />
+    </>
+  );
 }

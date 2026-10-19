@@ -23,6 +23,8 @@ date: 2026-10-18                   # required; newest posts come first
 updated: 2026-10-20                # optional: shows "Updated …"
 tags: [nextjs, design]             # optional
 cover: /media/blog/my-cover.png    # optional: an image in public/
+icon: 🧪                           # optional: the hexagon's icon (default ✍️)
+color: "#a29bfe"                   # optional: the icon square's colour
 draft: true                        # optional: only shows locally
 ---
 ```

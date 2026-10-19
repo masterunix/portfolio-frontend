@@ -17,7 +17,13 @@ export interface Project {
   slug: string;
   title: string;
   tech: string;
+  /** When it ran, e.g. "Jul 2025" */
+  period?: string;
+  /** The tile's text: `summary`, or the details as plain text */
   description: string;
+  summary?: string;
+  /** The full details (the body), rendered from Markdown, for the Read more popup */
+  html: string;
   icon?: string;
   logo?: Media;
   color: string;
@@ -33,7 +39,12 @@ export type SkillLevel = 'beginner' | 'intermediate' | 'proficient' | 'expert';
 export interface Skill {
   slug: string;
   title: string;
+  period?: string;
+  /** The tile's text: `summary`, or the details as plain text */
   description: string;
+  summary?: string;
+  /** The full details (the body), rendered from Markdown; experience shows it in a popup */
+  html: string;
   row: SkillRow;
   level?: SkillLevel;
   color: string;
@@ -124,6 +135,8 @@ export interface PageText {
 export interface Site {
   /** Shown in the footer, e.g. 2.01.02 */
   version: string;
+  /** The site's address, like https://www.vatsalgoyal.com (no trailing slash) */
+  url: string;
   title: string;
   description: string;
   pages: Record<'projects' | 'skills' | 'dsa' | 'resumes' | 'blog', PageText>;
@@ -143,6 +156,9 @@ export interface BlogPostSummary {
   updated?: string;
   tags: string[];
   cover?: Media;
+  /** The hexagon tile's icon (an emoji or a few letters) and its square's colour */
+  icon: string;
+  color: string;
   /** Words / 200, rounded up */
   readMins: number;
   /** Only ever true in dev: drafts are left out of production builds */
@@ -160,6 +176,9 @@ export interface Summary {
   tagline?: string;
   photo?: Media;
   location?: string;
+  /** For search engines: what you do, and where you studied */
+  jobTitle?: string;
+  school?: string;
   /** YYYY-MM-DD */
   updated?: string;
   /** Short highlights shown as chips, like { value: "5+ yrs", label: "experience" } */

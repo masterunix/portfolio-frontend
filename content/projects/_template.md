@@ -5,6 +5,9 @@
 #
 # title     required
 # tech      required: the tech stack line
+# summary   a sentence for the tile; Read more opens the full details below. Without
+#           one, the tile shows the start of the details
+# period    when, shown in the popup: Jul 2025, Sep – Dec 2025, In development
 # color     required: the icon square's colour (#7eadfc, purple, rgb(…))
 # icon      shown in the square when there's no logo: an emoji or a few letters (default 📦)
 # logo      a picture for the square instead, in public/ (e.g. /media/logos/gleck.png);
@@ -16,9 +19,12 @@
 # order     sorts the projects, lowest first (then by file name)
 # draft     true hides it
 #
-# Below the second --- line: the description (a sentence or two, plain text).
+# Below the second --- line: the full details, in Markdown (paragraphs, - lists,
+# **bold**, [links](https://…)). They open in a popup from the tile's Read more.
 title: My Project
 tech: Next.js, PostgreSQL
+summary: What it is, in a sentence.
+period: Jul 2025
 color: "#7eadfc"
 icon: MP
 github: https://github.com/masterunix/my-project
@@ -26,4 +32,7 @@ visit: https://my-project.com
 order: 100
 ---
 
-What it is and what it does, in a sentence or two.
+What it is and what it does, in as much detail as you like:
+
+- what you built
+- what it does well

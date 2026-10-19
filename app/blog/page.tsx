@@ -1,62 +1,41 @@
 /**
- * /blog — Every post, newest first, as readable cards in the same glass panel as the
- * posts themselves. A server component: the list is in the page's HTML.
+ * /blog — Every post, newest first, in the same hexagon carousel as the projects. A
+ * post's Read opens the whole post in a wide popup; each post also has its own page
+ * (/blog/<slug>), for links and search engines.
  */
-import Image from 'next/image';
-import Link from 'next/link';
-
-import GlassArticle from '@/components/GlassArticle';
-import { getPosts, getSite } from '@/lib/content';
-import { formatDate } from '@/lib/format';
+import Carousel from '@/components/Carousel';
+import HexPage from '@/components/HexPage';
+import Honeycomb from '@/components/Honeycomb';
+import MobileList from '@/components/MobileList';
+import { getPost, getPosts, getSite } from '@/lib/content';
+import { WIDE_GRID } from '@/lib/hexLayout';
 import { pageMetadata } from '@/lib/metadata';
+import { postTile, type Tile } from '@/lib/tiles';
 
 export const generateMetadata = () => pageMetadata('blog');
 
+/** Empty hexagons for the rows above and below the posts */
+const BLANK: Tile[] = Array.from({ length: 4 }, (_, i) => ({ key: `blank-${i}`, title: '' }));
+
+const NO_POSTS: Tile = {
+  key: 'no-posts',
+  title: 'No posts yet',
+  description: 'The first one is on its way.',
+  icon: '✍️',
+  color: '#a29bfe',
+};
+
 export default function BlogPage() {
-  const { title, description } = getSite().pages.blog;
-  const posts = getPosts();
+  const { title, hint } = getSite().pages.blog;
+  const posts = getPosts().map((summary) => postTile(getPost(summary.slug)!));
 
   return (
-    <GlassArticle back={{ href: '/', label: 'Home' }}>
-      <h1 className="article-title">{title}</h1>
-      <p className="article-lead">{description}</p>
-
-      {posts.length === 0 ? (
-        <p className="post-empty">No posts yet. The first one is on its way.</p>
+    <HexPage title={title} mobile={<MobileList title={title} sections={[{ tiles: posts.length ? posts : [NO_POSTS] }]} />}>
+      {posts.length ? (
+        <Carousel main={posts} supporting={BLANK} label="Posts" hint={hint ?? ''} />
       ) : (
-        <ul className="post-list">
-          {posts.map((post) => (
-            <li key={post.slug}>
-              <Link href={`/blog/${post.slug}`} className="post-card">
-                {post.cover && (
-                  <Image
-                    src={post.cover.url}
-                    alt=""
-                    width={1280}
-                    height={720}
-                    className="post-cover"
-                    unoptimized={post.cover.url.toLowerCase().endsWith('.svg')}
-                  />
-                )}
-                <div className="article-meta">
-                  <time dateTime={post.date}>{formatDate(post.date)}</time>
-                  <span>·</span>
-                  <span>{post.readMins} min read</span>
-                  {post.draft && <><span>·</span><span className="blog-draft">Draft</span></>}
-                </div>
-                <h2>{post.title}</h2>
-                <p>{post.description}</p>
-                {post.tags.length > 0 && (
-                  <ul className="article-tags" aria-label="Tags">
-                    {post.tags.map((tag) => <li key={tag}>{tag}</li>)}
-                  </ul>
-                )}
-                <span className="post-read" aria-hidden="true">Read <span>→</span></span>
-              </Link>
-            </li>
-          ))}
-        </ul>
+        <Honeycomb grid={WIDE_GRID} cells={[{ cell: [1, 3], tile: NO_POSTS }]} />
       )}
-    </GlassArticle>
+    </HexPage>
   );
 }

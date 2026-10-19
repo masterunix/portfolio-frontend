@@ -1,9 +1,11 @@
 ---
 title: AWS Cloud Certification
 row: middle
+summary: Upcoming, 2026.
+period: 2026
 color: Red
 icon: AWS
-order: 40
+order: 70
 ---
 
-2026 - Upcoming
+An AWS Cloud certification, planned for 2026.

@@ -1,14 +1,18 @@
 /**
- * Gleck.tsx — Gleck, my AI agent, in the bottom-left corner of every page.
+ * Gleck.tsx — Gleck, my AI agent, in the bottom-left corner of every page. His eyes
+ * follow the cursor and blink now and then.
  *
- * Wide screens: a glass widget with eyes that follow the cursor and Gleck's notices
- * (content/gleck.md), cycling every 5s. It expands 3s after collapsing and
- * collapses after 10s, until you close it yourself; ↑ shows every notice.
- * Narrow screens: just the eyes, linking to Gleck's repository.
+ * On the home page, on wide screens: a glass widget with Gleck's notices
+ * (content/gleck.md), cycling every 5s. It expands 3s after collapsing and collapses
+ * after 10s, until you close it yourself; ↑ shows every notice.
+ * Everywhere else, and on phones: just the eyes, linking to Gleck's repository.
  */
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { usePathname } from 'next/navigation';
+
+import { useBlink } from '@/hooks/useBlink';
 
 import { useEyeTracking } from '@/hooks/useEyeTracking';
 import { useIsDesktop } from '@/hooks/useIsDesktop';
@@ -19,18 +23,24 @@ type Notice = GleckContent['notices'][number];
 
 const EXPAND_AFTER_MS = 3000;
 const COLLAPSE_AFTER_MS = 10000;
-const BLINK_MS = 350;
 
 export default function Gleck({ gleck }: { gleck: GleckContent }) {
   const isDesktop = useIsDesktop();
+  const isHome = usePathname() === '/';
+  if (isDesktop && isHome) return <GleckWidget gleck={gleck} />;
+  return <GleckEyes link={gleck.moreLink} size={isDesktop ? 14 : 12} />;
+}
+
+/** Just the eyes, in a glass square: every page but home, and phones */
+function GleckEyes({ link, size }: { link: string; size: number }) {
+  const ref = useRef<HTMLAnchorElement>(null);
+  const look = useEyeTracking(ref);
+  const { shut, blink } = useBlink();
   return (
-    <>
-      <a href={gleck.moreLink} target="_blank" rel="noopener noreferrer" className="gleck gleck-mini mobile-only"
-        aria-label="Gleck, my AI agent">
-        <Eyes size={12} />
-      </a>
-      {isDesktop && <GleckWidget gleck={gleck} />}
-    </>
+    <a ref={ref} href={link} target="_blank" rel="noopener noreferrer" className="gleck gleck-mini"
+      aria-label="Gleck, my AI agent" title="Gleck, my AI agent" onMouseEnter={blink}>
+      <Eyes size={size} look={look} closed={shut} />
+    </a>
   );
 }
 
@@ -40,7 +50,7 @@ function GleckWidget({ gleck }: { gleck: GleckContent }) {
   const [expanded, setExpanded] = useState(true);
   const [enlarged, setEnlarged] = useState(false);
   const [closedByUser, setClosedByUser] = useState(false);
-  const [blinking, setBlinking] = useState(false);
+  const { shut, blink } = useBlink();
   const look = useEyeTracking(ref);
   const { index, setIndex } = useNoticeCarousel(notices.length, expanded);
 
@@ -51,12 +61,6 @@ function GleckWidget({ gleck }: { gleck: GleckContent }) {
     return () => clearTimeout(timer);
   }, [expanded, enlarged, closedByUser]);
 
-  useEffect(() => {
-    if (!blinking) return;
-    const timer = setTimeout(() => setBlinking(false), BLINK_MS);
-    return () => clearTimeout(timer);
-  }, [blinking]);
-
   const open = () => { setExpanded(true); setClosedByUser(false); };
   const close = () => { setExpanded(false); setEnlarged(false); setClosedByUser(true); };
   const notice = notices[index];
@@ -65,8 +69,8 @@ function GleckWidget({ gleck }: { gleck: GleckContent }) {
     <div ref={ref} className="gleck" role="complementary" aria-label="Gleck's notices">
       <div className={`gleck-widget glass ${expanded ? (enlarged ? 'is-enlarged' : '') : 'is-collapsed'}`}>
         <div className="gleck-row">
-          <button className="gleck-eyes" onClick={() => { setBlinking(true); open(); }} aria-label="Blink">
-            <Eyes size={14} look={look} closed={blinking} />
+          <button className="gleck-eyes" onClick={() => { blink(); open(); }} aria-label="Blink">
+            <Eyes size={14} look={look} closed={shut} />
           </button>
           {expanded && (
             <>

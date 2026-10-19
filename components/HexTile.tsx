@@ -6,6 +6,7 @@
  */
 import type { CSSProperties } from 'react';
 
+import ReadMore from '@/components/TileDialog';
 import { SmartLink } from '@/components/transition';
 import type { Tile } from '@/lib/tiles';
 
@@ -17,14 +18,15 @@ export default function HexTile({ tile }: { tile: Tile }) {
       <div className="tile-title">{tile.title}</div>
       {tile.meta && <div className="tile-meta">{tile.meta}</div>}
       {tile.description && <div className="tile-desc">{tile.description}</div>}
+      {tile.details && <ReadMore tile={tile} />}
       {tile.badge && (
         <div className="tile-badge" style={{ '--badge': tile.badge.color } as CSSProperties}>{tile.badge.label}</div>
       )}
       {tile.link && size !== 'lg' && <div className="hex-button">{tile.link.label}</div>}
       {!!tile.actions?.length && (
         <div className="tile-actions">
-          {tile.actions.map((action) => (
-            <SmartLink key={action.href} {...action} className="hex-button">{action.label}</SmartLink>
+          {tile.actions.map(({ label, ...action }) => (
+            <SmartLink key={action.href} {...action} className="hex-button">{label}</SmartLink>
           ))}
         </div>
       )}

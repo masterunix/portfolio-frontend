@@ -17,7 +17,7 @@ menu:
   - { title: Summary, description: "The whole site, on one page", href: /summary, cell: [1, 1], icon: summary, color: "#fd79a8", pulse: true }
   - { title: Github, description: View my code repositories, href: "https://github.com/masterunix", cell: [1, 2], icon: github, color: "#333333" }
   - { title: Live Projects, description: Explore my portfolio, href: /projects, cell: [1, 3], icon: projects, color: "#667eea" }
-  - { title: LinkedIn, description: Connect professionally, href: "https://www.linkedin.com/in/vatsal-goyal-05a896165", cell: [1, 4], icon: linkedin, color: "#0077b5" }
+  - { title: LinkedIn, description: Connect professionally, href: "https://www.linkedin.com/in/vatsalgoyal93", cell: [1, 4], icon: linkedin, color: "#0077b5" }
   - { title: Explore Resumes, description: Different resumes for different domains, href: /resumes, cell: [2, 2], icon: resumes, color: "#34a853" }
   - { title: Experience & Skills, description: My tech stack & career, href: /skills, cell: [2, 3], icon: skills, color: "#ff6b6b" }
   - { title: DSA Stats, description: Coding achievements, href: /dsa, cell: [2, 4], icon: dsa, color: "#4ecdc4" }
@@ -25,8 +25,10 @@ menu:
   - { title: Mail Me!, description: "Let's get in touch", href: "mailto:vatsalgoyal9999@gmail.com", cell: [2, 5], icon: mail, color: "#feca57" }
 ---
 
-- [Welcome to my Portfolio v2!](https://www.vatsalgoyal.me)
-- [Hi! I am Vatsal. See what I'm working on.](https://www.vatsalgoyal.me)
+- Welcome to my Portfolio v2!
+- [Hi! I am Vatsal. See what I'm working on.](/projects)
+- Building AxeSuite and RCIS.
+- [Open to full-stack and AI roles!](/summary)
 - Linus built git in 10 Days!
 - This is a website.
 - Computers are still magic.
@@ -34,7 +36,7 @@ menu:
 - Do you play minecraft?
 - Check out my resume!
 - [Check out what I'm Listening! Click Here!](https://music.apple.com/profile/vatsalgoyal9999)
-- [Wanna see portfolio v1? Click here!                       :)](https://portfolio-website-54obaoeuj-masterunixs-projects.vercel.app/)
+- [Wanna see portfolio v1? Click here!                       :)](https://v1.vatsalgoyal.com)
 - [Follow me on Instagram!](https://www.instagram.com/vatsalgoyall/)
 - Random Splash! Random Splash! Random Splash!
 - Help! ChatGPT!

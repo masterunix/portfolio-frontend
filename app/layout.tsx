@@ -6,16 +6,27 @@ import './site.css';
 import Gleck from '@/components/Gleck';
 import ShaderBackground from '@/components/ShaderBackground';
 import { SiteProvider } from '@/components/Footer';
-import { getBackground, getGleck, getSite } from '@/lib/content';
+import { getBackground, getGleck, getSite, getSummary } from '@/lib/content';
+import { baseOpenGraph } from '@/lib/metadata';
 
 const mono = JetBrains_Mono({ subsets: ['latin'], variable: '--font-mono' });
 
 export function generateMetadata(): Metadata {
-  const { title, description } = getSite();
+  const { url, title, description } = getSite();
+  const name = getSummary().title;
   return {
-    title: { default: title, template: '%s | Vatsal Goyal' },
+    metadataBase: new URL(url),
+    title: { default: title, template: `%s | ${name}` },
     description,
-    icons: { icon: '/icon.png' },
+    applicationName: name,
+    authors: [{ name, url }],
+    creator: name,
+    alternates: { canonical: '/' },
+    openGraph: { ...baseOpenGraph(), title, description, url: '/' },
+    twitter: { card: 'summary_large_image', title, description },
+    robots: { index: true, follow: true, googleBot: { index: true, follow: true, 'max-image-preview': 'large', 'max-snippet': -1 } },
+    icons: { icon: '/icon.png', apple: '/icon.png' },
+    category: 'technology',
   };
 }
 

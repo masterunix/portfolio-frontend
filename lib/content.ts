@@ -263,6 +263,25 @@ function loadFolder<T>(dir: string, parse: (e: Entry, body: string, slug: string
 }
 
 /** The text below the --- lines, as one plain line (tile descriptions) */
+/** HTML to plain text, for tile descriptions written in Markdown */
+function plainText(html: string): string {
+  return html.replace(/<[^>]+>/g, ' ')
+    .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'")
+    .replace(/\s+/g, ' ').trim();
+}
+
+/**
+ * An entry with a popup: the body is its full details (Markdown), and the tile shows
+ * `summary`, or the start of the details when there's no summary.
+ */
+function details(e: Entry, body: string): { description: string; summary?: string; html: string } {
+  const { html } = renderMarkdown(e.where, body);
+  const summary = e.optText('summary');
+  const description = summary ?? plainText(html);
+  if (!description) e.fail('description', 'is missing: write it below the second --- line');
+  return { description, summary, html };
+}
+
 function description(e: Entry, body: string, required = true): string {
   const text = body.trim().replace(/\s+/g, ' ');
   if (!text && required) e.fail('description', 'is missing: write it below the second --- line');
@@ -315,8 +334,11 @@ export function getSite(): Site {
     if (!/^\d+\.\d+\.\d+$/.test(version)) e.fail('version', `must look like 2.01.02; got "${version}"`);
     checkDocVersions(e, version);
     const pages = e.group('pages');
+    const url = e.link('url').replace(/\/$/, '');
+    if (!url.startsWith('https://')) e.fail('url', `must be the site's https:// address; got "${url}"`);
     const site = {
       version,
+      url,
       title: e.text('title'),
       description: e.text('description'),
       pages: Object.fromEntries(PAGES.map((page) => {
@@ -372,6 +394,8 @@ export function getSummary(): Summary {
     tagline: e.optText('tagline'),
     photo: e.optMedia('photo', 'image'),
     location: e.optText('location'),
+    jobTitle: e.optText('jobTitle'),
+    school: e.optText('school'),
     updated: readDate(e, 'updated', false),
     facts: e.list('facts').map((f) => {
       const fact = { value: f.text('value'), label: f.text('label') };
@@ -428,7 +452,8 @@ export function getProjects(): Project[] {
     slug,
     title: e.text('title'),
     tech: e.text('tech'),
-    description: description(e, body),
+    period: e.optText('period'),
+    ...details(e, body),
     icon: e.optText('icon'),
     logo: e.logo(),
     color: e.color('color'),
@@ -445,7 +470,8 @@ export function getSkills(): Skill[] {
   return loadFolder('skills', (e, body, slug) => ({
     slug,
     title: e.text('title'),
-    description: description(e, body),
+    period: e.optText('period'),
+    ...details(e, body),
     row: e.oneOf('row', ROWS, 'middle'),
     level: e.optOneOf('level', LEVELS),
     color: e.color('color'),
@@ -530,6 +556,8 @@ function loadPosts(): BlogPost[] {
         updated,
         tags: (tags as string[]).map((t) => t.trim()),
         cover: e.optMedia('cover', 'image'),
+        icon: e.optText('icon') ?? '✍️',
+        color: e.optText('color') === undefined ? '#a29bfe' : e.color('color'),
         draft: e.bool('draft', false),
       };
       e.done();
@@ -544,8 +572,8 @@ function loadPosts(): BlogPost[] {
 
 /** Every post readers can see, newest first, without bodies */
 export function getPosts(): BlogPostSummary[] {
-  return loadPosts().map(({ slug, title, description, date, updated, tags, cover, readMins, draft }) =>
-    ({ slug, title, description, date, updated, tags, cover, readMins, draft }));
+  return loadPosts().map(({ slug, title, description, date, updated, tags, cover, icon, color, readMins, draft }) =>
+    ({ slug, title, description, date, updated, tags, cover, icon, color, readMins, draft }));
 }
 
 /** One post with its body, or null when it doesn't exist (or is a draft in production) */

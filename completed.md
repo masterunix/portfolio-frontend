@@ -1,9 +1,34 @@
 # Completed changes
 
-**Current version: 2.04.00.** With every deployed change, bump `version:` in `content/site.md` and update this line in each `.md` file at the top of the project (AGENTS.md, CLAUDE.md, README.md, future.md, completed.md) to match; the build fails if they disagree.
+**Current version: 2.05.00.** With every deployed change, bump `version:` in `content/site.md` and update this line in each `.md` file at the top of the project (AGENTS.md, CLAUDE.md, README.md, future.md, completed.md) to match; the build fails if they disagree.
 
 Changes that have been made and tested, newest first. Agents move items here from
 [`future.md`](future.md) once they're done, with a note of what changed.
+
+## 2026-10-19 · v2.05.00
+
+- Read more on projects and experience: the tile shows `summary:`, and the full details
+  (the file's body, in Markdown) open in a popup that grows out of the hexagon and shrinks
+  back into it (`components/TileDialog.tsx`). New fields: `summary`, `period`.
+- Rewrote every project and experience entry with a summary and details from the resume;
+  added experience entries for the 450 House of Sourdough consulting, the JECRC Incubation
+  Centre and the Oracle Cloud certifications. Visit links for AxeSuite and AshaKiran.
+- The blog is a hexagon carousel like the projects; a post opens in a wide popup, and
+  still has its own page. Posts can set `icon` and `color`.
+- Gleck's eyes are on every page and blink now and then; his notices only show on the
+  home page (`hooks/useBlink.ts`, `components/Gleck.tsx`).
+- SEO: site address in `content/site.md`; canonical URLs, Open Graph and X cards on every
+  page; a generated preview image; sitemap.xml, robots.txt and a web manifest; schema.org
+  data (Person and WebSite on home, ProfilePage on the summary, BlogPosting on posts);
+  a real h1 on home; sharper titles and descriptions.
+- Summary and projects now follow the GitHub profile README (Profile/masterunix): its
+  content and its order (AxeSuite, RCIS, PocketLM, FT7, Gleck, then the rest). New
+  projects: FT7, GlobalFreight AI, Flapper, VS Code DSA Setup. The 2026 internship is
+  Pratham Software (PSI), Jan – Aug 2026. LinkedIn is linkedin.com/in/vatsalgoyal93.
+- Renamed the project to portfolio-v2: the folder (now ~/Desktop/Profile/portfolio-v2),
+  the GitHub repo (masterunix/portfolio-v2) and package.json.
+- Removed the dead vatsalgoyal.me links; "portfolio v1" links go to v1.vatsalgoyal.com
+  (added to the old site's Vercel project; it needs a CNAME in Cloudflare to go live).
 
 ## 2026-10-19 · v2.04.00
 

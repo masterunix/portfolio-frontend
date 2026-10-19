@@ -1,11 +1,15 @@
 ---
 title: AshaKiran
-tech: "Postgres, React, Node "
+tech: React, Node.js, PostgreSQL
+summary: The website for Asha Kiran, an NGO.
+visit: https://www.ashakiransanstha.org
 color: "#7a3238"
 icon: AK
 logo: /media/logos/ashakiran.png
 logoFill: true
-order: 80
+order: 110
 ---
 
-Built website for an NGO.
+The website for Asha Kiran, an NGO: what it does, its people, and how to get involved.
+
+Built with React, Node.js and PostgreSQL.

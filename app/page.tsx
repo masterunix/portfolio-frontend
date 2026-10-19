@@ -1,8 +1,10 @@
 import HexPage from '@/components/HexPage';
+import JsonLd from '@/components/JsonLd';
 import Honeycomb from '@/components/Honeycomb';
 import MobileList from '@/components/MobileList';
 import Typewriter from '@/components/Typewriter';
-import { getHome } from '@/lib/content';
+import { getHome, getSite } from '@/lib/content';
+import { homeSchema } from '@/lib/metadata';
 import { WIDE_GRID } from '@/lib/hexLayout';
 import { menuTile } from '@/lib/tiles';
 
@@ -13,6 +15,10 @@ export default function HomePage() {
   const { menu, messages } = getHome();
   const tiles = menu.map(menuTile);
   return (
+    <>
+    {/* The typewriter is decoration; this is the page's heading for search engines and screen readers */}
+    <h1 className="sr-only">{getSite().title}</h1>
+    <JsonLd data={homeSchema()} />
     <HexPage
       heading={<Typewriter messages={messages} />}
       mobile={
@@ -25,5 +31,6 @@ export default function HomePage() {
     >
       <Honeycomb grid={WIDE_GRID} cells={menu.map((item, i) => ({ cell: item.cell, tile: tiles[i] }))} stagger={HOME_STAGGER} />
     </HexPage>
+    </>
   );
 }
