@@ -339,6 +339,7 @@ export function getSite(): Site {
     if (!/^\d+\.\d+\.\d+$/.test(version)) e.fail('version', `must look like 2.01.02; got "${version}"`);
     checkDocVersions(e, version);
     const pages = e.group('pages');
+    const feedback = e.group('feedback');
     const url = e.link('url').replace(/\/$/, '');
     if (!url.startsWith('https://')) e.fail('url', `must be the site's https:// address; got "${url}"`);
     const site = {
@@ -356,11 +357,28 @@ export function getSite(): Site {
       // One line per paragraph
       footer: body.trim().split(/\n\s*\n/).filter(Boolean).map((line) =>
         markdown.parseInline(line.trim().replace(/\{year\}/g, String(new Date().getFullYear()))) as string),
+      feedback: readFeedback(feedback),
     };
     pages.done();
+    feedback.done();
     if (!site.footer.length) e.fail('footer', 'is missing: write it below the second --- line');
     return site;
   });
+}
+
+/** The feedback button's settings (site.md's `feedback`) */
+function readFeedback(f: Entry): Site['feedback'] {
+  const email = f.text('email').trim();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) f.fail('email', `must be an email address; got "${email}"`);
+  const topics = f.list('topics').map((t) => {
+    const page = t.optText('page');
+    if (page !== undefined && !/^\/\S*$/.test(page)) t.fail('page', `must be a page here, like /projects; got "${page}"`);
+    const topic = { label: t.text('label'), page };
+    t.done();
+    return topic;
+  });
+  if (!topics.length) f.fail('topics', 'needs at least one topic');
+  return { email, title: f.text('title'), note: f.text('note'), topics };
 }
 
 /** The home menu and the typewriter lines (content/home.md) */

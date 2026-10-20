@@ -144,6 +144,18 @@ export interface Site {
   firefoxNotice: string;
   /** The footer's lines as inline HTML; the first shows everywhere */
   footer: string[];
+  feedback: Feedback;
+}
+
+/** The feedback button and popup (content/site.md's `feedback`) */
+export interface Feedback {
+  /** Where the message is mailed */
+  email: string;
+  title: string;
+  /** The line under the button on wide screens */
+  note: string;
+  /** The "About" choices; one with a `page` is picked by default on that page */
+  topics: { label: string; page?: string }[];
 }
 
 /** A blog post's details, without its body (content/blog/<slug>.md) */

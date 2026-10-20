@@ -9,10 +9,17 @@
 #                        (Markdown: **bold** and [links](https://…) work)
 #   pages                each page's heading, its search description, and the hint under
 #                        the carousel buttons (projects and skills)
+#   feedback             the feedback button at the bottom right of every page:
+#     email              where "Mail it" sends the message (opens the visitor's mail app)
+#     title              the popup's heading
+#     note               the line under the button on wide screens
+#     topics             the "About" drop-down, in order. A topic with a `page` is picked
+#                        by itself on that page (and the pages under it, like /blog/…);
+#                        one without a page is the fallback
 #
 # Below the second --- line: the footer, one line per paragraph. {year} becomes the current
 # year. The first line shows everywhere; the others only on wide screens.
-version: 2.07.02
+version: 2.08.00
 url: https://www.vatsalgoyal.com
 title: Vatsal Goyal · Full-stack and AI Developer
 description: Vatsal Goyal is a full-stack and AI developer in Jaipur, India, building AxeSuite and the RCIS studio. Projects, experience, skills and resume.
@@ -36,6 +43,19 @@ pages:
     title: Blog
     description: "Notes on what I build and learn: web development, AI/ML and problem solving."
     hint: Use arrow keys to browse the posts
+feedback:
+  email: vatsalgoyal9999@gmail.com
+  title: Send feedback
+  note: Found a bug? Tell me.
+  topics:
+    - { label: Home, page: / }
+    - { label: Summary, page: /summary }
+    - { label: Projects, page: /projects }
+    - { label: Experience & Skills, page: /skills }
+    - { label: Resumes, page: /resumes }
+    - { label: DSA Stats, page: /dsa }
+    - { label: Blog, page: /blog }
+    - { label: Something else }
 ---
 
 © {year} Vatsal Goyal. All rights reserved.

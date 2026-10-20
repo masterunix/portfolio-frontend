@@ -1,9 +1,24 @@
 # Completed changes
 
-**Current version: 2.07.02.** With every deployed change, bump `version:` in `content/site.md` and update this line in each `.md` file at the top of the project (AGENTS.md, CLAUDE.md, README.md, future.md, completed.md) to match; the build fails if they disagree.
+**Current version: 2.08.00.** With every deployed change, bump `version:` in `content/site.md` and update this line in each `.md` file at the top of the project (AGENTS.md, CLAUDE.md, README.md, future.md, completed.md) to match; the build fails if they disagree.
 
 Changes that have been made and tested, newest first. Agents move items here from
 [`future.md`](future.md) once they're done, with a note of what changed.
+
+## 2026-10-20 · v2.08.00
+
+- Feedback button: a glass square at the bottom right of every page, like Gleck's on the
+  left (with "Found a bug? Tell me." under it on wide screens). It opens a popup with an
+  "About" drop-down (Home, Summary, Projects, Experience & Skills, Resumes, DSA Stats, Blog,
+  Something else; it starts on the page you're on), a message box, and Mail it, which
+  opens your mail app with the subject and message filled in. Gmail and Copy address are
+  there for anyone with no mail app set up. Settings: `feedback` in `content/site.md`
+  (`components/Feedback.tsx`, `lib/content.ts`, `types/index.ts`, `app/layout.tsx`,
+  `app/site.css`).
+- Removed the Feedback tile from /resumes (`content/resumes/feedback.md`): it had no link,
+  so it did nothing.
+- The home page's Mail Me! tile now opens the same popup, headed "Mail me", instead of a
+  bare `mailto:` link, which did nothing without a mail app (`content/home.md`, `href: "#mail"`).
 
 ## 2026-10-19 · v2.07.02
 

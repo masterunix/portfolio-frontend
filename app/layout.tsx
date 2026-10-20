@@ -3,6 +3,7 @@ import { JetBrains_Mono } from 'next/font/google';
 
 import './globals.css';
 import './site.css';
+import Feedback from '@/components/Feedback';
 import Gleck from '@/components/Gleck';
 import ShaderBackground from '@/components/ShaderBackground';
 import BrowserNotice from '@/components/BrowserNotice';
@@ -46,6 +47,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <SiteProvider footer={getSite().footer} version={getSite().version}>
           <ShaderBackground background={getBackground()} />
           <Gleck gleck={getGleck()} />
+          <Feedback feedback={getSite().feedback} />
           <BrowserNotice html={getSite().firefoxNotice} />
           <div className="page">{children}</div>
         </SiteProvider>

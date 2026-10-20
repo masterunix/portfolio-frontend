@@ -3,7 +3,8 @@
 #
 # menu: the hexagon menu, and the list on phones (in this order).
 #   title, description   the tile's text
-#   href                 where it goes: a page here (/projects), https://…, or mailto:…
+#   href                 where it goes: a page here (/projects), https://…, mailto:…, or #mail
+#                        (opens the mail-me popup; the address is site.md's feedback email)
 #   cell                 [row, column] in the honeycomb. Rows 0–3, columns 0–6; rows 0 and 2
 #                        start at column 1. Each tile needs its own cell.
 #   icon                 a built-in icon (summary, github, projects, linkedin, resumes, skills,
@@ -22,7 +23,7 @@ menu:
   - { title: Experience & Skills, description: My tech stack & career, href: /skills, cell: [2, 3], icon: skills, color: "#ff6b6b" }
   - { title: DSA Stats, description: Coding achievements, href: /dsa, cell: [2, 4], icon: dsa, color: "#4ecdc4" }
   - { title: Blog, description: Notes on what I build, href: /blog, cell: [1, 5], icon: blog, color: "#a29bfe" }
-  - { title: Mail Me!, description: "Let's get in touch", href: "mailto:vatsalgoyal9999@gmail.com", cell: [2, 5], icon: mail, color: "#feca57" }
+  - { title: Mail Me!, description: "Let's get in touch", href: "#mail", cell: [2, 5], icon: mail, color: "#feca57" }
 ---
 
 - Welcome to my Portfolio v2!

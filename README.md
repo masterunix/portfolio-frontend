@@ -2,7 +2,7 @@
 
 Vatsal Goyal's portfolio, live at **[vatsalgoyal.com](https://www.vatsalgoyal.com)**.
 
-**Current version: 2.07.02.** With every deployed change, bump `version:` in `content/site.md` and update this line in each `.md` file at the top of the project (AGENTS.md, CLAUDE.md, README.md, future.md, completed.md) to match; the build fails if they disagree.
+**Current version: 2.08.00.** With every deployed change, bump `version:` in `content/site.md` and update this line in each `.md` file at the top of the project (AGENTS.md, CLAUDE.md, README.md, future.md, completed.md) to match; the build fails if they disagree.
 
 A portfolio site of glass hexagons over an animated background: a honeycomb menu,
 scrolling carousels of projects, experience and blog posts (click a hexagon and its
@@ -61,6 +61,7 @@ components/
   TileDialog.tsx           Read more: a tile's details in a popup that grows out of its hexagon
   MobileList.tsx           A tile list for narrow screens (server-rendered)
   transition.tsx           The outro context and SmartLink, the one link component
+  Feedback.tsx             The feedback button (bottom right) and its mail-it popup; #mail links open it too
   GlassArticle.tsx, Gleck.tsx, ShaderBackground.tsx, Typewriter.tsx, Footer.tsx, ItemIcon.tsx,
   BackArrow.tsx, JsonLd.tsx
 lib/
@@ -111,7 +112,7 @@ reload in dev, and on the next deploy in production. There is no CMS or database
 
 | File | Shows on |
 |---|---|
-| `content/site.md` | the footer, page headings, carousel hints, search descriptions |
+| `content/site.md` | the footer, page headings, carousel hints, search descriptions, the feedback button |
 | `content/home.md` | the home menu (tile text, links, icons, positions) and the typewriter lines |
 | `content/summary.md` | /summary |
 | `content/projects/<name>.md` | /projects, one file per project: `summary` on the tile, the body in its Read more popup |
