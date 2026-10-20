@@ -145,6 +145,15 @@ export interface Site {
   /** The footer's lines as inline HTML; the first shows everywhere */
   footer: string[];
   feedback: Feedback;
+  compatibility: Compatibility;
+}
+
+/** The compatibility-mode toggle (content/site.md's `compatibility`) */
+export interface Compatibility {
+  /** Its name, e.g. "Compatibility mode" */
+  label: string;
+  /** What it does, shown on hover */
+  tip: string;
 }
 
 /** The feedback button and popup (content/site.md's `feedback`) */

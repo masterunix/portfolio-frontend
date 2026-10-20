@@ -1,6 +1,6 @@
 # AGENTS.md
 
-**Current version: 2.08.00.** With every deployed change, bump `version:` in `content/site.md` and update this line in each `.md` file at the top of the project (AGENTS.md, CLAUDE.md, README.md, future.md, completed.md) to match; the build fails if they disagree.
+**Current version: 2.08.01.** With every deployed change, bump `version:` in `content/site.md` and update this line in each `.md` file at the top of the project (AGENTS.md, CLAUDE.md, README.md, future.md, completed.md) to match; the build fails if they disagree.
 
 Instructions for AI agents (and people) working on this site: Vatsal Goyal's portfolio at
 [vatsalgoyal.com](https://www.vatsalgoyal.com), a Next.js site whose content lives in
@@ -69,7 +69,7 @@ The same rules apply to commit messages, `completed.md` entries and these docs.
 
 | On the site | File |
 |---|---|
-| Footer lines (© … / "managed by Gleck"), page headings, carousel hints, search titles and descriptions, the site's address, the feedback button (bottom right: its email, popup heading and "About" topics) | `content/site.md` |
+| Footer lines (© … / "managed by Gleck"), page headings, carousel hints, search titles and descriptions, the site's address, the feedback button and compatibility toggle (bottom right: email, popup heading, "About" topics, the toggle's tip) | `content/site.md` |
 | Home menu tiles and their text ("Summary: The whole site, on one page", and the rest), which one pulses, the typewriter lines | `content/home.md` |
 | Summary page (/summary), the one page for recruiters | `content/summary.md` |
 | Projects (/projects middle row) | `content/projects/<name>.md`, one per project |
@@ -177,7 +177,8 @@ shown; they tell search engines who Vatsal is. Update `updated:` when you change
   (search results), `firefoxNotice` (the one-time popup in Firefox-engine browsers), `pages` (each page's heading, search description and carousel
   hint), and `feedback` (the button at the bottom right: `email`, the popup's `title`, the
   `note` under the button, and the `topics` in its "About" drop-down; a topic's `page`
-  makes it the default there).
+  makes it the default there), and `compatibility` (the CPU button beside it that turns
+  the blur off: its `label` and the `tip` shown on hover).
 - A link to `#mail` anywhere (the home page's Mail Me! tile) opens the same popup as
   "Mail me". Use it instead of a bare `mailto:` link: the popup also offers Gmail and
   Copy address for visitors with no mail app set up.

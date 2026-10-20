@@ -7,7 +7,9 @@ import Feedback from '@/components/Feedback';
 import Gleck from '@/components/Gleck';
 import ShaderBackground from '@/components/ShaderBackground';
 import BrowserNotice from '@/components/BrowserNotice';
+import CompatToggle from '@/components/CompatToggle';
 import { SiteProvider } from '@/components/Footer';
+import { COMPAT_SCRIPT } from '@/lib/compat';
 import { getBackground, getGleck, getSite, getSummary } from '@/lib/content';
 import { baseOpenGraph } from '@/lib/metadata';
 
@@ -42,12 +44,17 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={mono.variable}>
+    // The compatibility script may set data-compat on <html> before React hydrates
+    <html lang="en" className={mono.variable} suppressHydrationWarning>
       <body>
+        <script dangerouslySetInnerHTML={{ __html: COMPAT_SCRIPT }} />
         <SiteProvider footer={getSite().footer} version={getSite().version}>
           <ShaderBackground background={getBackground()} />
           <Gleck gleck={getGleck()} />
-          <Feedback feedback={getSite().feedback} />
+          <div className="corner-right">
+            <CompatToggle compatibility={getSite().compatibility} />
+            <Feedback feedback={getSite().feedback} />
+          </div>
           <BrowserNotice html={getSite().firefoxNotice} />
           <div className="page">{children}</div>
         </SiteProvider>

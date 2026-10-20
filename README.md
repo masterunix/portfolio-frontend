@@ -2,7 +2,7 @@
 
 Vatsal Goyal's portfolio, live at **[vatsalgoyal.com](https://www.vatsalgoyal.com)**.
 
-**Current version: 2.08.00.** With every deployed change, bump `version:` in `content/site.md` and update this line in each `.md` file at the top of the project (AGENTS.md, CLAUDE.md, README.md, future.md, completed.md) to match; the build fails if they disagree.
+**Current version: 2.08.01.** With every deployed change, bump `version:` in `content/site.md` and update this line in each `.md` file at the top of the project (AGENTS.md, CLAUDE.md, README.md, future.md, completed.md) to match; the build fails if they disagree.
 
 A portfolio site of glass hexagons over an animated background: a honeycomb menu,
 scrolling carousels of projects, experience and blog posts (click a hexagon and its
@@ -62,6 +62,7 @@ components/
   MobileList.tsx           A tile list for narrow screens (server-rendered)
   transition.tsx           The outro context and SmartLink, the one link component
   Feedback.tsx             The feedback button (bottom right) and its mail-it popup; #mail links open it too
+  CompatToggle.tsx         The CPU button beside it: compatibility mode (<html data-compat>, no blur)
   GlassArticle.tsx, Gleck.tsx, ShaderBackground.tsx, Typewriter.tsx, Footer.tsx, ItemIcon.tsx,
   BackArrow.tsx, JsonLd.tsx
 lib/

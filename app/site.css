@@ -245,8 +245,10 @@ a.tile:hover .hex-button {
   );
 }
 
-/* Low-power mode (ShaderBackground): a plain tint instead of the live blur */
-html[data-low-power] .hex-glass-blur {
+/* Low-power mode (ShaderBackground) and compatibility mode (CompatToggle): a plain tint
+   instead of the live blur */
+html[data-low-power] .hex-glass-blur,
+html[data-compat] .hex-glass-blur {
   background: rgba(10, 10, 16, 0.86);
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
@@ -879,7 +881,7 @@ html:has(.tile-dialog[open]) {
   flex-direction: column;
   gap: 12px;
   min-height: 100vh;
-  padding: 100px 16px 80px;
+  padding: 100px 16px 32px;
 }
 
 .mobile-header:has(.mobile-tabs) + .mobile-list {
@@ -973,6 +975,7 @@ a.mobile-card:active {
 
 .site-footer-small {
   font-size: 12px;
+  text-wrap: balance;
   color: var(--text-muted);
 }
 
@@ -999,9 +1002,23 @@ a.mobile-card:active {
   color: #fff;
 }
 
+/* Clear of Gleck and the corner buttons, which are fixed over the bottom of the page */
 .mobile-footer {
-  padding: 24px 0;
-  margin-top: 16px;
+  padding: 16px 16px 92px;
+}
+
+/* Phones: the version pill gets its own line, instead of wrapping in the middle of
+   the copyright line */
+@media (max-width: 767px) {
+  .site-footer {
+    font-size: 12px;
+    text-wrap: balance;
+  }
+
+  .site-footer .site-version {
+    display: table;
+    margin: 6px auto 0;
+  }
 }
 
 /* ═══ Browser notice (BrowserNotice, Firefox-engine browsers only) ═══════════ */
@@ -1272,18 +1289,26 @@ a.gleck-notice:hover,
 
 /* ═══ Feedback (bottom right, mirroring Gleck) ═══════════════════════════════ */
 
-.feedback {
+/* The bottom-right corner: the compatibility toggle, then the feedback button */
+.corner-right {
   position: fixed;
   right: 16px;
   bottom: 16px;
   z-index: 9999;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.feedback {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
 }
 
 /* The same size as Gleck: 60px next to his widget, 52px next to his eyes on phones */
-.feedback-button {
+.feedback-button,
+.compat-button {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1296,17 +1321,92 @@ a.gleck-notice:hover,
   transition: transform 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 
-.feedback-button:hover {
+.feedback-button:hover,
+.compat-button:hover {
   border-color: rgba(255, 255, 255, 0.3);
   color: var(--text-strong);
   transform: translateY(-1px);
 }
 
 @media (max-width: 767px) {
-  .feedback-button {
+  .feedback-button,
+  .compat-button {
     width: 52px;
     height: 52px;
   }
+}
+
+/* ═══ Compatibility mode (CompatToggle) ════════════════════════════════════ */
+
+.compat {
+  position: relative;
+}
+
+.compat-button.is-on {
+  border-color: rgba(52, 211, 153, 0.55);
+  background: rgba(16, 80, 60, 0.55);
+  color: #6ee7b7;
+}
+
+/* The tip: above the button, kept on screen at the right edge */
+.compat-tip {
+  position: absolute;
+  right: -70px;
+  bottom: calc(100% + 10px);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: min(280px, calc(100vw - 32px));
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(14, 14, 20, 0.96);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-muted);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(4px);
+  transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
+  pointer-events: none;
+}
+
+.compat-tip strong {
+  font-weight: 600;
+  color: var(--text-strong);
+}
+
+.compat:hover .compat-tip,
+.compat:has(:focus-visible) .compat-tip,
+.compat.is-flashing .compat-tip {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+}
+
+/* Every backdrop blur off, with solid tints where text needs them */
+html[data-compat] *,
+html[data-compat] *::before,
+html[data-compat] *::after,
+html[data-compat] ::backdrop {
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+
+html[data-compat] .glass,
+html[data-compat] .back-button-glass,
+html[data-compat] .carousel-bar::before {
+  background: rgba(16, 16, 22, 0.88);
+}
+
+html[data-compat] .mobile-card,
+html[data-compat] .mobile-back {
+  background: rgba(16, 16, 22, 0.82);
+}
+
+html[data-compat] .glass-article {
+  background: rgba(8, 8, 12, 0.88);
 }
 
 .feedback-note {

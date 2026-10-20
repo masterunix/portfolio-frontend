@@ -16,10 +16,13 @@
 #     topics             the "About" drop-down, in order. A topic with a `page` is picked
 #                        by itself on that page (and the pages under it, like /blog/…);
 #                        one without a page is the fallback
+#   compatibility        the CPU button next to the feedback button, which turns the blur
+#                        off for browsers that draw it badly: its `label`, and the `tip`
+#                        shown on hover
 #
 # Below the second --- line: the footer, one line per paragraph. {year} becomes the current
 # year. The first line shows everywhere; the others only on wide screens.
-version: 2.08.00
+version: 2.08.01
 url: https://www.vatsalgoyal.com
 title: Vatsal Goyal · Full-stack and AI Developer
 description: Vatsal Goyal is a full-stack and AI developer in Jaipur, India, building AxeSuite and the RCIS studio. Projects, experience, skills and resume.
@@ -56,6 +59,9 @@ feedback:
     - { label: DSA Stats, page: /dsa }
     - { label: Blog, page: /blog }
     - { label: Something else }
+compatibility:
+  label: Compatibility mode
+  tip: Many browsers have rendering issues with the heavy blur on this site. This toggle turns it off.
 ---
 
 © {year} Vatsal Goyal. All rights reserved.

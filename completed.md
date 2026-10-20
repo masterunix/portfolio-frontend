@@ -1,9 +1,21 @@
 # Completed changes
 
-**Current version: 2.08.00.** With every deployed change, bump `version:` in `content/site.md` and update this line in each `.md` file at the top of the project (AGENTS.md, CLAUDE.md, README.md, future.md, completed.md) to match; the build fails if they disagree.
+**Current version: 2.08.01.** With every deployed change, bump `version:` in `content/site.md` and update this line in each `.md` file at the top of the project (AGENTS.md, CLAUDE.md, README.md, future.md, completed.md) to match; the build fails if they disagree.
 
 Changes that have been made and tested, newest first. Agents move items here from
 [`future.md`](future.md) once they're done, with a note of what changed.
+
+## 2026-10-20 · v2.08.01
+
+- Compatibility mode: a CPU button next to the feedback button turns off every backdrop
+  blur on the site (plain dark tints instead), for browsers that draw the heavy blur
+  badly. Hovering it says so; clicking again turns the blur back on. The choice is
+  remembered in that browser and applied before the page paints. Text: `compatibility`
+  in `content/site.md` (`components/CompatToggle.tsx`, `app/layout.tsx`, `app/site.css`,
+  `lib/content.ts`, `types/index.ts`).
+- Footer on phones: the copyright line no longer breaks in the middle with the version
+  squeezed in (the version gets its own line, the text is balanced), and the card-list
+  pages leave room under it so the corner buttons don't cover it (`app/site.css`).
 
 ## 2026-10-20 · v2.08.00
 

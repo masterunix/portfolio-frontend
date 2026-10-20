@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-**Current version: 2.08.00.** With every deployed change, bump `version:` in `content/site.md` and update this line in each `.md` file at the top of the project (AGENTS.md, CLAUDE.md, README.md, future.md, completed.md) to match; the build fails if they disagree.
+**Current version: 2.08.01.** With every deployed change, bump `version:` in `content/site.md` and update this line in each `.md` file at the top of the project (AGENTS.md, CLAUDE.md, README.md, future.md, completed.md) to match; the build fails if they disagree.
 
 When writing anything for this site (content, the blog, commit messages, these docs):
 write like a person, plainly and specifically, and never use em dashes (the long dash,

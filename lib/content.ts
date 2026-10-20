@@ -340,6 +340,7 @@ export function getSite(): Site {
     checkDocVersions(e, version);
     const pages = e.group('pages');
     const feedback = e.group('feedback');
+    const compatibility = e.group('compatibility');
     const url = e.link('url').replace(/\/$/, '');
     if (!url.startsWith('https://')) e.fail('url', `must be the site's https:// address; got "${url}"`);
     const site = {
@@ -358,9 +359,11 @@ export function getSite(): Site {
       footer: body.trim().split(/\n\s*\n/).filter(Boolean).map((line) =>
         markdown.parseInline(line.trim().replace(/\{year\}/g, String(new Date().getFullYear()))) as string),
       feedback: readFeedback(feedback),
+      compatibility: { label: compatibility.text('label'), tip: compatibility.text('tip') },
     };
     pages.done();
     feedback.done();
+    compatibility.done();
     if (!site.footer.length) e.fail('footer', 'is missing: write it below the second --- line');
     return site;
   });
