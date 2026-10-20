@@ -1,6 +1,6 @@
 # AGENTS.md
 
-**Current version: 2.08.01.** With every deployed change, bump `version:` in `content/site.md` and update this line in each `.md` file at the top of the project (AGENTS.md, CLAUDE.md, README.md, future.md, completed.md) to match; the build fails if they disagree.
+**Current version: 2.08.02.** With every deployed change, bump `version:` in `content/site.md` and update this line in each `.md` file at the top of the project (AGENTS.md, CLAUDE.md, README.md, future.md, completed.md) to match; the build fails if they disagree.
 
 Instructions for AI agents (and people) working on this site: Vatsal Goyal's portfolio at
 [vatsalgoyal.com](https://www.vatsalgoyal.com), a Next.js site whose content lives in
@@ -175,10 +175,10 @@ shown; they tell search engines who Vatsal is. Update `updated:` when you change
 
 - `version` (see "Version it"), `url` (the site's address), `title` and `description`
   (search results), `firefoxNotice` (the one-time popup in Firefox-engine browsers), `pages` (each page's heading, search description and carousel
-  hint), and `feedback` (the button at the bottom right: `email`, the popup's `title`, the
-  `note` under the button, and the `topics` in its "About" drop-down; a topic's `page`
+  hint), and `feedback` (the button at the bottom right: `email`, the popup's `title`, its
+  `note` under the corner buttons, and the `topics` in its "About" drop-down; a topic's `page`
   makes it the default there), and `compatibility` (the CPU button beside it that turns
-  the blur off: its `label` and the `tip` shown on hover).
+  the blur off: its `label`, the `tip` shown on hover and its `note`).
 - A link to `#mail` anywhere (the home page's Mail Me! tile) opens the same popup as
   "Mail me". Use it instead of a bare `mailto:` link: the popup also offers Gmail and
   Copy address for visitors with no mail app set up.

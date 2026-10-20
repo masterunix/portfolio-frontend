@@ -1,9 +1,17 @@
 # Completed changes
 
-**Current version: 2.08.01.** With every deployed change, bump `version:` in `content/site.md` and update this line in each `.md` file at the top of the project (AGENTS.md, CLAUDE.md, README.md, future.md, completed.md) to match; the build fails if they disagree.
+**Current version: 2.08.02.** With every deployed change, bump `version:` in `content/site.md` and update this line in each `.md` file at the top of the project (AGENTS.md, CLAUDE.md, README.md, future.md, completed.md) to match; the build fails if they disagree.
 
 Changes that have been made and tested, newest first. Agents move items here from
 [`future.md`](future.md) once they're done, with a note of what changed.
+
+## 2026-10-20 · v2.08.02
+
+- The processor button now sits right beside the feedback button (8px apart): the
+  feedback note used to widen its column and push the processor away. Both notes now sit
+  under the pair: "Found a bug? Tell me by clicking the messages icon." and "Website
+  slow? Tap the processor to fix!" (`note` under `feedback` and `compatibility` in
+  `content/site.md`; `app/layout.tsx`, `components/Feedback.tsx`, `app/site.css`).
 
 ## 2026-10-20 · v2.08.01
 

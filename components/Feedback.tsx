@@ -48,7 +48,7 @@ export default function Feedback({ feedback }: { feedback: FeedbackContent }) {
   }, []);
 
   return (
-    <div className="feedback">
+    <>
       <button type="button" className="feedback-button glass" onClick={() => setOpen({ mail: false })}
         aria-haspopup="dialog" aria-label={feedback.title}>
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -56,9 +56,8 @@ export default function Feedback({ feedback }: { feedback: FeedbackContent }) {
           <path d="M8 9h8M8 12h5" />
         </svg>
       </button>
-      <p className="feedback-note">{feedback.note}</p>
       {open && createPortal(<FeedbackDialog feedback={feedback} mail={open.mail} onClosed={() => setOpen(null)} />, document.body)}
-    </div>
+    </>
   );
 }
 

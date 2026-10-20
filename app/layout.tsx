@@ -52,8 +52,14 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           <ShaderBackground background={getBackground()} />
           <Gleck gleck={getGleck()} />
           <div className="corner-right">
-            <CompatToggle compatibility={getSite().compatibility} />
-            <Feedback feedback={getSite().feedback} />
+            <div className="corner-buttons">
+              <CompatToggle compatibility={getSite().compatibility} />
+              <Feedback feedback={getSite().feedback} />
+            </div>
+            <div className="corner-notes">
+              <p>{getSite().feedback.note}</p>
+              <p>{getSite().compatibility.note}</p>
+            </div>
           </div>
           <BrowserNotice html={getSite().firefoxNotice} />
           <div className="page">{children}</div>

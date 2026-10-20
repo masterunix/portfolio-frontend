@@ -154,6 +154,8 @@ export interface Compatibility {
   label: string;
   /** What it does, shown on hover */
   tip: string;
+  /** Its line under the corner buttons on wide screens */
+  note: string;
 }
 
 /** The feedback button and popup (content/site.md's `feedback`) */
@@ -161,7 +163,7 @@ export interface Feedback {
   /** Where the message is mailed */
   email: string;
   title: string;
-  /** The line under the button on wide screens */
+  /** Its line under the corner buttons on wide screens */
   note: string;
   /** The "About" choices; one with a `page` is picked by default on that page */
   topics: { label: string; page?: string }[];
