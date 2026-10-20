@@ -245,9 +245,7 @@ a.tile:hover .hex-button {
   );
 }
 
-/* Low-power mode (ShaderBackground) and compatibility mode (CompatToggle): a plain tint
-   instead of the live blur */
-html[data-low-power] .hex-glass-blur,
+/* Compatibility mode (lib/compat.ts): a plain tint instead of the live blur */
 html[data-compat] .hex-glass-blur {
   background: rgba(10, 10, 16, 0.86);
   -webkit-backdrop-filter: none;
@@ -1287,6 +1285,64 @@ a.gleck-notice:hover,
   .gleck-know-more { display: none; }
 }
 
+/* Phones: the panel of notices above the eyes. It sits over the corner buttons while
+   open (a tap outside closes it) */
+.gleck-sheet {
+  position: absolute;
+  left: 0;
+  bottom: calc(100% + 10px);
+  display: flex;
+  flex-direction: column;
+  width: calc(100vw - 32px);
+  max-height: min(62vh, 520px);
+  padding: 14px;
+  border-radius: 16px;
+  border-color: rgba(255, 255, 255, 0.12);
+  background: rgba(14, 14, 20, 0.92);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(8px) scale(0.98);
+  transform-origin: bottom left;
+  transition: opacity 0.25s ease, transform 0.25s var(--ease-out), visibility 0.25s;
+}
+
+.gleck-sheet[data-open='true'] {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+}
+
+.gleck-sheet-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.gleck-sheet-head h3 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-strong);
+}
+
+.gleck-sheet-list {
+  min-height: 0;
+  overflow: hidden auto;
+  overscroll-behavior: contain;
+}
+
+.gleck-sheet .gleck-notice-item:last-child {
+  margin-bottom: 0;
+}
+
+.gleck-sheet-more {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
 /* ═══ Feedback (bottom right, mirroring Gleck) ═══════════════════════════════ */
 
 /* The bottom-right corner: the compatibility toggle and the feedback button side by
@@ -1358,12 +1414,6 @@ a.gleck-notice:hover,
   position: relative;
 }
 
-.compat-button.is-on {
-  border-color: rgba(52, 211, 153, 0.55);
-  background: rgba(16, 80, 60, 0.55);
-  color: #6ee7b7;
-}
-
 /* The tip: above the button, kept on screen at the right edge */
 .compat-tip {
   position: absolute;
@@ -1411,6 +1461,7 @@ html[data-compat] ::backdrop {
 }
 
 html[data-compat] .glass,
+html[data-compat] .gleck-mini,
 html[data-compat] .back-button-glass,
 html[data-compat] .carousel-bar::before {
   background: rgba(16, 16, 22, 0.88);
@@ -1423,6 +1474,21 @@ html[data-compat] .mobile-back {
 
 html[data-compat] .glass-article {
   background: rgba(8, 8, 12, 0.88);
+}
+
+/* The processor button is tinted green while compatibility mode is on. It follows the
+   attribute itself, so it's tinted from the first paint, and it comes after the .glass
+   rule above, which would otherwise paint it dark like the rest */
+html[data-compat] .compat-button {
+  border-color: rgba(52, 211, 153, 0.7);
+  background: rgba(16, 110, 80, 0.75);
+  color: #a7f3d0;
+  box-shadow: var(--glass-shadow), 0 0 18px rgba(52, 211, 153, 0.35);
+}
+
+html[data-compat] .compat-button:hover {
+  border-color: rgba(110, 231, 183, 0.9);
+  color: #d1fae5;
 }
 
 .feedback-dialog {

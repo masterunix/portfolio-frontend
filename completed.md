@@ -1,9 +1,23 @@
 # Completed changes
 
-**Current version: 2.08.02.** With every deployed change, bump `version:` in `content/site.md` and update this line in each `.md` file at the top of the project (AGENTS.md, CLAUDE.md, README.md, future.md, completed.md) to match; the build fails if they disagree.
+**Current version: 2.08.03.** With every deployed change, bump `version:` in `content/site.md` and update this line in each `.md` file at the top of the project (AGENTS.md, CLAUDE.md, README.md, future.md, completed.md) to match; the build fails if they disagree.
 
 Changes that have been made and tested, newest first. Agents move items here from
 [`future.md`](future.md) once they're done, with a note of what changed.
+
+## 2026-10-20 · v2.08.03
+
+- The processor button is tinted green while compatibility mode is on. The rule that
+  darkens glass in that mode was painting over it (`app/site.css`).
+- When the site finds frames running slow, it now switches on the full compatibility mode
+  (every blur off) instead of only swapping the hexagons' blur, and the processor button
+  shows it, with a line saying it came on by itself (`auto` under `compatibility` in
+  `content/site.md`). Turning it off by hand sticks: it won't come back on by itself in
+  that browser. The old `data-low-power` mode is gone (`lib/compat.ts`,
+  `components/CompatToggle.tsx`, `components/ShaderBackground.tsx`).
+- Phones: tapping Gleck's eyes opens a panel above them with all his notices and the
+  link to his repository, instead of going straight to GitHub. A tap outside, the close
+  button or Esc closes it (`components/Gleck.tsx`, `app/site.css`).
 
 ## 2026-10-20 · v2.08.02
 

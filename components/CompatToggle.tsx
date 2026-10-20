@@ -1,44 +1,32 @@
 /**
  * CompatToggle.tsx: The CPU button next to the feedback button. It switches
- * compatibility mode on and off: <html data-compat>, which site.css uses to turn off
- * every backdrop blur and use plain tints instead. Some browsers draw the heavy blur
- * badly or slowly. The choice is remembered in this browser, and a small script
- * (lib/compat.ts, run from app/layout.tsx) applies it before the page first paints, so
- * the blur never flashes.
+ * compatibility mode on and off (lib/compat.ts): <html data-compat>, which site.css uses
+ * to turn off every backdrop blur and use plain tints instead. Some browsers draw the
+ * heavy blur badly or slowly. The button follows the mode however it came on, by hand
+ * or by itself on a slow device, and is tinted green while it's on.
  *
  * Hovering (or focusing) shows the tip from content/site.md (`compatibility`); a click
  * shows it for a moment too, which is what touch screens get.
  */
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 
-import { COMPAT_KEY } from '@/lib/compat';
+import { getCompat, setCompatByHand, subscribeCompat } from '@/lib/compat';
 import type { Compatibility } from '@/types';
 
 const FLASH_MS = 2500;
 
 export default function CompatToggle({ compatibility }: { compatibility: Compatibility }) {
-  const [on, setOn] = useState(false);
+  const state = useSyncExternalStore(subscribeCompat, getCompat, () => 'off');
+  const on = state !== 'off';
   const [flash, setFlash] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
 
-  // The layout's script has already set the attribute; read it back once mounted
-  // eslint-disable-next-line react-hooks/set-state-in-effect
-  useEffect(() => setOn(document.documentElement.dataset.compat !== undefined), []);
   useEffect(() => () => clearTimeout(timer.current), []);
 
   const toggle = () => {
-    const next = !on;
-    setOn(next);
-    if (next) document.documentElement.dataset.compat = '';
-    else delete document.documentElement.dataset.compat;
-    try {
-      if (next) localStorage.setItem(COMPAT_KEY, '1');
-      else localStorage.removeItem(COMPAT_KEY);
-    } catch {
-      // Storage blocked: it still applies until the page is closed
-    }
+    setCompatByHand(!on);
     setFlash(true);
     clearTimeout(timer.current);
     timer.current = setTimeout(() => setFlash(false), FLASH_MS);
@@ -56,6 +44,7 @@ export default function CompatToggle({ compatibility }: { compatibility: Compati
       </button>
       <div className="compat-tip" id="compat-tip" role="status">
         <strong>{compatibility.label}: {on ? 'on' : 'off'}</strong>
+        {state === 'auto' && <span>{compatibility.auto}</span>}
         <span>{compatibility.tip}</span>
       </div>
     </div>

@@ -17,15 +17,17 @@
 import { useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 
+import { getCompat, setCompatAuto } from '@/lib/compat';
 import type { Background, ThemePage } from '@/types';
 
 /** Canvas pixels per CSS pixel */
 const RENDER_SCALE = 0.5;
 
 /**
- * Low-power mode: if frames keep running slow (two 1s windows under ~40fps), the page
- * marks <html data-low-power>, and site.css swaps the hexagons' live blur for a plain
- * tint, the costliest thing left on weak GPUs (and in Firefox, whose blur is slower).
+ * If frames keep running slow (two 1s windows under ~40fps), compatibility mode comes
+ * on by itself (lib/compat.ts): every backdrop blur, the costliest thing left on weak
+ * GPUs (and in Firefox, whose blur is slower), turns into a plain tint, and the
+ * processor button shows it's on. Not if the visitor turned it off by hand.
  */
 const SLOW_FRAME_MS = 25;
 
@@ -162,15 +164,15 @@ export default function ShaderBackground({ background }: { background: Backgroun
     const start = performance.now();
     let last = start;
     let frame = 0;
-    // Frame timing for low-power mode, from 3s in (after the page's intro)
+    // Frame timing for compatibility mode, from 3s in (after the page's intro)
     let windowStart = 0, windowFrames = 0, slowWindows = 0;
     const watchSpeed = (now: number, delta: number) => {
-      if (now - start < 3000 || delta > 250 || document.documentElement.dataset.lowPower !== undefined) return;
+      if (now - start < 3000 || delta > 250 || getCompat() !== 'off') return;
       if (!windowStart) windowStart = now;
       windowFrames++;
       if (now - windowStart < 1000) return;
       slowWindows = (now - windowStart) / windowFrames > SLOW_FRAME_MS ? slowWindows + 1 : 0;
-      if (slowWindows >= 2) document.documentElement.dataset.lowPower = '';
+      if (slowWindows >= 2) setCompatAuto();
       windowStart = now;
       windowFrames = 0;
     };

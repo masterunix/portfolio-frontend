@@ -7,7 +7,8 @@
  * widget to Gleck's notices (content/gleck.md), then shows every one. On the home page
  * the widget also opens by itself, cycling notices every 5s; it collapses after 10s and
  * opens again 3s later, until you close it. On other pages it stays closed until asked.
- * Phones: just the eyes, linking to Gleck's repository.
+ * Phones: just the eyes; a tap opens a panel above them with every notice and the link
+ * to Gleck's repository. A tap outside it, or Esc, closes it.
  *
  * The widget is never unmounted or re-laid out: it only changes width (and the
  * notice list its height), so every change is one smooth CSS transition.
@@ -32,22 +33,69 @@ export default function Gleck({ gleck }: { gleck: GleckContent }) {
   const isDesktop = useIsDesktop();
   return (
     <>
-      <GleckEyes link={gleck.moreLink} />
+      {!isDesktop && <GleckMobile gleck={gleck} />}
       {isDesktop && <GleckWidget gleck={gleck} />}
     </>
   );
 }
 
-/** Phones: just the eyes, in a glass square, linking to Gleck's repository */
-function GleckEyes({ link }: { link: string }) {
-  const ref = useRef<HTMLAnchorElement>(null);
+/** Phones: the eyes in a glass square; a tap opens his notices in a panel above them */
+function GleckMobile({ gleck }: { gleck: GleckContent }) {
+  const ref = useRef<HTMLDivElement>(null);
   const look = useEyeTracking(ref);
-  const { shut } = useBlink();
+  const { shut, blink } = useBlink();
+  const [open, setOpen] = useState(false);
+  const pathname = usePathname();
+
+  // A new page starts closed
+  const [page, setPage] = useState(pathname);
+  if (page !== pathname) {
+    setPage(pathname);
+    setOpen(false);
+  }
+
+  // A tap outside, or Esc, closes it
+  useEffect(() => {
+    if (!open) return;
+    const onPointerDown = (e: PointerEvent) => {
+      if (!ref.current?.contains(e.target as Node)) setOpen(false);
+    };
+    const onKeyDown = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpen(false); };
+    document.addEventListener('pointerdown', onPointerDown);
+    document.addEventListener('keydown', onKeyDown);
+    return () => {
+      document.removeEventListener('pointerdown', onPointerDown);
+      document.removeEventListener('keydown', onKeyDown);
+    };
+  }, [open]);
+
   return (
-    <a ref={ref} href={link} target="_blank" rel="noopener noreferrer" className="gleck gleck-mini mobile-only"
-      aria-label="Gleck, my AI agent">
-      <Eyes size={12} look={look} closed={shut} />
-    </a>
+    <div ref={ref} className="gleck mobile-only" role="complementary" aria-label="Gleck's notices">
+      <div className="gleck-sheet glass" data-open={open} inert={!open} id="gleck-sheet">
+        <div className="gleck-sheet-head">
+          <h3>Gleck&apos;s notices</h3>
+          <button className="gleck-button gleck-button-danger" onClick={() => setOpen(false)} aria-label="Close">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true">
+              <path d="M2 2L10 10M10 2L2 10" />
+            </svg>
+          </button>
+        </div>
+        <div className="gleck-sheet-list">
+          {gleck.notices.map((n, i) => (
+            <div key={i} className="gleck-notice-item">
+              <Notice notice={n} />
+            </div>
+          ))}
+        </div>
+        <a href={gleck.moreLink} target="_blank" rel="noopener noreferrer" className="gleck-sheet-more">
+          {gleck.moreText}
+        </a>
+      </div>
+      <button className="gleck-mini" onClick={() => { blink(); setOpen(!open); }}
+        aria-label={open ? "Hide Gleck's notices" : "Show Gleck's notices"} aria-expanded={open} aria-controls="gleck-sheet">
+        <Eyes size={12} look={look} closed={shut} />
+      </button>
+    </div>
   );
 }
 

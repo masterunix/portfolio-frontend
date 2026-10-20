@@ -18,11 +18,12 @@
 #                        one without a page is the fallback
 #   compatibility        the CPU button next to the feedback button, which turns the blur
 #                        off for browsers that draw it badly: its `label`, the `tip`
-#                        shown on hover, and its `note` under the corner buttons
+#                        shown on hover, `auto` (added to the tip when it came on by
+#                        itself on a slow device), and its `note` under the corner buttons
 #
 # Below the second --- line: the footer, one line per paragraph. {year} becomes the current
 # year. The first line shows everywhere; the others only on wide screens.
-version: 2.08.02
+version: 2.08.03
 url: https://www.vatsalgoyal.com
 title: Vatsal Goyal · Full-stack and AI Developer
 description: Vatsal Goyal is a full-stack and AI developer in Jaipur, India, building AxeSuite and the RCIS studio. Projects, experience, skills and resume.
@@ -62,6 +63,7 @@ feedback:
 compatibility:
   label: Compatibility mode
   tip: Many browsers have rendering issues with the heavy blur on this site. This toggle turns it off.
+  auto: It came on by itself because the page was running slowly. Tap to turn the blur back on.
   note: Website slow? Tap the processor to fix!
 ---
 

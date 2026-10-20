@@ -359,7 +359,7 @@ export function getSite(): Site {
       footer: body.trim().split(/\n\s*\n/).filter(Boolean).map((line) =>
         markdown.parseInline(line.trim().replace(/\{year\}/g, String(new Date().getFullYear()))) as string),
       feedback: readFeedback(feedback),
-      compatibility: { label: compatibility.text('label'), tip: compatibility.text('tip'), note: compatibility.text('note') },
+      compatibility: { label: compatibility.text('label'), tip: compatibility.text('tip'), auto: compatibility.text('auto'), note: compatibility.text('note') },
     };
     pages.done();
     feedback.done();

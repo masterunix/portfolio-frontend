@@ -154,6 +154,8 @@ export interface Compatibility {
   label: string;
   /** What it does, shown on hover */
   tip: string;
+  /** Also shown on hover when it came on by itself */
+  auto: string;
   /** Its line under the corner buttons on wide screens */
   note: string;
 }
