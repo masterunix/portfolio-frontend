@@ -7,7 +7,7 @@ Changes that have been made and tested, newest first. Agents move items here fro
 
 ## 2026-10-20 · v2.08.04
 
-- Phones: on the summary and blog posts, a "← Home" (or "← Blog") button floats at the
+- Phones: on the summary and blog posts, a "← Home" (or "← All posts") button floats at the
   top left once the back link at the top has scrolled out of view, so leaving a long page
   doesn't mean scrolling back up (`components/GlassArticle.tsx`, `app/site.css`).
 
