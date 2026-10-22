@@ -1,9 +1,15 @@
 # Completed changes
 
-**Current version: 2.08.04.** With every deployed change, bump `version:` in `content/site.md` and update this line in each `.md` file at the top of the project (AGENTS.md, CLAUDE.md, README.md, future.md, completed.md) to match; the build fails if they disagree.
+**Current version: 2.08.05.** With every deployed change, bump `version:` in `content/site.md` and update this line in each `.md` file at the top of the project (AGENTS.md, CLAUDE.md, README.md, future.md, completed.md) to match; the build fails if they disagree.
 
 Changes that have been made and tested, newest first. Agents move items here from
 [`future.md`](future.md) once they're done, with a note of what changed.
+
+## 2026-10-22 · v2.08.05
+
+- /ft7 now shows FT7's download page: the downloads for Mac and Windows and a short guide. The page is a
+  Vercel project of its own (`ft7-site`); this site only forwards `/ft7` and `/ft7/...` to it, and nothing
+  else here changes (`next.config.ts`).
 
 ## 2026-10-20 · v2.08.04
 

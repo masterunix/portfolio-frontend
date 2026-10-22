@@ -1,6 +1,6 @@
 # AGENTS.md
 
-**Current version: 2.08.04.** With every deployed change, bump `version:` in `content/site.md` and update this line in each `.md` file at the top of the project (AGENTS.md, CLAUDE.md, README.md, future.md, completed.md) to match; the build fails if they disagree.
+**Current version: 2.08.05.** With every deployed change, bump `version:` in `content/site.md` and update this line in each `.md` file at the top of the project (AGENTS.md, CLAUDE.md, README.md, future.md, completed.md) to match; the build fails if they disagree.
 
 Instructions for AI agents (and people) working on this site: Vatsal Goyal's portfolio at
 [vatsalgoyal.com](https://www.vatsalgoyal.com), a Next.js site whose content lives in
